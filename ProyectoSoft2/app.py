@@ -71,3 +71,51 @@ def mostrar_catalogo():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+ 
+"""# Modifica la función mostrar_catalogo para obtener los productos de la base de datos
+@app.route('/catalogo')
+def mostrar_catalogo():
+    # Conexión a la base de datos
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="fitogreen"
+    )
+
+    # Crear un cursor para ejecutar consultas SQL
+    cursor = conn.cursor()
+
+    # Consulta para obtener los productos desde la base de datos
+    query = "SELECT * FROM productos"
+
+    # Ejecutar la consulta
+    cursor.execute(query)
+
+    # Obtener todos los productos
+    productos = cursor.fetchall()
+
+    # Cerrar el cursor y la conexión a la base de datos
+    cursor.close()
+    conn.close()
+
+    # Renderiza la plantilla y pasa los productos
+    return render_template('catalogo.html', productos=productos) 
+    
+    #HTML catalogo html
+    <div class="col-md-9"> <!-- Amplié el tamaño del contenido del catálogo a 9 de 12 columnas -->
+    <div class="row">
+        {% for producto in productos %}
+        <div class="col-md-4">
+            <div class="card my-2">
+                <div class="card-body">
+                    <h5 class="card-title">{{ producto[1] }}</h5> <!-- Nombre del producto -->
+                    <p class="card-text">{{ producto[2] }}</p> <!-- Descripción del producto -->
+                    <p class="card-text">Precio: ${{ producto[3] }}</p> <!-- Precio del producto -->
+                </div>
+            </div>
+        </div>
+        {% endfor %}"""
+ 
