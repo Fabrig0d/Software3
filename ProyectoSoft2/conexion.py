@@ -91,15 +91,15 @@ cursor = conn.cursor()
 #     "Administrador",
 # ]
 
-sql = """CALL insertar_emp(%s, %s, %s, %s, %s)"""
-valores = [
-    ("12345678", "abcdefg", "abcdefg", "abcdefg", 1, 5000.50),
-    ("12345678", "abcdefg", "abcdefg", "abcdefg", 2, 5000.50),
-]
+# sql = """CALL insertar_emp(%s, %s, %s, %s, %s)"""
+# valores = [
+#     ("12345678", "abcdefg", "abcdefg", "abcdefg", 1, 5000.50),
+#     ("12345678", "abcdefg", "abcdefg", "abcdefg", 2, 5000.50),
+# ]
 
-cursor.executemany(sql, valores)
-conn.commit()
-print(cursor.rowcount, "registros insertados")
+# cursor.executemany(sql, valores)
+# conn.commit()
+# print(cursor.rowcount, "registros insertados")
 
 
 conn.close
