@@ -19,19 +19,11 @@
 <body>
     <!-- Contenedor para la cabecera -->
     <div class="header-container d-flex justify-content-between align-items-center p-3">
-        <!-- Bienvenido en la esquina superior izquierda -->
         <div class="welcome-text">
-            <h1>Bienvenido a FitoGreen, {{ username }}! <i class="fa-light fa-skull"></i> </h1> 
+            <h1>Bienvenido a FitoGreen, {{ username }}! <i class="fa-solid fa-skull" style="color: #ffffff;"></i></h1> 
         </div>
-  
-        <!-- Boton de logout -->
-        <div class="btn-logout">
-            <a href="/logout" class="btn btn-danger">Cerrar Sesión</a>
-        </div>
-    </div>
-
-    <!-- Barra de búsqueda  -->
-    <div class="search-container d-flex justify-content-center my-3">
+       <!-- Barra de búsqueda  -->
+       <div class="search-container d-flex justify-content-center my-3">
         <div class="input-group" style="max-width: 600px;"> 
             <input type="text" class="form-control" placeholder="Buscar productos..." aria-label="Buscar">
             <div class="input-group-append">
@@ -39,28 +31,35 @@
             </div>
         </div>
     </div>
-
-    <!-- Pestañas de navegación -->
-    <ul class="nav nav-tabs justify-content-center my-3"> 
-        <li class="nav-item">
-            <a class="nav-link active" href="#">Inventario</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link " href="#">Contacto</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link " href="#">Asesoria Virtual</a>
-        </li>
-    </ul>
-
-    <!-- Contenido de la página -->
-    <div class="content-container p-4">
-   
-        <p> aca va el inventario</p>
+        <!-- Boton de logout -->
+        <div class="btn-logout">
+            <a href="/logout" class="btn btn-danger">Cerrar Sesión</a>
+        </div>
     </div>
 
 
+    <!-- Pestañas de navegación -->
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <div class="container-fluid">
+          
+            <ul class="navbar-nav mr-auto">  
+                <li class="nav-item">
+                    <a class="nav-link active" href="/catalogo">Inventario <i class="fa-solid fa-list"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Agregar nuevo producto <i class="fa-regular fa-square-plus"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">aaa </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Mis datos <i class="fa-solid fa-user"></i></a>
+                </li>
+            </ul>
+     </div>
+  </nav>
 
+    {% include 'catalogo_e.html' %}
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>

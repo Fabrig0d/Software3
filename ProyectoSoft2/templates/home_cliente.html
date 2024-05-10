@@ -19,48 +19,53 @@
 <body>
     <!-- Contenedor para la cabecera -->
     <div class="header-container d-flex justify-content-between align-items-center p-3">
-    
         <div class="welcome-text">
-            <h1>Bienvenido a FitoGreen, {{ username }}! </h1>
+            <h1>Bienvenido a FitoGreen, {{ username }}! <i class="fa-solid fa-seedling"></i></h1>  
         </div>
-  
         <!-- Carrito  -->
         <div class="shopping-cart">
-            <button class="btn btn-secondary">
-                <i class="fa-sharp fa-solid fa-cart-circle-plus"></i> Ver Carrito
+            <button class="btn btn-primary">
+                <i class="fas fa-shopping-cart"></i>  
             </button>
+     
         </div>
     </div>
-
-    <!-- Barra de búsqueda -->
-    <div class="search-container d-flex justify-content-center my-3">
-        <div class="input-group" style="max-width: 600px;">
-            <input type="text" class="form-control" placeholder="Buscar productos..." aria-label="Buscar">
-            <div class="input-group-append">
-                <button class="btn btn-primary" type="button">Buscar</button>
+<div></div>
+     <!-- Barra de navegación -->
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+    <div class="container-fluid">
+        
+        <ul class="navbar-nav mr-auto">  
+            <li class="nav-item">
+                <a class="nav-link active" href="/catalogo">Catálogo <i class="fa-solid fa-list"></i></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Asesoría virtual <i class="fa-solid fa-comment"></i></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Contacto <i class="fa-solid fa-phone"></i></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Mis datos <i class="fa-solid fa-user"></i></a>
+            </li>
+        </ul>
+        <div class="navbar-nav ml-auto">  <!-- 'ml-auto' empuja a la izquierda -->
+            <div class="input-group">  
+                <input type="text" class="form-control" placeholder="Buscar productos..." aria-label="Buscar">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="button">Buscar</button>
+                </div>
             </div>
         </div>
+        <div class="navbar-nav ml-auto">  
+            <a href="/logout" class="btn btn-danger">Cerrar Sesión</a>
+        </div>
     </div>
+</nav>
+   
+      {% include 'catalogo.html' %}
 
-    <!-- Pestañas de navegación -->
-    <ul class="nav nav-tabs justify-content-center my-3"> 
-        <li class="nav-item">
-            <a class="nav-link active" href="#">Catálogo</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link " href="#">Contacto</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link " href="#">Asesoria Virtual</a>
-        </li>
-    </ul>
-
-    <!-- Contenido de la página -->
-    <div class="content-container p-4">
-        <p> aca va el catalogo</p>
     </div>
-
-
 
     <!-- Incluir Bootstrap JavaScript y dependencias -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

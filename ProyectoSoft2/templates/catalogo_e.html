@@ -27,10 +27,12 @@
             </div>
 
             <!-- Contenido del catálogo -->
-            <div class="col-md-9">  <!-- 9 de 12 columnas para el contenido del catálogo -->
+            <div class="col-md-9">  
+                <h2></h2>
+                
                 <div class="row">
                     {% for producto in catalogo %}
-                    <div class="col-md-4">  
+                    <div class="col-md-4">  <!-- Usar Bootstrap para diseño de columnas -->
                         <div class="card my-2">
                             <div class="card-body">
                                 <h5 class="card-title">{{ producto.nombre }}</h5>
@@ -51,6 +53,5 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
-
 
     

@@ -58,5 +58,16 @@ def logout():
     return redirect(url_for('login'))
 
 
+# Ejemplo de una función para mostrar el catálogo
+@app.route('/catalogo')
+def mostrar_catalogo():
+    catalogo = [
+        {"nombre": "Producto 1", "descripcion": "Descripción del producto 1", "precio": 10.99},
+        {"nombre": "Producto 2", "descripcion": "Descripción del producto 2", "precio": 20.49},
+ 
+    ]
+    # Renderiza la plantilla y pasa el catálogo
+    return render_template('catalogo.html', catalogo=catalogo)
+
 if __name__ == '__main__':
     app.run(debug=True)

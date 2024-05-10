@@ -5,7 +5,16 @@ body {
     justify-content: justify ;  /* Centra horizontalmente */
     align-items: justify ;  /* Centra verticalmente */
     margin: 0;  /* Eliminar márgenes por defecto */
-    background: white;  /* Fondo degradado */
+    background: #73c883;  
+}
+
+.header-container {
+
+    background-color: #26874e; 
+    color: white;
+    padding: 20px;
+    text-align: center;
+
 }
 
 /* Estilos para la caja principal */
@@ -18,3 +27,51 @@ body {
     max-width: 800px;  /* Limitar el ancho máximo */
     text-align: justify  ;  /* Centrar el texto */
 }
+.navbar {
+    background-color: #333; /* Color de fondo de la navbar */
+    padding: 10px; /* Espacio interno */
+}
+
+.navbar-content {
+    display: flex; /* Usamos Flexbox para distribución */
+    justify-content: space-between; /* Espacio entre elementos */
+    align-items: center; /* Alinear elementos verticalmente */
+}
+
+.nav-links {
+    display: flex; /* Flexbox para los enlaces */
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: white; /* Color de los enlaces */
+    margin-right: 30px; /* Espacio entre enlaces */
+}
+
+.logout a {
+    text-decoration: none;
+    color: white; /* Color del botón de Cerrar Sesión */
+    background-color: #dc3545; /* Color del botón */
+    padding: 8px 12px; /* Espacio interno del botón */
+    border-radius: 5px; /* Bordes redondeados */
+}
+
+.logout a:hover {
+    background-color: #c82333; /* Color al pasar el ratón por encima */
+}
+
+.fas.fa-shopping-cart {
+    font-size: 1.5em;  /* Ajustar el tamaño del ícono */
+    color: white;  /* Cambiar el color del ícono */
+}
+
+/* Ajustar la altura de los elementos adicionales, como el buscador */
+.search-container {
+    height: 60px;  /* Ajustar según la altura del navbar */
+    display: flex;
+    align-items: center;  /* Centrar verticalmente */
+    min-width: 80px;
+    width: 100%;
+    flex: 1;
+}
+
