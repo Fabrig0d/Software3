@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+import mysql.connector 
 
 app = Flask(__name__)
 app.secret_key = 'tu_clave_secreta'  # Se usa para manejar sesiones y cookies.
@@ -9,6 +10,60 @@ usuarios = {
     "empleado1": {"password": "psw2", "role": "empleado"},
 }
 
+products = [
+    {"id": 1, "name": "Producto 1", "price": 10},
+    {"id": 2, "name": "Producto 2", "price": 20},
+    {"id": 3, "name": "Producto 3", "price": 30},
+]
+
+# Carrito de compra (almacenado en memoria, en una aplicación real podría ser una base de datos)
+cart = []
+
+ #Index Visita
+@app.route('/')
+def index():
+    return render_template('index.html', products=products, cart=cart)
+
+ #Carrito add/rm
+@app.route('/carrito')
+def carrito():
+    if 'cart' in session:
+        cart_items = session['cart']
+    else:
+        cart_items = []
+    return render_template('carrito.html', cart_items=cart_items)
+
+@app.route('/add_to_cart', methods=['POST'])
+def add_to_cart():
+    product_id = int(request.form['producto_id'])
+    product = next((p for p in products if p['id'] == product_id), None)
+    if product:
+        cart_item = {'id': product['id'], 'name': product['name'], 'price': product['price'], 'quantity': 1}  
+        if 'cart' not in session:
+            session['cart'] = []
+        session['cart'].append(cart_item)
+        return redirect(url_for('mostrar_catalogo'))
+    else:
+        return "Producto no encontrado"
+
+@app.route('/remove_from_cart/<int:product_id>')
+def remove_from_cart(product_id):
+    global cart
+    cart = [item for item in cart if item['id'] != product_id]
+    return redirect(url_for('carrito'))
+
+@app.route('/borrar_carrito', methods=['POST'])
+def borrar_carrito():
+    session.pop('carrito', None)
+    return redirect(url_for('carrito'))
+
+@app.route('/pagar', methods=['POST'])
+def pagar():
+    # Aquí puedes agregar la lógica para procesar el pago
+    return '¡Gracias por su compra!'
+
+
+#Login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -57,31 +112,16 @@ def logout():
     session.pop('role', None)
     return redirect(url_for('login'))
 
-
-# Ejemplo de una función para mostrar el catálogo
-@app.route('/catalogo')
-def mostrar_catalogo():
-    catalogo = [
-        {"nombre": "Producto 1", "descripcion": "Descripción del producto 1", "precio": 10.99},
-        {"nombre": "Producto 2", "descripcion": "Descripción del producto 2", "precio": 20.49},
  
-    ]
-    # Renderiza la plantilla y pasa el catálogo
-    return render_template('catalogo.html', catalogo=catalogo)
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
-
- 
-"""# Modifica la función mostrar_catalogo para obtener los productos de la base de datos
+# Modifica la función mostrar_catalogo para obtener los productos de la base de datos
 @app.route('/catalogo')
 def mostrar_catalogo():
     # Conexión a la base de datos
     conn = mysql.connector.connect(
         host="localhost",
         user="root",
-        password="",
+        password="925024936F@b.", #pon tu contra :v
+        port = "3305", #Cambia el port segun el tuyo (default 3306)
         database="fitogreen"
     )
 
@@ -103,19 +143,41 @@ def mostrar_catalogo():
 
     # Renderiza la plantilla y pasa los productos
     return render_template('catalogo.html', productos=productos) 
-    
-    #HTML catalogo html
-    <div class="col-md-9"> <!-- Amplié el tamaño del contenido del catálogo a 9 de 12 columnas -->
-    <div class="row">
-        {% for producto in productos %}
-        <div class="col-md-4">
-            <div class="card my-2">
-                <div class="card-body">
-                    <h5 class="card-title">{{ producto[1] }}</h5> <!-- Nombre del producto -->
-                    <p class="card-text">{{ producto[2] }}</p> <!-- Descripción del producto -->
-                    <p class="card-text">Precio: ${{ producto[3] }}</p> <!-- Precio del producto -->
-                </div>
-            </div>
-        </div>
-        {% endfor %}"""
+
+@app.route('/catalogo_e')
+def catalogo_empleado():
+    # Conexión a la base de datos
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="", #pon tu contra :v
+        port = "3306", #Cambia el port segun el tuyo (default 3306)
+        database="fitogreen"
+    )
+
+    # Crear un cursor para ejecutar consultas SQL
+    cursor = conn.cursor()
+
+    # Consulta para obtener los productos desde la base de datos
+    query = "SELECT * FROM productos"
+
+    # Ejecutar la consulta
+    cursor.execute(query)
+
+    # Obtener todos los productos
+    productos = cursor.fetchall()
+
+    # Cerrar el cursor y la conexión a la base de datos
+    cursor.close()
+    conn.close()
+
+    # Renderiza la plantilla y pasa los productos
+    return render_template('catalogo_e.html', productos=productos) 
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
  

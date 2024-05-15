@@ -7,9 +7,17 @@
     <!-- Incluir Bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style_cat.css') }}">
+    <script src="https://kit.fontawesome.com/9e204c657e.js" crossorigin="anonymous"></script>
  
 </head>
 <body>
+    <header>
+   <!-- Contenedor para la cabecera -->
+   <div class="header-container d-flex justify-content-between align-items-center p-3">
+    <div class="welcome-text">
+        <h1>Catalogo de Productos </h1>  
+    </div>
+</header>
     <div class="container-fluid">  <!-- Usamos container-fluid para diseño de dos columnas -->
         <div class="row">
             <!-- Barra lateral para categorías -->
@@ -25,27 +33,21 @@
 
                 </ul>
             </div>
-
-            <!-- Contenido del catálogo -->
-            <div class="col-md-9">  
-                <h2></h2>
-                
-                <div class="row">
-                    {% for producto in catalogo %}
-                    <div class="col-md-4">  <!-- Usar Bootstrap para diseño de columnas -->
-                        <div class="card my-2">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ producto.nombre }}</h5>
-                                <p class="card-text">{{ producto.descripcion }}</p>
-                                <p class="card-text">Precio: ${{ producto.precio }}</p>
-                            </div>
-                        </div>
+     
+    <div class="col-md-9"> 
+        <div class="row">
+            {% for producto in productos %}
+            <div class="col-md-4">
+                <div class="card my-2">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ producto[1] }}</h5> <!-- Nombre del producto -->
+                        <p class="card-text">{{ producto[2] }}</p> <!-- Descripción del producto -->
+                        <p class="card-text">Precio: ${{ producto[3] }}</p> <!-- Precio del producto -->
                     </div>
-                    {% endfor %}
                 </div>
             </div>
-        </div>
-    </div>
+
+            {% endfor %}
 
     <!-- Incluir scripts de Bootstrap -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

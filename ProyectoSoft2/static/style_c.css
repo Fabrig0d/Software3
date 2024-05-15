@@ -8,13 +8,21 @@ body {
     background: #73c883;  
 }
 
+.container-fluid  {
+    color: white;
+}
+
+.carousel-caption {
+
+    color: black;
+
+}
 .header-container {
 
     background-color: #26874e; 
     color: white;
     padding: 20px;
     text-align: center;
-
 }
 
 /* Estilos para la caja principal */

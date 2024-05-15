@@ -3,6 +3,14 @@
     flex-direction: row; /* Los elementos hijos se colocan en fila */
 }
 
+.header-container {
+
+    background-color: #26874e; 
+    color: Black;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid black;  /* Línea divisoria */
+}
 .sidebar {
     width: 20%; /* Barra lateral ocupa el 20% del ancho */
     background-color: white;
@@ -31,7 +39,8 @@
 .sidebar {
     background: #26874e;  /* Color de fondo de la barra lateral */
     padding: 10px;  /* Espaciado interno */
-    border-right: 1px solid black;  /* Línea divisoria */
+    border-right: 1px solid black;
+    border-left: 1px solid black;  /* Línea divisoria */
     height: 100vh;  /* Abarcar toda la altura del viewport */
 }
 
