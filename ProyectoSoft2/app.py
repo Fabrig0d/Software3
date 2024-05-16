@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from flask_mail import Mail, Message
+import smtplib
 import mysql.connector 
 
 app = Flask(__name__)
@@ -15,6 +17,19 @@ products = [
     {"id": 2, "name": "Producto 2", "price": 20},
     {"id": 3, "name": "Producto 3", "price": 30},
 ]
+
+
+# Configuración del correo
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = '@gmail.com'
+app.config['MAIL_PASSWORD'] = ''
+app.config['MAIL_DEFAULT_SENDER'] = '@gmail.com'
+app.config['MAIL_ASCII_ATTACHMENTS'] = False
+
+mail = Mail(app)
 
 # Carrito de compra (almacenado en memoria, en una aplicación real podría ser una base de datos)
 cart = []
@@ -95,6 +110,14 @@ def home_cliente():
         flash('Acceso denegado. Debes ser un cliente.', 'error')
         return redirect(url_for('login'))
 
+@app.route('/contacto')
+def contacto():
+    if 'logged_in' in session and session['logged_in'] and session['role'] == 'cliente':
+        return render_template('contacto.html', username=session['username'])
+    else:
+        flash('Acceso denegado. Debes ser un cliente.', 'error')
+        return redirect(url_for('login'))
+
 
 @app.route('/home_empleado')
 def home_empleado():
@@ -103,6 +126,22 @@ def home_empleado():
     else:
         flash('Acceso denegado. Debes ser un empleado.', 'error')
         return redirect(url_for('login'))
+
+@app.route('/enviar', methods=['POST'])
+def enviar():
+    nombre = request.form['nombre']
+    email = request.form['email']
+    asunto = request.form['asunto']
+    mensaje = request.form['mensaje']
+
+    msg = Message(asunto, sender=app.config['MAIL_DEFAULT_SENDER'], recipients=['fabriziovh01@example.com'])
+    msg.body = f"Nombre: {nombre}\nCorreo: {email}\n\nMensaje:\n{mensaje}"
+    try:
+        mail.send(msg)
+        flash('¡Tu mensaje ha sido enviado correctamente!')
+    except smtplib.SMTPException as e:
+        flash('Error al enviar el mensaje: ' + str(e))
+    return redirect(url_for('home_cliente'))
 
 
 @app.route('/logout')
@@ -150,8 +189,8 @@ def catalogo_empleado():
     conn = mysql.connector.connect(
         host="localhost",
         user="root",
-        password="", #pon tu contra :v
-        port = "3306", #Cambia el port segun el tuyo (default 3306)
+        password="925024936F@b.", #pon tu contra :v
+        port = "3305", #Cambia el port segun el tuyo (default 3306)
         database="fitogreen"
     )
 
