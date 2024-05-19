@@ -1,4 +1,6 @@
-CREATE DATABASE fitogreen
+CREATE DATABASE fitogreen;
+
+USE fitogreen;
 
 CREATE TABLE clientes (
     id INT AUTO_INCREMENT PRIMARY KEY,
