@@ -9,12 +9,12 @@ CREATE TABLE clientes (
     apellido VARCHAR(100), 
     correo VARCHAR(100) UNIQUE, 
     direccion VARCHAR(200)
-)
+);
 
 CREATE TABLE tipoEmpleado (
     id INT AUTO_INCREMENT PRIMARY KEY, 
     nombre VARCHAR(100)
-)
+);
 
 CREATE TABLE empleados (
     id INT AUTO_INCREMENT PRIMARY KEY, 
@@ -25,12 +25,12 @@ CREATE TABLE empleados (
     sueldo DECIMAL(6,2), 
     tipo INT, 
     FOREIGN KEY (tipo) REFERENCES tipoEmpleado(id)
-)
+);
 
 CREATE TABLE tipoUsuario (
     id INT AUTO_INCREMENT PRIMARY KEY, 
     descripción VARCHAR(100)
-)
+);
 
 CREATE TABLE usuario (
     id INT AUTO_INCREMENT PRIMARY KEY, 
@@ -42,28 +42,32 @@ CREATE TABLE usuario (
     FOREIGN KEY (correo_cli) REFERENCES clientes(correo), 
     FOREIGN KEY (correo_emp) REFERENCES empleados(correo), 
     FOREIGN KEY (tipo) REFERENCES tipoUsuario(id)
-)
+);
 
 CREATE TABLE tipoProducto (
-    id INT AUTO_INCREMENT PRIMARY KEY, 
-    nombre VARCHAR(100)
-)
+	id INT AUTO_INCREMENT PRIMARY KEY, 
+	nombre VARCHAR(100)
+);
 
 CREATE TABLE productos (
-    id INT AUTO_INCREMENT PRIMARY KEY, 
-    nombre VARCHAR(100), 
-    composicion VARCHAR(100),  
-    precio DECIMAL(6,2), 
-    stock INT, 
-    tipo INT, 
-    FOREIGN KEY (tipo) REFERENCES tipoProducto(id)
-)
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100),
+    composicion VARCHAR(100),
+    presentacion  VARCHAR(100),
+    precio_distr DECIMAL(6 , 2 ),
+    precio_publico DECIMAL(6 , 2 ),
+    stock INT,
+    tipo INT,
+    FOREIGN KEY (tipo)
+        REFERENCES tipoProducto (id)
+);
 
 
---- PROCEDIMIENTOS ALMACENADOS
+--- PROCEDIMIENTOS ALMACENADOS ---
 
 --- CLIENTES ---
 
+DELIMITER //
 CREATE PROCEDURE insertar_cli(
     IN dni_cli VARCHAR(8), 
     IN nombre_cli VARCHAR(100), 
@@ -72,10 +76,11 @@ CREATE PROCEDURE insertar_cli(
     IN direccion_cli VARCHAR(200)
 )
 BEGIN
-    INSERT INTO clientes (dni, nombre, apellido, correo, direccion) 
+    INSERT INTO clientes (dni, nombre, apellido, correo, direccion)
     VALUES (dni_cli, nombre_cli, apellido_cli, correo_cli, direccion_cli);
 END;
 
+DELIMITER //
 CREATE PROCEDURE editar_cli(
     IN id_cli INT, 
     IN dni_cli VARCHAR(8), 
@@ -94,12 +99,15 @@ BEGIN
         direccion = direccion_cli 
     WHERE id = id_cli;
 END;
-
+ 
+DELIMITER //
 CREATE PROCEDURE listar_cli()
 BEGIN
     SELECT * FROM clientes;
 END;
 
+
+DELIMITER //
 CREATE PROCEDURE buscar_cli(
     IN dni_cli VARCHAR(8), 
     IN nombre_cli VARCHAR(100), 
@@ -107,13 +115,14 @@ CREATE PROCEDURE buscar_cli(
 )
 BEGIN
     SELECT * FROM clientes 
-    WHERE (dni_cli IS NULL OR dni = dni_cli) 
-    AND (nombre_cli IS NULL OR nombre LIKE CONCAT(nombre_cli, '%')) 
+    WHERE (dni_cli IS NULL OR dni = dni_cli)
+    AND (nombre_cli IS NULL OR nombre LIKE CONCAT(nombre_cli, '%'))
     AND (apellido_cli IS NULL OR apellido LIKE CONCAT(apellido_cli, '%'));
 END;
 
 --- TIPO DE EMPLEADO ---
 
+DELIMITER //
 CREATE PROCEDURE insertar_tipoEmp(
     IN nombre_tipoEmp VARCHAR(100)
 )
@@ -122,9 +131,12 @@ BEGIN
     VALUES (nombre_tipoEmp);
 END;
 
+
+
+DELIMITER //
 CREATE PROCEDURE editar_tipoEmp(
     IN id_tipoEmp INT, 
-    IN nombre_tipoEmp VARCHAR(100), 
+    IN nombre_tipoEmp VARCHAR(100)
 )
 BEGIN
     UPDATE tipoEmpleado 
@@ -132,13 +144,16 @@ BEGIN
     WHERE id = id_tipoEmp;
 END;
 
+DELIMITER //
 CREATE PROCEDURE listar_tipoEmp()
 BEGIN
     SELECT * FROM tipoEmpleado;
 END;
 
+
+DELIMITER //
 CREATE PROCEDURE buscar_tipoEmp(
-    IN nombre_tipoEmp VARCHAR(100), 
+    IN nombre_tipoEmp VARCHAR(100) 
 )
 BEGIN
     SELECT * FROM tipoEmpleado 
@@ -147,6 +162,7 @@ END;
 
 --- EMPLEADO ---
 
+DELIMITER //
 CREATE PROCEDURE insertar_emp(
     IN dni_emp VARCHAR(8), 
     IN nombre_emp VARCHAR(100), 
@@ -160,6 +176,7 @@ BEGIN
     VALUES (dni_emp, nombre_emp, apellido_emp, correo_emp, sueldo_emp, tipo_emp);
 END;
 
+DELIMITER //
 CREATE PROCEDURE editar_emp(
     IN id_emp INT, 
     IN dni_emp VARCHAR(8), 
@@ -180,21 +197,27 @@ BEGIN
     WHERE id = id_emp;
 END;
 
+
+DELIMITER //
 CREATE PROCEDURE listar_emp()
 BEGIN
     SELECT * FROM empleados;
 END;
 
+
+DELIMITER //
 CREATE PROCEDURE buscar_emp()
 BEGIN
     SELECT * FROM empleados 
     WHERE (dni_emp IS NULL OR dni = dni_emp) 
     AND (nombre_emp IS NULL OR nombre LIKE CONCAT(nombre_emp, '%')) 
     AND (apellido_emp IS NULL OR apellido LIKE CONCAT(apellido_emp, '%'));
-END
+END;
+
 
 --- TIPO DE USUARIO ---
 
+DELIMITER //
 CREATE PROCEDURE insertar_tipoUsu(
     IN nombre_tipoUsu VARCHAR(100)
 )
@@ -203,9 +226,10 @@ BEGIN
     VALUES (nombre_tipoUsu);
 END;
 
+DELIMITER //
 CREATE PROCEDURE editar_tipoUsu(
     IN id_tipoUsu INT, 
-    IN nombre_tipoUsu VARCHAR(100), 
+    IN nombre_tipoUsu VARCHAR(100) 
 )
 BEGIN
     UPDATE tipoUsuario
@@ -213,13 +237,16 @@ BEGIN
     WHERE id = id_tipoUsu;
 END;
 
+
+DELIMITER //
 CREATE PROCEDURE listar_tipoUsu()
 BEGIN
     SELECT * FROM tipoUsuario;
 END;
 
+DELIMITER //
 CREATE PROCEDURE buscar_tipoUsu(
-    IN nombre_tipoUsu VARCHAR(100), 
+    IN nombre_tipoUsu VARCHAR(100)
 )
 BEGIN
     SELECT * FROM tipoUsuario
@@ -228,6 +255,7 @@ END;
 
 --- USUARIO ---
 
+DELIMITER //
 CREATE PROCEDURE insertar_cliUsu(
     IN correo_cliUsu VARCHAR(100), 
     IN usuario_usu VARCHAR(100), 
@@ -239,6 +267,7 @@ BEGIN
     VALUES (correo_cliUsu, usuario_usu, contraseña_usu, tipo_usu);
 END;
 
+DELIMITER //
 CREATE PROCEDURE insertar_empUsu(
     IN correo_empUsu VARCHAR(100), 
     IN usuario_usu VARCHAR(100), 
@@ -250,6 +279,7 @@ BEGIN
     VALUES (correo_empUsu, usuario_usu, contraseña_usu, tipo_usu);
 END;
 
+DELIMITER //
 CREATE PROCEDURE editar_cliUsu(
     IN id_usu INT,
     IN correo_cliUsu VARCHAR(100), 
@@ -267,6 +297,7 @@ BEGIN
     WHERE id = id_usu;
 END;
 
+DELIMITER //
 CREATE PROCEDURE editar_empUsu(
     IN id_usu INT,
     IN correo_empUsu VARCHAR(100), 
@@ -284,6 +315,7 @@ BEGIN
     WHERE id = id_usu;
 END;
 
+DELIMITER //
 CREATE PROCEDURE listar_cliUsu(
     IN correo_cliUsu VARCHAR(100)
 )
@@ -292,6 +324,7 @@ BEGIN
     WHERE correo_cliUsu IS NOT NULL;
 END;
 
+DELIMITER //
 CREATE PROCEDURE listar_empUsu(
     IN correo_empUsu VARCHAR(100)
 )
@@ -300,16 +333,18 @@ BEGIN
     WHERE correo_empUsu IS NOT NULL;
 END;
 
+DELIMITER //
 CREATE PROCEDURE buscar_usu(
     IN usuario_usu VARCHAR(100)
 )
 BEGIN
     SELECT * FROM usuario 
     WHERE (usuario_usu IS NULL OR usuario LIKE CONCAT(usuario_usu, '%'));
-END
+END;
 
 --- TIPO DE PRODUCTO ---
 
+DELIMITER //
 CREATE PROCEDURE insertar_tipoProd(
     IN nombre_tipoProd VARCHAR(100)
 )
@@ -318,9 +353,10 @@ BEGIN
     VALUES (nombre_tipoProd);
 END;
 
+DELIMITER //
 CREATE PROCEDURE editar_tipoProd(
     IN id_tipoProd INT, 
-    IN nombre_tipoProd VARCHAR(100), 
+    IN nombre_tipoProd VARCHAR(100)
 )
 BEGIN
     UPDATE tipoProducto
@@ -328,13 +364,15 @@ BEGIN
     WHERE id = id_tipoProd;
 END;
 
+DELIMITER //
 CREATE PROCEDURE listar_tipoProd()
 BEGIN
     SELECT * FROM tipoProducto;
 END;
 
+DELIMITER //
 CREATE PROCEDURE buscar_tipoProd(
-    IN nombre_tipoProd VARCHAR(100), 
+    IN nombre_tipoProd VARCHAR(100)
 )
 BEGIN
     SELECT * FROM tipoProducto
@@ -343,18 +381,22 @@ END;
 
 --- PRODUCTO ---
 
+DELIMITER //
 CREATE PROCEDURE insertar_prod(
     IN nombre_prod VARCHAR(100), 
     IN composicion_prod VARCHAR(100), 
-    IN precio_prod DECIMAL(6,2), 
+    IN presentacion_prod VARCHAR(100),
+    IN precio_distr_prod DECIMAL(6,2), 
+    IN precio_publico_prod DECIMAL(6,2),
     IN stock_prod INT, 
     IN tipo_prod INT
 )
 BEGIN
-    INSERT INTO productos (nombre, composicion, precio, stock, tipo) 
-    VALUES (nombre_prod, composicion_prod, precio_prod, stock_prod, tipo_prod);
+    INSERT INTO productos (nombre, composicion, presentacion, precio_distr, precio_publico, stock, tipo) 
+    VALUES (nombre_prod, composicion_prod, presentacion_prod, precio_distr_prod, precio_publico_prod, stock_prod, tipo_prod);
 END;
 
+DELIMITER //
 CREATE PROCEDURE editar_prod(
     IN id_prod INT, 
     IN nombre_prod VARCHAR(100), 
@@ -374,11 +416,13 @@ BEGIN
     WHERE id = id_prod;
 END;
 
+DELIMITER //
 CREATE PROCEDURE listar_prod()
 BEGIN
     SELECT * FROM productos;
 END;
 
+DELIMITER //
 CREATE PROCEDURE listar_prodxtipo(
     IN tipo_prod INT
 )
@@ -387,19 +431,21 @@ BEGIN
     WHERE tipo = tipo_prod;
 END;
 
+DELIMITER //
 CREATE PROCEDURE buscar_prod(
     IN nombre_prod VARCHAR(100), 
-    IN composicion_prod VARCHAR(100), 
+    IN composicion_prod VARCHAR(100)
 )
 BEGIN
     SELECT * FROM productos 
     WHERE (nombre_prod IS NULL OR nombre LIKE CONCAT(nombre_prod, '%')) 
-    AND (composicion_prod IS NULL OR composicion LIKE CONCAT(composicion_prod, '%')) 
-END
+    AND (composicion_prod IS NULL OR composicion LIKE CONCAT(composicion_prod, '%'));
+END;
 
+DELIMITER //
 CREATE PROCEDURE buscar_prodxMayorOmenorQue(
     IN precio_prod DECIMAL(6,2), 
-    IN busqueda VARCHAR(10), 
+    IN busqueda VARCHAR(10) 
 )
 BEGIN
     IF busqueda = 'mayor' THEN
@@ -409,4 +455,4 @@ BEGIN
         SELECT * FROM productos 
         WHERE precio < precio_prod;
     END IF;
-END
+END;
