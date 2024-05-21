@@ -19,17 +19,6 @@ products = [
 ]
 
 
-# Configuración del correo
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USE_SSL'] = False
-app.config['MAIL_USERNAME'] = '@gmail.com'
-app.config['MAIL_PASSWORD'] = ''
-app.config['MAIL_DEFAULT_SENDER'] = '@gmail.com'
-app.config['MAIL_ASCII_ATTACHMENTS'] = False
-
-mail = Mail(app)
 
 # Carrito de compra (almacenado en memoria, en una aplicación real podría ser una base de datos)
 cart = []
@@ -114,6 +103,15 @@ def home_cliente():
 def contacto():
     if 'logged_in' in session and session['logged_in'] and session['role'] == 'cliente':
         return render_template('contacto.html', username=session['username'])
+    else:
+        flash('Acceso denegado. Debes ser un cliente.', 'error')
+        return redirect(url_for('login'))
+
+
+@app.route('/datos_c')
+def datos_c():
+    if 'logged_in' in session and session ['logged_in'] and session ['role'] == 'cliente':
+        return render_template('datos_c.html', username=session['username'])
     else:
         flash('Acceso denegado. Debes ser un cliente.', 'error')
         return redirect(url_for('login'))
