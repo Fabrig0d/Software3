@@ -5,16 +5,11 @@
 
 .header-container {
 
-    background-color: #26874e; 
+    background-color: #006414; 
     color: Black;
     padding: 20px;
     text-align: center;
     border: 1px solid black;  /* Línea divisoria */
-}
-.sidebar {
-    width: 20%; /* Barra lateral ocupa el 20% del ancho */
-    background-color: white;
-    padding: 10px;
 }
 
 .content {
@@ -37,7 +32,7 @@
 }
 
 .sidebar {
-    background: #26874e;  /* Color de fondo de la barra lateral */
+    background: #006414;  /* Color de fondo de la barra lateral */
     padding: 10px;  /* Espaciado interno */
     border-right: 1px solid black;
     border-left: 1px solid black;  /* Línea divisoria */
@@ -50,5 +45,21 @@ body {
     justify-content: justify ;  /* Centra horizontalmente */
     align-items: justify ;  /* Centra verticalmente */
     margin: 0;  /* Eliminar márgenes por defecto */
-    background: #73c883;  
+    background: #5ccb5f;  
+}
+
+.welcome-text{
+
+color: white
+
+}
+
+.shopping-cart {
+    margin-right: 10px; /* Ajusta este valor según sea necesario para el espaciado deseado */
+}
+
+.btn-inicio {
+
+    margin-right: 15px; 
+
 }

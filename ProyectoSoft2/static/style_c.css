@@ -5,7 +5,7 @@ body {
     justify-content: justify ;  /* Centra horizontalmente */
     align-items: justify ;  /* Centra verticalmente */
     margin: 0;  /* Eliminar márgenes por defecto */
-    background: #73c883;  
+    background: #5ccb5f;  
 }
 
 .container-fluid  {
@@ -19,7 +19,7 @@ body {
 }
 .header-container {
 
-    background-color: #26874e; 
+    background-color: #006414; 
     color: white;
     padding: 20px;
     text-align: center;

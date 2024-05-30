@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import urllib.parse
+from math import ceil
 
 # Cargar variables de entorno
 env_path = os.path.join(os.path.dirname(__file__), '../ProyectoSoft2/.env')
@@ -72,22 +73,22 @@ class Empleado(db.Model):
     sueldo = db.Column(db.Numeric(8, 2))  
     rol = db.Column(db.String(100))
 
-
 class TipoProducto(db.Model):
     __tablename__ = 'tipo_producto'
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), unique=True)
+    nombre = db.Column(db.String(100), unique=True, nullable=False)
 
 class Producto(db.Model):
     __tablename__ = 'productos'
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100))
-    descripcion = db.Column(db.String(200))
-    presentacion = db.Column(db.String(100))
-    precio_dis = db.Column(db.Numeric(8, 2)) 
-    precio_pub = db.Column(db.Numeric(8, 2)) 
-    stock = db.Column(db.Integer)
-    tipo_producto_id = db.Column(db.Integer, db.ForeignKey('tipo_producto.id'))
+    nombre = db.Column(db.String(100), nullable=False)
+    descripcion = db.Column(db.String(200), nullable=True)
+    presentacion = db.Column(db.String(100), nullable=True)
+    precio_dis = db.Column(db.Numeric(8, 2), nullable=False)
+    precio_pub = db.Column(db.Numeric(8, 2), nullable=False)
+    stock = db.Column(db.Integer, nullable=False)
+    tipo_producto_id = db.Column(db.Integer, db.ForeignKey('tipo_producto.id'), nullable=False)
+    tipo_producto = db.relationship('TipoProducto', backref=db.backref('productos', lazy=True))
 
 # Carrito de compra (almacenado en memoria, en una aplicación real podría ser una base de datos)
 cart = []
@@ -177,7 +178,6 @@ def contacto():
         return redirect(url_for('login'))
 
 
-
 @app.route('/home_empleado')
 def home_empleado():
     if 'logged_in' in session and session['logged_in'] and session['tipo'] == 'empleado':
@@ -210,8 +210,18 @@ def logout():
 
 @app.route('/catalogo')
 def mostrar_catalogo():
-    productos = Producto.query.all()
-    return render_template('catalogo.html', productos=productos)
+    page = request.args.get('page', 1, type=int)
+    per_page = 9  # Número de productos por página
+    tipo_producto_id = request.args.get('tipo_producto_id', type=int)
+
+    if tipo_producto_id:
+        productos = Producto.query.filter_by(tipo_producto_id=tipo_producto_id).paginate(page=page, per_page=per_page)
+    else:
+        productos = Producto.query.paginate(page=page, per_page=per_page)
+
+    total_pages = ceil(productos.total / per_page)
+    tipos_producto = TipoProducto.query.all()  # Obtener todos los tipos de productos
+    return render_template('catalogo.html', productos=productos.items, total_pages=total_pages, current_page=page, tipos_producto=tipos_producto)
 
 @app.route('/catalogo_e')
 def catalogo_empleado():

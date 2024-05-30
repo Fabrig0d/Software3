@@ -1,5 +1,5 @@
 body {
-    background: #73c883;  
+    background: #4ea93b;  
 }
 
 .container {
@@ -14,3 +14,29 @@ body {
 .form-group {
     margin-bottom: 20px;
 }
+
+
+.container {
+    background: rgba(255, 255, 255, 0.9);  
+    padding: 30px;
+    border-radius: 10px; 
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); 
+}
+
+.submitBtn {
+    display: block;
+    margin-left: 0px;
+    padding: 15px 30px;
+    border: none;
+    background-color: #26874e;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+    margin-top: 25px;
+  }
+  
+  .submitBtn:hover {
+    background-color: #73c883;
+    transform: translateY(-2px);
+  }
