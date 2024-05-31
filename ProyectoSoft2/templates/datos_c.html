@@ -4,52 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Datos Cliente</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/9e204c657e.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='style_con.css') }}">
 </head>
 <body>
+    <header>
+        <div class="header-container d-flex justify-content-between align-items-center p-3">
+            <div class="welcome-text">
+                <center><h1 class="display-4">Datos personales:</h1></center>
+            </div>
+            <div class="btn-inicio ml-auto">
+                <a href="/home_cliente" class="btn btn-primary">
+                    <i class="fa-solid fa-house"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+    <br><br>
     <div class="container">
-        <h1>Datos personales:</h1>
-        <div class="form-group">
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" value="{{ cliente.nombre }}" readonly>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" name="nombre" value="{{ cliente.nombre }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="apellidos">Apellidos</label>
+                <input type="text" id="apellidos" name="apellidos" value="{{ cliente.apellidos }}" readonly>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="apellido">Apellidos:</label>
-            <input type="text" id="apellido" name="apellido" value="{{ cliente.apellidos }}" readonly>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="correo">Correo Electrónico</label>
+                <input type="email" id="correo" name="correo" value="{{ cliente.correo }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="telefono_celular">Teléfono Celular</label>
+                <input type="text" id="telefono_celular" name="telefono_celular" value="{{ cliente.telefono_celular }}" readonly>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="correo">Correo Electrónico:</label>
-            <input type="email" id="correo" name="correo" value="{{ cliente.correo }}" readonly>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="dni_ruc">DNI o RUC</label>
+                <input type="text" id="dni_ruc" name="dni_ruc" value="{{ cliente.dni_ruc }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="fecha_nacimiento">Fecha de Nacimiento</label>
+                <input type="text" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ cliente.fecha_nacimiento }}" readonly>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="telefono">Teléfono Celular:</label>
-            <input type="text" id="telefono" name="telefono" value="{{ cliente.telefono_celular }}" readonly>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="departamento">Departamento</label>
+                <input type="text" id="departamento" name="departamento" value="{{ cliente.departamento }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="provincia">Provincia</label>
+                <input type="text" id="provincia" name="provincia" value="{{ cliente.provincia }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="distrito">Distrito</label>
+                <input type="text" id="distrito" name="distrito" value="{{ cliente.distrito }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="direccion">Dirección</label>
+                <input type="text" id="direccion" name="direccion" value="{{ cliente.direccion }}" readonly>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="dni">DNI:</label>
-            <input type="text" id="dni" name="dni" value="{{ cliente.dni_ruc }}" readonly>
-        </div>
-        <div class="form-group">
-            <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
-            <input type="text" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ cliente.fecha_nacimiento }}" readonly>
-        </div>
-        <div class="form-group">
-            <label for="departamento">Departamento:</label>
-            <input type="text" id="departamento" name="departamento" value="{{ cliente.departamento }}" readonly>
-        </div>
-        <div class="form-group">
-            <label for="provincia">Provincia:</label>
-            <input type="text" id="provincia" name="provincia" value="{{ cliente.provincia }}" readonly>
-        </div>
-        <div class="form-group">
-            <label for="distrito">Distrito:</label>
-            <input type="text" id="distrito" name="distrito" value="{{ cliente.distrito }}" readonly>
-        </div>
-        <div class="form-group">
-            <label for="direccion">Dirección:</label>
-            <input type="text" id="direccion" name="direccion" value="{{ cliente.direccion }}" readonly>
-        </div>
-    
     </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

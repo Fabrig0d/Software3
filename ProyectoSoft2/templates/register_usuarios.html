@@ -6,35 +6,140 @@
     <title>Registro de Usuario</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style_r.css') }}">
+    <script>
+        function toggleFields() {
+            var tipo = document.getElementById('tipo').value;
+            if (tipo === 'cliente') {
+                document.getElementById('empleadoFields').style.display = 'none';
+                document.getElementById('clienteFields').style.display = 'block';
+                document.getElementById('administradorFields').style.display = 'none';
+            } else if (tipo === 'empleado') {
+                document.getElementById('clienteFields').style.display = 'none';
+                document.getElementById('empleadoFields').style.display = 'block';
+                document.getElementById('administradorFields').style.display = 'none';
+            }
+            else if (tipo === 'administrador') {
+                document.getElementById('clienteFields').style.display = 'none';
+                document.getElementById('empleadoFields').style.display = 'none';
+                document.getElementById('administradorFields').style.display = 'block';
+            }
+            
+        }
+    </script>
 </head>
 <body>
-  <br><br><br><br><br><br>
+    <br><br><br>
     <div class="container">
-        <h2 class="text-center mt-5">Registro de Usuario</h2>
-        <form action="{{ url_for('register') }}" method="POST" class="mt-4">
-            <div class="form-group">
-                <label for="username">Nombre de Usuario</label>
-                <input type="text" class="form-control" id="username" name="username" required>
+        <center><h1 class="display-2">Registrar Usuario</h1></center>
+        <br> <br>
+        <form method="POST" action="{{ url_for('register') }}">
+            <div class="form-row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" required>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="apellidos">Apellidos</label>
+                        <input type="text" class="form-control" id="apellidos" name="apellidos" required>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="password">Contraseña</label>
-                <input type="password" class="form-control" id="password" name="password" required>
+            <div class="form-row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="correo">Correo Electrónico</label>
+                        <input type="email" class="form-control" id="correo" name="correo" required>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="telefono_celular">Teléfono Celular</label>
+                        <input type="text" class="form-control" id="telefono_celular" name="telefono_celular" required>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="tipo">Tipo de Usuario</label>
-                <select class="form-control" id="tipo" name="tipo">
-                    <option value="cliente">Cliente</option>
-                    <option value="empleado">Empleado</option>
-                    <option value="admin">Administrador</option>
-                </select>
-                <br>
+            <div class="form-row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="dni">DNI</label>
+                        <input type="text" class="form-control" id="dni" name="dni" required>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="fecha_nacimiento">Fecha de Nacimiento</label>
+                        <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required>
+                    </div>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary">Registrar</button>
+            <div class="form-row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="tipo">Tipo de Usuario</label>
+                        <select class="form-control" id="tipo" name="tipo" onchange="toggleFields()" required>
+                            <option value="">Selecciona un tipo</option>
+                            <option value="cliente">Cliente</option>
+                            <option value="empleado">Empleado</option>
+                            <option value="Administrador">Administrador</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div id="clienteFields" style="display: none;">
+                <div class="form-row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="departamento">Departamento</label>
+                            <input type="text" class="form-control" id="departamento" name="departamento">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="provincia">Provincia</label>
+                            <input type="text" class="form-control" id="provincia" name="provincia">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="distrito">Distrito</label>
+                            <input type="text" class="form-control" id="distrito" name="distrito">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="empleadoFields" style="display: none;">
+                <div class="form-row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="sueldo">Sueldo</label>
+                            <input type="number" class="form-control" id="sueldo" name="sueldo">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="username">Usuario</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Registrarse</button>
         </form>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>    
 </body>
 </html>

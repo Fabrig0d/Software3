@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from flask_mail import Mail, Message
 import smtplib
 import pymysql
+from functools import wraps
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -71,7 +72,20 @@ class Empleado(db.Model):
     fecha_nacimiento = db.Column(db.Date)
     direccion = db.Column(db.String(200))
     sueldo = db.Column(db.Numeric(8, 2))  
-    rol = db.Column(db.String(100))
+    username = db.Column(db.String(100))
+
+class Administrador(db.Model):
+    __tablename__ = 'Administrador'
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100))
+    apellidos = db.Column(db.String(100))
+    correo = db.Column(db.String(100), unique=True)
+    telefono_celular = db.Column(db.String(20))
+    dni = db.Column(db.String(15))
+    fecha_nacimiento = db.Column(db.Date)
+    direccion = db.Column(db.String(200))
+    sueldo = db.Column(db.Numeric(8, 2))  
+    username = db.Column(db.String(100))
 
 class TipoProducto(db.Model):
     __tablename__ = 'tipo_producto'
@@ -148,6 +162,8 @@ def login():
                 return redirect(url_for('home_cliente'))
             elif user.tipo == 'empleado':
                 return redirect(url_for('home_empleado'))
+            elif user.tipo == 'admin':
+                return redirect(url_for('home_admin'))
         else:
             flash('Usuario o contraseña incorrectos.', 'error')
     return render_template('login.html')
@@ -169,14 +185,6 @@ def home_cliente():
         flash('Acceso denegado. Debes ser un cliente.', 'error')
         return redirect(url_for('login'))
 
-@app.route('/contacto')
-def contacto():
-    if 'logged_in' in session and session['logged_in'] and session['tipo'] == 'cliente':
-        return render_template('contacto.html', username=session['username'])
-    else:
-        flash('Acceso denegado. Debes ser un cliente.', 'error')
-        return redirect(url_for('login'))
-
 
 @app.route('/home_empleado')
 def home_empleado():
@@ -184,6 +192,14 @@ def home_empleado():
         return render_template('home_empleado.html', username=session['username'])
     else:
         flash('Acceso denegado. Debes ser un empleado.', 'error')
+        return redirect(url_for('login'))
+    
+@app.route('/home_admin')
+def home_admin():
+    if 'logged_in' in session and session['logged_in'] and session['tipo'] == 'admin':
+        return render_template('home_admin.html', username=session['username'])
+    else:
+        flash('Acceso denegado. Debes ser un administrador.', 'error')
         return redirect(url_for('login'))
 
 @app.route('/enviar', methods=['POST'])
@@ -223,47 +239,155 @@ def mostrar_catalogo():
     tipos_producto = TipoProducto.query.all()  # Obtener todos los tipos de productos
     return render_template('catalogo.html', productos=productos.items, total_pages=total_pages, current_page=page, tipos_producto=tipos_producto)
 
+@app.route('/catalogo_in')
+def catalogo_index():
+    page = request.args.get('page', 1, type=int)
+    per_page = 9  # Número de productos por página
+    tipo_producto_id = request.args.get('tipo_producto_id', type=int)
+
+    if tipo_producto_id:
+        productos = Producto.query.filter_by(tipo_producto_id=tipo_producto_id).paginate(page=page, per_page=per_page)
+    else:
+        productos = Producto.query.paginate(page=page, per_page=per_page)
+
+    total_pages = ceil(productos.total / per_page)
+    tipos_producto = TipoProducto.query.all()  # Obtener todos los tipos de productos
+    return render_template('catalogo_in.html', productos=productos.items, total_pages=total_pages, current_page=page, tipos_producto=tipos_producto)
+
 @app.route('/catalogo_e')
 def catalogo_empleado():
-    productos = Producto.query.all()
-    return render_template('catalogo_e.html', productos=productos)
+    page = request.args.get('page', 1, type=int)
+    per_page = 9  # Número de productos por página
+    tipo_producto_id = request.args.get('tipo_producto_id', type=int)
+
+    if tipo_producto_id:
+        productos = Producto.query.filter_by(tipo_producto_id=tipo_producto_id).paginate(page=page, per_page=per_page)
+    else:
+        productos = Producto.query.paginate(page=page, per_page=per_page)
+
+    total_pages = ceil(productos.total / per_page)
+    tipos_producto = TipoProducto.query.all()  # Obtener todos los tipos de productos
+    return render_template('catalogo_e.html', productos=productos.items, total_pages=total_pages, current_page=page, tipos_producto=tipos_producto)
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'logged_in' in session and session['logged_in'] and session['tipo'] == 'admin':
+            return f(*args, **kwargs)
+        else:
+            flash('Acceso denegado. Debes ser un administrador.', 'error')
+            return redirect(url_for('login'))
+    return decorated_function
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # Aquí iría tu lógica para verificar si el usuario es un administrador
+        # Puedes implementar tu propia lógica de autenticación aquí
+        # Por ejemplo, verificar si el usuario está autenticado y si es un administrador
+        # Si no es un administrador, puedes redirigirlo a alguna otra página
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.route('/register_usuarios', methods=['GET', 'POST'])
+@admin_required
 def register():
     if request.method == 'POST':
+        tipo = request.form.get('tipo')
         username = request.form.get('username')
         password = request.form.get('password')
-        tipo = request.form.get('tipo')
+        nombre = request.form.get('nombre')
+        apellidos = request.form.get('apellidos')
+        correo = request.form.get('correo')
+        telefono_celular = request.form.get('telefono_celular')
+        dni = request.form.get('dni')
+        fecha_nacimiento = request.form.get('fecha_nacimiento')
+        direccion = request.form.get('direccion')
+
+        if tipo == 'cliente':
+            departamento = request.form.get('departamento')
+            provincia = request.form.get('provincia')
+            distrito = request.form.get('distrito')
+            if all([username, password, nombre, apellidos, correo, telefono_celular, dni, fecha_nacimiento, direccion, departamento, provincia, distrito]):
+                agregar_cliente(username, password, nombre, apellidos, correo, telefono_celular, dni, fecha_nacimiento, direccion, departamento, provincia, distrito)
+                flash('Cliente registrado exitosamente', 'success')
+                return redirect(url_for('login'))
+            else:
+                flash('Por favor complete todos los campos', 'error')
+
+        elif tipo == 'empleado':
+            sueldo = request.form.get('sueldo')
+            if all([username, password, nombre, apellidos, correo, telefono_celular, dni, fecha_nacimiento, direccion, sueldo]):
+                agregar_empleado(username, password, nombre, apellidos, correo, telefono_celular, dni, fecha_nacimiento, direccion, sueldo)
+                flash('Empleado registrado exitosamente', 'success')
+                return redirect(url_for('login'))
+            else:
+                flash('Por favor complete todos los campos', 'error')
         
-        if username and password and tipo:
-            # Llamar a la función para agregar el usuario
-            agregar_usuario(username, password, tipo)
-            flash('Usuario registrado exitosamente', 'success')
-            return redirect(url_for('login'))
-        else:
-            flash('Por favor complete todos los campos', 'error')
+        elif tipo == 'administrador':
+            sueldo = request.form.get('sueldo')
+            if all([username, password, nombre, apellidos, correo, telefono_celular, dni, fecha_nacimiento, direccion, sueldo]):
+                agregar_administrador(username, password, nombre, apellidos, correo, telefono_celular, dni, fecha_nacimiento, direccion, sueldo)
+                flash('Administrador registrado exitosamente', 'success')
+                return redirect(url_for('login'))
+            else:
+                flash('Por favor complete todos los campos', 'error')
     
     return render_template('register_usuarios.html')
 
-def agregar_usuario(username, password, tipo):
-    hashed_password = generate_password_hash(password)
-
-    # Conectarse a la base de datos
-    connection = pymysql.connect(
-        host='localhost',
-        user='root',
-        password=os.getenv('DB_PASSWORD'),
-        db='fitogreen'
+def agregar_administrador(username, password, nombre, apellidos, correo, telefono_celular, dni, fecha_nacimiento, direccion,sueldo):
+    nuevo_administrador = Administrador(
+        username=username,
+        password=password,  # Recuerda hashear la contraseña
+        nombre=nombre,
+        apellidos=apellidos,
+        correo=correo,
+        telefono_celular=telefono_celular,
+        dni=dni,
+        fecha_nacimiento=fecha_nacimiento,
+        direccion=direccion,
+        sueldo=sueldo
     )
+    db.session.add(nuevo_administrador)
+    db.session.commit()
+    return nuevo_administrador
 
-    try:
-        with connection.cursor() as cursor:
-            # Llamar al procedimiento almacenado
-            sql = "CALL agregar_usuario(%s, %s, %s)"
-            cursor.execute(sql, (username, hashed_password, tipo))
-        connection.commit()
-    finally:
-        connection.close()
+def agregar_cliente(username, password, nombre, apellidos, correo, telefono_celular, dni, fecha_nacimiento,departamento,provincia,distrito,direccion):
+    nuevo_cliente = Cliente(
+        username=username,
+        password=password,  # Recuerda hashear la contraseña
+        nombre=nombre,
+        apellidos=apellidos,
+        correo=correo,
+        telefono_celular=telefono_celular,
+        dni_ruc=dni,
+        fecha_nacimiento=fecha_nacimiento,
+        departamento=departamento,
+        provincia=provincia,
+        distrito=distrito,
+        direccion=direccion
+    )
+    db.session.add(nuevo_cliente)
+    db.session.commit()
+    return nuevo_cliente
+
+def agregar_empleado(username, password, nombre, apellidos, correo, telefono_celular, dni, fecha_nacimiento, direccion,sueldo):
+    nuevo_empleado = Empleado(
+        username=username,
+        password=password,  # Recuerda hashear la contraseña
+        nombre=nombre,
+        apellidos=apellidos,
+        correo=correo,
+        telefono_celular=telefono_celular,
+        dni=dni,
+        fecha_nacimiento=fecha_nacimiento,
+        direccion=direccion,
+        sueldo=sueldo
+    )
+    db.session.add(nuevo_empleado)
+    db.session.commit()
+    return nuevo_empleado
+
 
 def agregar_usuario_con_sp(username, password, tipo):
     hashed_password = generate_password_hash(password)
@@ -334,6 +458,16 @@ def datos_c():
         else:
             flash('No se encontraron datos del cliente.', 'error')
     return redirect(url_for('login'))
+
+@app.route('/contacto')
+def contacto():
+    if 'logged_in' in session and session['logged_in'] and session['tipo'] == 'cliente':
+        return render_template('contacto.html', username=session['username'])
+    else:
+        flash('Acceso denegado. Debes ser un cliente.', 'error')
+        return redirect(url_for('login'))
+
+
 
 
 if __name__ == '__main__':
