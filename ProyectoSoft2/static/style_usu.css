@@ -1,5 +1,5 @@
 body {
-    background-color:  white; /* Usar !important para aumentar la especificidad */
+    background-color: #4ea93b !important; /* Usar !important para aumentar la especificidad */
 }
 
 .header-container {
@@ -9,17 +9,6 @@ body {
     padding: 20px;
     text-align: center;
 
-}
-
-.row {
-
-    width: 90%;  /* Ajusta el ancho de la tabla */
-    max-width: 90%;  /* Asegura que no se desborde del contenedor */
-    margin-left: center;  /* Centra la tabla horizontalmente */
-    margin-right: center;  /* Centra la tabla horizontalmente */
-    color: white;
-
-    
 }
 .table-container {
     margin-top: 20px;  /* Ajusta el margen superior */
@@ -45,8 +34,12 @@ body {
     display: block;
 }
 
-.total-container {
-    width: 32%;
-    margin-left: auto;
-}
+.mt-4 {
 
+    width: 90%;  /* Ajusta el ancho de la tabla */
+    max-width: 90%;  /* Asegura que no se desborde del contenedor */
+    margin-left: auto;  /* Centra la tabla horizontalmente */
+    margin-right: auto;  /* Centra la tabla horizontalmente */
+    color: white;
+
+}

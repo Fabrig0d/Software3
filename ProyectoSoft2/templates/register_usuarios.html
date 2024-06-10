@@ -9,21 +9,23 @@
     <script>
         function toggleFields() {
             var tipo = document.getElementById('tipo').value;
+            var clienteFields = document.getElementById('clienteFields');
+            var empleadoFields = document.getElementById('empleadoFields');
+            var administradorFields = document.getElementById('administradorFields');
+
+            // Ocultar todos los campos primero
+            clienteFields.style.display = 'none';
+            empleadoFields.style.display = 'none';
+            administradorFields.style.display = 'none';
+
+            // Mostrar solo los campos relevantes según el tipo de usuario seleccionado
             if (tipo === 'cliente') {
-                document.getElementById('empleadoFields').style.display = 'none';
-                document.getElementById('clienteFields').style.display = 'block';
-                document.getElementById('administradorFields').style.display = 'none';
+                clienteFields.style.display = 'block';
             } else if (tipo === 'empleado') {
-                document.getElementById('clienteFields').style.display = 'none';
-                document.getElementById('empleadoFields').style.display = 'block';
-                document.getElementById('administradorFields').style.display = 'none';
+                empleadoFields.style.display = 'block';
+            } else if (tipo === 'administrador') {
+                administradorFields.style.display = 'block';
             }
-            else if (tipo === 'administrador') {
-                document.getElementById('clienteFields').style.display = 'none';
-                document.getElementById('empleadoFields').style.display = 'none';
-                document.getElementById('administradorFields').style.display = 'block';
-            }
-            
         }
     </script>
 </head>
@@ -64,14 +66,14 @@
             <div class="form-row">
                 <div class="col">
                     <div class="form-group">
-                        <label for="dni">DNI</label>
-                        <input type="text" class="form-control" id="dni" name="dni" required>
+                        <label for="fecha_nacimiento">Fecha de Nacimiento</label>
+                        <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required>
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-group">
-                        <label for="fecha_nacimiento">Fecha de Nacimiento</label>
-                        <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required>
+                        <label for="direccion">Direccion</label>
+                        <input type="text" class="form-control" id="direccion" name="direccion" required>
                     </div>
                 </div>
             </div>
@@ -83,43 +85,55 @@
                             <option value="">Selecciona un tipo</option>
                             <option value="cliente">Cliente</option>
                             <option value="empleado">Empleado</option>
-                            <option value="Administrador">Administrador</option>
+                            <option value="administrador">Administrador</option>
                         </select>
                     </div>
                 </div>
             </div>
             <div id="clienteFields" style="display: none;">
-                <div class="form-row">
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="departamento">Departamento</label>
-                            <input type="text" class="form-control" id="departamento" name="departamento">
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="provincia">Provincia</label>
-                            <input type="text" class="form-control" id="provincia" name="provincia">
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="distrito">Distrito</label>
-                            <input type="text" class="form-control" id="distrito" name="distrito">
-                        </div>
-                    </div>
+                <!-- Campos específicos para clientes -->
+                <div class="form-group">
+                    <label for="departamento">Departamento</label>
+                    <input type="text" class="form-control" id="departamento" name="departamento">
+                </div>
+                <div class="form-group">
+                    <label for="provincia">Provincia</label>
+                    <input type="text" class="form-control" id="provincia" name="provincia">
+                </div>
+                <div class="form-group">
+                    <label for="distrito">Distrito</label>
+                    <input type="text" class="form-control" id="distrito" name="distrito">
+                </div>
+                <div class="form-group">
+                    <label for="dni_ruc">DNI o RUC</label>
+                    <input type="text" class="form-control" id="dni_ruc" name="dni_ruc">
                 </div>
             </div>
+
             <div id="empleadoFields" style="display: none;">
-                <div class="form-row">
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="sueldo">Sueldo</label>
-                            <input type="number" class="form-control" id="sueldo" name="sueldo">
-                        </div>
-                    </div>
+                <!-- Campos específicos para empleados -->
+                <div class="form-group">
+                    <label for="sueldo_em">Sueldo</label>
+                    <input type="number" class="form-control" id="sueldo_em" name="sueldo">
+                </div>
+                <div class="form-group">
+                    <label for="dni_em">DNI</label>
+                    <input type="text" class="form-control" id="dni_em" name="dni">
                 </div>
             </div>
+
+            <div id="administradorFields" style="display: none;">
+                <!-- Campos específicos para administradores -->
+                <div class="form-group">
+                    <label for="sueldo_ad">Sueldo</label>
+                    <input type="number" class="form-control" id="sueldo_ad" name="sueldo">
+                </div>
+                <div class="form-group">
+                    <label for="dni_ad">DNI</label>
+                    <input type="text" class="form-control" id="dni_ad" name="dni">
+                </div>
+            </div>
+
             <div class="form-row">
                 <div class="col">
                     <div class="form-group">
@@ -134,12 +148,12 @@
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Registrarse</button>
+            <button name="submit" type="submit" class="btn btn-primary">Registrar usuario</button>
         </form>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>    
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

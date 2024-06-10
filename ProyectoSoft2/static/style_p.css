@@ -1,0 +1,17 @@
+.cliente, .detalles-pago {
+    margin: 30px;
+}
+.container-border {
+    border: 1px solid black; /* Color de borde */
+    border-bottom: none; /* Elimina la línea inferior */
+    padding: 10px; /* Espacio interno */
+    border-radius: 5px; /* Borde redondeado */
+}
+.header-container {
+
+    background-color: #006414; 
+    color: white;
+    padding: 20px;
+    text-align: center;
+
+}

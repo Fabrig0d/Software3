@@ -83,5 +83,8 @@ body {
     flex: 1;
 }
 
+.toast {
+    align-items: center;
 
+}
 

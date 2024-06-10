@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Asesoría Virtual</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_chat.css') }}">
+    <script src="https://kit.fontawesome.com/9e204c657e.js" crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <h1>Bienvenido al ChatBot! <i class="fa-solid fa-robot"></i></h1>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a href="/home_cliente" class="btn btn-primary"> <i class="fa-solid fa-house"></i></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container chat-container">
+        <div class="chat-box">
+            <div id="chat-log" class="chat-log"></div>
+            <div class="chat-input">
+                <input type="text" id="user-input" placeholder="Escribe tu mensaje..." class="form-control" disabled>
+                <button id="send-button" class="btn btn-primary" disabled>Enviar</button>
+            </div>
+            <div class="faq">
+                <h5>Preguntas frecuentes:</h5>
+                <ul id="initial-options">
+                    {% for option in initial_options %}
+                        <li>{{ option }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#initial-options li').click(function() {
+                var userInput = $(this).text();
+                $('#chat-log').append('<div><strong>Tú:</strong> ' + userInput + '</div>');
+                $.ajax({
+                    url: '/get_response',
+                    method: 'POST',
+                    data: { message: userInput },
+                    success: function(response) {
+                        $('#chat-log').append('<div><strong>Bot:</strong> ' + response.response + '</div>');
+                        $('#user-input').prop('disabled', false);
+                        $('#send-button').prop('disabled', false);
+                    }
+                });
+            });
+
+            $('#send-button').click(function() {
+                var userInput = $('#user-input').val();
+                if (userInput) {
+                    $('#chat-log').append('<div><strong>Tú:</strong> ' + userInput + '</div>');
+                    $('#user-input').val('');
+                    $.ajax({
+                        url: '/get_response',
+                        method: 'POST',
+                        data: { message: userInput },
+                        success: function(response) {
+                            $('#chat-log').append('<div><strong>Bot:</strong> ' + response.response + '</div>');
+                        }
+                    });
+                }
+            });
+
+            $('#user-input').keypress(function(e) {
+                if (e.which === 13) {
+                    $('#send-button').click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
