@@ -309,7 +309,7 @@ def catalogo_index():
     return render_template('catalogo_in.html', productos=productos.items, total_pages=total_pages, current_page=page, tipos_producto=tipos_producto)
 
 def execute_procedure(proc_name, params):
-    conn = mysql.connector.connect(**db_config)
+    conn = pymysql.connector.connect(**db_config)
     cursor = conn.cursor()
     cursor.callproc(proc_name, params)
     results = [result.fetchall() for result in cursor.stored_results()]
@@ -352,7 +352,7 @@ def increase_stock():
     product_id = request.form['id']
     amount = int(request.form['amount'])
     
-    conn = mysql.connector.connect(**db_config)
+    conn = pymysql.connector.connect(**db_config)
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT stock FROM productos WHERE id = %s", (product_id,))
     producto = cursor.fetchone()
