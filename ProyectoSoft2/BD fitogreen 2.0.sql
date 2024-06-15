@@ -23,7 +23,7 @@ CREATE TABLE clientes (
     distrito VARCHAR(100), 
     direccion VARCHAR(200),
     usuario_id INT,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id)
 );
 
 -- Tabla para empleados
@@ -39,7 +39,7 @@ CREATE TABLE empleados (
     sueldo DECIMAL(8,2), 
     rol VARCHAR(100),
     usuario_id INT,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id)
 );
 
 -- Tabla para tipos de productos (categorías)
