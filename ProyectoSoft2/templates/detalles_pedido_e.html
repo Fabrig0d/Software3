@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Pedido</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            padding: 20px;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .pedido-lista {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Detalles del Pedido</h1>
+
+        {% if pedido %}
+            <div class="card">
+                <div class="card-header" id="heading{{ pedido.pedido_id }}">
+                    <h2 class="mb-0">
+                        Pedido #{{ pedido.pedido_id }} - {{ pedido.fecha_pedido }}
+                    </h2>
+                </div>
+
+                <div class="card-body">
+                    <div class="form-row mb-3">
+                        <div class="col">
+                            <div class="form-group">
+                                <p><strong>Cliente:</strong> {{ pedido.nombre_cli }} {{ pedido.apellido_cli }}</p>
+                                <p><strong>Dirección de Envío:</strong> {{ pedido.direccion_pedido }}</p>
+                                <p><strong>Método de Pago:</strong> {{ pedido.metodo_pago }}</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <form action="{{ url_for('cambiar_estado_pedido', pedido_id=pedido.pedido_id) }}" method="POST">
+                                <div class="form-group">
+                                    <label for="estado"><strong>Estado Actual:</strong></label>
+                                    <p>{{ pedido.estado }}</p>
+                                </div>
+                                <div class="form-group">
+                                    <label for="nuevo_estado"><strong>Cambiar Estado:</strong></label>
+                                    <select class="form-control" id="estado" name="estado">
+                                        <option value="" disabled selected>Seleccione un estado</option>
+                                        <option value="Pendiente">Pendiente</option>
+                                        <option value="En camino">En Camino</option>
+                                        <option value="Con retraso">Con Retraso</option>
+                                        <option value="Entregado">Entregado</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <h5 class="card-title">Productos</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio Unitario</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for detalle in pedido.detalles_pedidos %}
+                                <tr>
+                                    <td>{{ detalle.producto.nombre }}</td>
+                                    <td>{{ detalle.cantidad }}</td>
+                                    <td>{{ detalle.precio_unitario }}</td>
+                                    <td>{{ detalle.cantidad * detalle.precio_unitario }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <p>No se encontró el pedido solicitado.</p>
+        {% endif %}
+
+        <a href="{{ url_for('lista_pedidos_e') }}" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Volver</a>
+    </div>
+
+    <!-- Bootstrap JS y dependencias -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

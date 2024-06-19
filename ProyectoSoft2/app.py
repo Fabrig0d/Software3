@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_mail import Mail, Message
 import smtplib
-import pymysql
+import mysql.connector
 import difflib
+from datetime import date
 from functools import wraps
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
@@ -10,6 +11,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import urllib.parse
 from math import ceil
+from sqlalchemy import exc, extract, func, or_
+
 
 
 # Cargar variables de entorno
@@ -55,16 +58,23 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+db_config = {
+    'user': os.getenv('DB_USER'),
+    'password': password,
+    'host': os.getenv('DB_HOST'),
+    'database': os.getenv('DB_NAME'),
+}
+
 class Usuario(db.Model):
     __tablename__ = 'usuario'
     id = db.Column(db.Integer, primary_key=True)
     usuario = db.Column(db.String(100), unique=True, nullable=False)
     contrasena = db.Column(db.String(200), nullable=False)
-    tipo = db.Column(db.String(20))  # Cambiado a VARCHAR(20) para coincidir con la base de datos
+    tipo = db.Column(db.String(20))  # Puede ser 'admin', 'empleado', o 'cliente'
 
 class Cliente(db.Model):
     __tablename__ = 'clientes'
-    id = db.Column(db.Integer, primary_key=True)
+    id_cli = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100))
     apellidos = db.Column(db.String(100))
     correo = db.Column(db.String(100), unique=True)
@@ -77,7 +87,6 @@ class Cliente(db.Model):
     direccion = db.Column(db.String(200))
     username = db.Column(db.String(100))
 
-
 class Empleado(db.Model):
     __tablename__ = 'empleados'
     id = db.Column(db.Integer, primary_key=True)
@@ -88,7 +97,8 @@ class Empleado(db.Model):
     dni = db.Column(db.String(15))
     fecha_nacimiento = db.Column(db.Date)
     direccion = db.Column(db.String(200))
-    sueldo = db.Column(db.Numeric(8, 2))  
+    sueldo = db.Column(db.Numeric(8, 2))
+    rol = db.Column(db.String(100))
     username = db.Column(db.String(100))
 
 class Administrador(db.Model):
@@ -101,32 +111,63 @@ class Administrador(db.Model):
     dni = db.Column(db.String(15))
     fecha_nacimiento = db.Column(db.Date)
     direccion = db.Column(db.String(200))
-    sueldo = db.Column(db.Numeric(8, 2))  
+    sueldo = db.Column(db.Numeric(8, 2))
     username = db.Column(db.String(100))
 
 class TipoProducto(db.Model):
     __tablename__ = 'tipo_producto'
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), unique=True, nullable=False)
+    nombre = db.Column(db.String(100), unique=True)
 
 class Producto(db.Model):
     __tablename__ = 'productos'
-    id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False)
-    descripcion = db.Column(db.String(200), nullable=True)
-    presentacion = db.Column(db.String(100), nullable=True)
-    precio_dis = db.Column(db.Numeric(8, 2), nullable=False)
-    precio_pub = db.Column(db.Numeric(8, 2), nullable=False)
-    stock = db.Column(db.Integer, nullable=False)
-    tipo_producto_id = db.Column(db.Integer, db.ForeignKey('tipo_producto.id'), nullable=False)
+    producto_id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100))
+    descripcion = db.Column(db.String(200))
+    presentacion = db.Column(db.String(100))
+    precio_dis = db.Column(db.Numeric(8, 2))
+    precio_pub = db.Column(db.Numeric(8, 2))
+    stock = db.Column(db.Integer)
+    tipo_producto_id = db.Column(db.Integer, db.ForeignKey('tipo_producto.id'))
     tipo_producto = db.relationship('TipoProducto', backref=db.backref('productos', lazy=True))
- 
 
-class CartItem(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), nullable=False)
-    quantity = db.Column(db.Integer, nullable=False)
-    price = db.Column(db.Float, nullable=False)
+class Pagos(db.Model):
+    __tablename__ = 'Pagos'
+    pago_id = db.Column(db.Integer, primary_key=True)
+    id_cliente = db.Column(db.Integer, db.ForeignKey('clientes.id_cli'))
+    fecha_pago = db.Column(db.Date)
+    monto = db.Column(db.Numeric(10, 2))
+    metodo_pago = db.Column(db.String(50))
+    estado = db.Column(db.String(20))
+
+class Pedidos(db.Model):
+    __tablename__ = 'Pedidos'
+    pedido_id = db.Column(db.Integer, primary_key=True)
+    id_cliente = db.Column(db.Integer, db.ForeignKey('clientes.id_cli'))
+    nombre_cli = db.Column(db.String(100))
+    apellido_cli = db.Column(db.String(100))
+    direccion_pedido = db.Column(db.String(200))
+    fecha_pedido = db.Column(db.Date)
+    metodo_pago = db.Column(db.String(45))
+    total = db.Column(db.Numeric(10, 2))
+    estado = db.Column(db.String(20))
+
+class DetallesPedidos(db.Model):
+    __tablename__ = 'DetallesPedidos'
+    detalle_id = db.Column(db.Integer, primary_key=True)
+    pedido_id = db.Column(db.Integer, db.ForeignKey('Pedidos.pedido_id'))
+    producto_id = db.Column(db.Integer, db.ForeignKey('productos.producto_id'))
+    nombre_cli = db.Column(db.String(100))
+    apellido_cli = db.Column(db.String(100))
+    direccion = db.Column(db.String(200))
+    fecha_pedido = db.Column(db.Date)
+    cantidad = db.Column(db.Integer)
+    metodo_pago = db.Column(db.String(40))
+    precio_unitario = db.Column(db.Numeric(10, 2))
+
+    pedido = db.relationship('Pedidos', backref=db.backref('detalles_pedidos', lazy=True))
+    producto = db.relationship('Producto', backref=db.backref('detalles_pedidos', lazy=True))
+
 
 # Carrito de compra (almacenado en memoria, en una aplicación real podría ser una base de datos)
 cart = []
@@ -136,30 +177,27 @@ def index():
     productos = Producto.query.all()
     return render_template('index.html', products=productos, cart=session.get('cart', []))
 
-@app.route('/pago')
-def pago():
-    user_id = session.get('user_id')  # Obtener el ID del usuario de la sesión actual
-    if user_id:
-        cart_items = CartItem.query.filter_by(user_id=user_id).all()  # Obtener los productos del carrito del usuario
-        return render_template('pago.html', cart_items=cart_items)
-    else:
-        # Manejar el caso donde no hay usuario en la sesión
-        return redirect('/login')
-
 @app.route('/carrito')
 def carrito():
     cart_items = session.get('cart', [])
+    print("Carrito en sesión:", cart_items)  # Verifica qué hay en el carrito
+
+    # Convertir 'price' y 'quantity' a números adecuados
     for item in cart_items:
         item['price'] = float(item['price']) if isinstance(item['price'], str) else item['price']
+        item['quantity'] = int(item['quantity']) if isinstance(item['quantity'], str) else item['quantity']
+
     total = sum(item['price'] * item['quantity'] for item in cart_items)
     return render_template('carrito.html', cart_items=cart_items, total=total)
+
+
 
 @app.route('/update_quantity/<int:product_id>', methods=['POST'])
 def update_quantity(product_id):
     new_quantity = int(request.form['quantity'])
     cart = session.get('cart', [])
     for item in cart:
-        if item['id'] == product_id:
+        if item['producto_id'] == product_id:
             item['quantity'] = new_quantity  # Actualizar la cantidad
             session['cart'] = cart
             return redirect(url_for('carrito'))
@@ -167,39 +205,245 @@ def update_quantity(product_id):
 
 @app.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
-    product_id = int(request.form['producto_id'])
-    product = Producto.query.get(product_id)
+    if 'producto_id' not in request.form or not request.form['producto_id']:
+        return "ID de producto no válido"
+
+    try:
+        producto_id = int(request.form['producto_id'])
+    except ValueError:
+        return "ID de producto no válido"
+
+    product = Producto.query.get(producto_id)
     if product:
         cart = session.get('cart', [])
         # Verificar si el producto ya está en el carrito
         for item in cart:
-            if item['id'] == product_id:
+            if item['producto_id'] == producto_id:
                 item['quantity'] += 1  # Incrementar la cantidad
                 session['cart'] = cart
                 return redirect(url_for('mostrar_catalogo'))
         # Si el producto no está en el carrito, agregarlo
-        cart_item = {'id': product.id, 'name': product.nombre, 'price': product.precio_pub, 'quantity': 1}
+        cart_item = {'producto_id': product.producto_id, 'name': product.nombre, 'price': product.precio_pub, 'quantity': 1}
         cart.append(cart_item)
         session['cart'] = cart
+        print("Carrito actualizado:", session['cart']) 
         return redirect(url_for('mostrar_catalogo'))
     else:
         return "Producto no encontrado"
+    
 
 @app.route('/remove_from_cart/<int:product_id>')
 def remove_from_cart(product_id):
     cart = session.get('cart', [])
-    cart = [item for item in cart if item['id'] != product_id]
+    cart = [item for item in cart if item['producto_id'] != product_id]
     session['cart'] = cart
     return redirect(url_for('carrito'))
+
 
 @app.route('/borrar_carrito', methods=['POST'])
 def borrar_carrito():
     session.pop('cart', None)
     return redirect(url_for('carrito'))
 
+
+@app.route('/pago', methods=['POST'])
+def pago():
+    username = session.get('username')
+    if username:
+        try:
+            cliente = Cliente.query.filter_by(username=username).first()
+            if not cliente:
+                flash('Cliente no encontrado.', 'error')
+                return redirect(url_for('carrito'))
+
+            cart_items = session.get('cart', [])
+            if not cart_items:
+                flash('El carrito está vacío.', 'error')
+                return redirect(url_for('carrito'))
+            
+            # Calcular el total del pedido
+            for item in cart_items:
+                item['price'] = float(item['price']) if isinstance(item['price'], (int, float, str)) else 0.0
+                item['quantity'] = int(item['quantity']) if isinstance(item['quantity'], (int, str)) else 0
+            total = sum(item['price'] * item['quantity'] for item in cart_items)
+
+            # Crear un nuevo pedido
+            nuevo_pedido = Pedidos(
+                id_cliente=cliente.id_cli,
+                nombre_cli=cliente.nombre,
+                apellido_cli=cliente.apellidos,
+                direccion_pedido=cliente.direccion,
+                fecha_pedido=date.today(),
+                metodo_pago=request.form['metodo_pago'],
+                total=total,  # Actualizar con el total real después del cálculo
+                estado='Pendiente'  # Puedes ajustar el estado según tu lógica
+            )
+
+            db.session.add(nuevo_pedido)
+            db.session.commit()
+
+            # Obtener el ID del pedido recién creado
+            pedido_id = nuevo_pedido.pedido_id
+
+            # Agregar detalles del pedido a DetallesPedidos
+            for item in cart_items:
+                detalle_pedido = DetallesPedidos(
+                    pedido_id=pedido_id,
+                    producto_id=item['producto_id'],
+                    nombre_cli=cliente.nombre,
+                    apellido_cli=cliente.apellidos,
+                    direccion=cliente.direccion,
+                    fecha_pedido=date.today(),
+                    cantidad=item['quantity'],
+                    metodo_pago=request.form['metodo_pago'],  # Ajusta según cómo recibas el método de pago
+                    precio_unitario=item['price']
+                )
+                db.session.add(detalle_pedido)
+
+            db.session.commit()
+
+            # Limpiar el carrito después de completar la compra
+            session.pop('cart', None)
+
+            # Redirigir a la página de confirmación de orden
+            return redirect(url_for('orden_confirmada', pedido_id=pedido_id))
+
+        except exc.SQLAlchemyError as e:
+            db.session.rollback()
+            flash(f'Error al procesar el pedido: {str(e)}', 'error')
+            return redirect(url_for('pagar'))
+    
+    else:
+        flash('Por favor, inicia sesión para realizar un pedido.', 'error')
+        return redirect(url_for('login'))
+    
+
+def obtener_detalles_pedido(pedido_id):
+    detalles_pedido = DetallesPedidos.query.filter_by(pedido_id=pedido_id).all()
+    return detalles_pedido
+
+@app.route('/orden_confirmada/<int:pedido_id>')
+def orden_confirmada(pedido_id):
+    print(f"Pedido ID: {pedido_id}")
+    pedido = Pedidos.query.get(pedido_id)
+    if pedido:
+        detalles_pedido = obtener_detalles_pedido(pedido_id)
+        return render_template('orden_confirmada.html', pedido=pedido, detalles_pedido=detalles_pedido)
+    else:
+        flash('Pedido no encontrado.', 'error')
+        return redirect(url_for('carrito'))
+
+
+@app.route('/detalles_pedido_e')
+def lista_pedidos_e():
+    if 'logged_in' in session and session['logged_in'] and session.get('tipo') == 'empleado':
+        pedidos = Pedidos.query.all()  # Obtener todos los pedidos
+        return render_template('lista_pedidos_e.html', pedidos=pedidos)
+    else:
+        flash('Debes iniciar sesión como empleado para ver los pedidos.', 'error')
+        return redirect(url_for('login'))
+
+@app.route('/detalles_pedido_e/<int:pedido_id>')
+def detalles_pedido_e(pedido_id):
+    if 'logged_in' in session and session['logged_in'] and session.get('tipo') == 'empleado':
+        pedido = Pedidos.query.get(pedido_id)
+        if pedido:
+            return render_template('detalles_pedido_e.html', pedido=pedido)
+        else:
+            flash('Pedido no encontrado.', 'error')
+            return redirect(url_for('lista_pedidos_e'))
+    else:
+        flash('Debes iniciar sesión como empleado para ver los detalles del pedido.', 'error')
+        return redirect(url_for('login'))
+
+
+@app.route('/detalles_pedido')
+def lista_pedidos():
+    if 'logged_in' in session and session['logged_in'] and session.get('tipo') == 'cliente':
+        username = session.get('username')
+        cliente = Cliente.query.filter_by(username=username).first()
+        if cliente:
+            pedidos = Pedidos.query.filter_by(id_cliente=cliente.id_cli).all()
+            return render_template('lista_pedidos.html', pedidos=pedidos)
+        else:
+            flash('No se encontraron datos del cliente.', 'error')
+            return redirect(url_for('index'))
+    else:
+        flash('Debes iniciar sesión para ver tus pedidos.', 'error')
+        return redirect(url_for('login'))
+
+
+@app.route('/cambiar_estado_pedido/<int:pedido_id>', methods=['POST'])
+def cambiar_estado_pedido(pedido_id):
+    if 'logged_in' in session and session['logged_in'] and session.get('tipo') == 'empleado':
+        nuevo_estado = request.form.get('estado')
+        pedido = Pedidos.query.get(pedido_id)
+        if pedido:
+            pedido.estado = nuevo_estado
+            db.session.commit()
+            flash('Estado del pedido actualizado correctamente.', 'success')
+            return redirect(url_for('detalles_pedido_e', pedido_id=pedido_id))
+        else:
+            flash('Pedido no encontrado.', 'error')
+            return redirect(url_for('lista_pedidos_e'))
+    else:
+        flash('Debes iniciar sesión como empleado para cambiar el estado del pedido.', 'error')
+        return redirect(url_for('login'))
+
+
+@app.route('/detalles_pedido/<int:pedido_id>')
+def detalles_pedido(pedido_id):
+    if 'logged_in' in session and session['logged_in'] and session.get('tipo') == 'cliente':
+        username = session.get('username')
+        cliente = Cliente.query.filter_by(username=username).first()
+        if cliente:
+            pedido = Pedidos.query.get(pedido_id)
+            if pedido and pedido.id_cliente == cliente.id_cli:
+                return render_template('detalles_pedido.html', pedido=pedido)
+            else:
+                flash('Pedido no encontrado o no autorizado.', 'error')
+                return redirect(url_for('lista_pedidos'))
+        else:
+            flash('No se encontraron datos del cliente.', 'error')
+            return redirect(url_for('index'))
+    else:
+        flash('Debes iniciar sesión para ver los detalles del pedido.', 'error')
+        return redirect(url_for('login'))
+
+
 @app.route("/pagar")
 def pagar():
-    return render_template("Pagos_cli.html")
+    cart_items = session.get('cart', [])  # Obtener los elementos del carrito desde la sesión
+
+    # Convertir 'price' y 'quantity' a números adecuados
+    for item in cart_items:
+        item['price'] = float(item['price']) if isinstance(item['price'], (int, float, str)) else 0.0
+        item['quantity'] = int(item['quantity']) if isinstance(item['quantity'], (int, str)) else 0
+
+    total = sum(item['price'] * item['quantity'] for item in cart_items)  # Calcular el total del carrito
+    # Obtener el nombre de usuario desde la sesión
+    username = session.get('username')
+
+    if username:
+        # Obtener datos del cliente basados en el nombre de usuario
+        cliente = Cliente.query.filter_by(username=username).first()
+
+        if cliente:
+            nombre = cliente.nombre
+            apellidos = cliente.apellidos
+            direccion = cliente.direccion
+        else:
+            nombre = ''
+            apellidos = ''
+            direccion = ''
+    else:
+        # Manejar el caso donde el nombre de usuario no está en la sesión
+        nombre = ''
+        apellidos = ''
+        direccion = ''
+
+    return render_template("Pagar.html", cart_items=cart_items, total=total, nombre=nombre, apellidos=apellidos, direccion=direccion)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -415,7 +659,7 @@ def registro():
         if user:
             # Crear nuevo cliente y asociarlo con su propio id
             nuevo_cliente = Cliente(
-                id=user.id,  # Asociar el cliente con su propio id
+                id_cli=user.id,  # Asociar el cliente con su propio id
                 nombre=nombre,
                 apellidos=apellidos,
                 correo=correo,
@@ -437,6 +681,33 @@ def registro():
             flash('Error al crear el cliente. Usuario no encontrado.', 'error')
     
     return render_template('registro.html')
+
+
+@app.route('/datos_e', methods=['GET', 'POST'])
+def datos_e():
+    if 'logged_in' in session and session['logged_in'] and session.get('tipo') == 'empleado':
+        username = session.get('username')
+        empleado = Empleado.query.filter_by(username=username).first()
+        if empleado:
+            if request.method == 'POST':
+                # Obtener los datos actualizados del formulario
+                empleado.nombre = request.form['nombre']
+                empleado.apellidos = request.form['apellidos']
+                empleado.correo = request.form['correo']
+                empleado.telefono_celular = request.form['telefono_celular']
+                empleado.dni = request.form['dni_ruc']  # Se usa 'dni' en lugar de 'dni_ruc'
+                empleado.fecha_nacimiento = request.form['fecha_nacimiento']
+                empleado.direccion = request.form['direccion']
+                # Guardar los cambios en la base de datos
+                db.session.commit()
+                flash('Datos actualizados correctamente.', 'success')
+                return redirect(url_for('datos_e'))
+            else:
+                return render_template('datos_e.html', empleado=empleado)
+        else:
+            flash('No se encontraron datos del empleado.', 'error')
+    return redirect(url_for('login'))
+
 
 @app.route('/datos_c', methods=['GET', 'POST'])
 def datos_c():
@@ -576,7 +847,7 @@ def registro_cliente():
         if user:
             # Crear nuevo cliente y asociarlo con su propio id
             nuevo_cliente = Cliente(
-                id=user.id,  # Asociar el cliente con su propio id
+                id_cli=user.id,  # Asociar el cliente con su propio id
                 nombre=nombre,
                 apellidos=apellidos,
                 correo=correo,
@@ -694,6 +965,64 @@ def registro_administrador():
     
     return render_template('registro_administrador.html')
 
+
+@app.route('/reporte')
+def reporte():
+    mes = request.args.get('mes', default=1, type=int)
+    pedidos = db.session.query(Pedidos).filter(extract('month', Pedidos.fecha_pedido) == mes).all()
+    total_ventas = db.session.query(func.sum(Pedidos.total)).filter(extract('month', Pedidos.fecha_pedido) == mes).scalar()
+    return render_template('reporte.html', pedidos=pedidos, total_ventas=total_ventas, mes=mes)
+
+sugerencias_estaticas = ['Alga sheer', 'Fito alga', 'Otra sugerencia']
+
+@app.route('/api/sugerencias')
+def sugerencias():
+    query = request.args.get('q', '')
+    sugerencias_filtradas = [s for s in sugerencias_estaticas if query.lower() in s.lower()]
+    return jsonify(sugerencias_filtradas)
+
+# Función de ejemplo para obtener sugerencias (debes adaptarla según tu modelo de datos)
+def obtener_sugerencias(query):
+    # Ejemplo simple: retornar algunas sugerencias estáticas
+    sugerencias = ['Alga sheer', 'Fito alga', 'Otra sugerencia']
+    # Aquí podrías consultar tu base de datos u otro origen de datos para obtener sugerencias dinámicas
+    return sugerencias
+
+@app.route('/buscar_productos')
+def buscar_productos():
+    query = request.args.get('q', '')
+    categoria = request.args.get('categoria', '')
+    precio = request.args.get('precio', '')
+    tipo_compra = request.args.get('tipo_compra', '')
+
+    # Construcción de la consulta SQL utilizando SQLAlchemy
+    productos_query = Producto.query.filter(or_(
+        Producto.nombre.ilike(f'%{query}%'),
+        Producto.descripcion.ilike(f'%{query}%')
+    ))
+
+    if categoria:
+        productos_query = productos_query.filter_by(tipo_producto_id=categoria)
+
+    if precio == 'mayor':
+        productos_query = productos_query.order_by(Producto.precio_pub.desc())
+    elif precio == 'menor':
+        productos_query = productos_query.order_by(Producto.precio_pub.asc())
+
+    # Ejemplo de filtrado por tipo de compra (distribuidor o normal)
+    # Dependiendo de tu lógica de negocio, puedes ajustar esto
+    if tipo_compra == 'distribuidor':
+        # Ejemplo: filtrar productos que tienen precio de distribuidor
+        productos_query = productos_query.filter(Producto.precio_dis != None)
+    elif tipo_compra == 'normal':
+        # Ejemplo: filtrar productos que no tienen precio de distribuidor
+        productos_query = productos_query.filter(Producto.precio_dis == None)
+
+    # Obtener los resultados finales
+    productos = productos_query.all()
+
+    # Aquí renderizas tu template de resultados de búsqueda con los productos encontrados
+    return render_template('resultados_busqueda.html', productos=productos)
 
 if __name__ == '__main__':
     app.run(debug=True)

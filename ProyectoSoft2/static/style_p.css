@@ -1,17 +1,56 @@
-.cliente, .detalles-pago {
-    margin: 30px;
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
 }
-.container-border {
-    border: 1px solid black; /* Color de borde */
-    border-bottom: none; /* Elimina la línea inferior */
-    padding: 10px; /* Espacio interno */
-    border-radius: 5px; /* Borde redondeado */
-}
-.header-container {
 
-    background-color: #006414; 
-    color: white;
+.container {
+    max-width: 600px;
+    margin: 50px auto;
     padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: center;
+}
 
+h1 {
+    color: #28a745;
+    margin-bottom: 20px;
+}
+
+p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn {
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    color: #ffffff;
+    transition: background-color 0.3s;
+}
+
+.btn-primary {
+    background-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
 }

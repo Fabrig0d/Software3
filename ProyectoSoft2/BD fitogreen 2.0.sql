@@ -11,7 +11,7 @@ CREATE TABLE usuario (
 
 -- Tabla para clientes
 CREATE TABLE clientes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_cli INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100), 
     apellidos VARCHAR(100), 
     correo VARCHAR(100) UNIQUE, 
@@ -22,8 +22,7 @@ CREATE TABLE clientes (
     provincia VARCHAR(100), 
     distrito VARCHAR(100), 
     direccion VARCHAR(200),
-    usuario_id INT,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    username VARCHAR(100)
 );
 
 -- Tabla para empleados
@@ -38,8 +37,22 @@ CREATE TABLE empleados (
     direccion VARCHAR(200), 
     sueldo DECIMAL(8,2), 
     rol VARCHAR(100),
-    usuario_id INT,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    username VARCHAR(100)
+);
+
+-- Tabla para administrador
+CREATE TABLE Administrador (
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+    nombre VARCHAR(100),  
+    apellidos VARCHAR(100), 
+    correo VARCHAR(100) UNIQUE, 
+    telefono_celular VARCHAR(20), 
+    dni VARCHAR(15), 
+    fecha_nacimiento DATE, 
+    direccion VARCHAR(200), 
+    sueldo DECIMAL(8,2), 
+    rol VARCHAR(100),
+    username VARCHAR(100)
 );
 
 -- Tabla para tipos de productos (categorías)
@@ -50,7 +63,7 @@ CREATE TABLE tipo_producto (
 
 -- Tabla para productos
 CREATE TABLE productos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    producto_id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100),
     descripcion VARCHAR(200),
     presentacion varchar(100),
@@ -60,6 +73,52 @@ CREATE TABLE productos (
     tipo_producto_id INT,
     FOREIGN KEY (tipo_producto_id) REFERENCES tipo_producto(id)
 );
+
+CREATE TABLE Pagos (
+    pago_id INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente INT,
+    fecha_pago DATE,
+    monto DECIMAL(10, 2),
+    metodo_pago VARCHAR(50),
+    estado VARCHAR(20),
+   FOREIGN KEY (id_cliente) REFERENCES clientes(id_cli)
+);
+
+CREATE TABLE Pedidos (
+    pedido_id INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente INT,
+    nombre_cli VARCHAR(100),
+    apellido_cli VARCHAR(100),
+    direccion_pedido Varchar(200),
+    fecha_pedido DATE,
+    metodo_pago Varchar(40),
+    total DECIMAL(10, 2),
+    estado VARCHAR(20),
+	FOREIGN KEY (id_cliente) REFERENCES clientes(id_cli)
+);
+
+CREATE TABLE DetallesPedidos (
+    detalle_id INT AUTO_INCREMENT PRIMARY KEY,
+    pedido_id INT,
+    producto_id INT,
+	nombre_cli VARCHAR(100),
+    apellido_cli VARCHAR(100),
+    direccion Varchar(200),
+    fecha_pedido DATE,
+    cantidad INT,
+    metodo_pago Varchar(40),
+    precio_unitario DECIMAL(10, 2),
+    FOREIGN KEY (pedido_id) REFERENCES Pedidos(pedido_id),
+    FOREIGN KEY (producto_id) REFERENCES Productos(producto_id)
+);
+
+
+
+
+
+
+
+
 
 
 -- PROCEDIMIENTOS ALMACENADOS
@@ -126,6 +185,92 @@ END //
 DELIMITER ;
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+-- ADMINISTRADOR
+
+DELIMITER //
+CREATE PROCEDURE agregar_administrador(
+    IN p_nombre VARCHAR(100),
+    IN p_apellidos VARCHAR(100),
+    IN p_correo VARCHAR(100),
+    IN p_telefono_celular VARCHAR(20),
+    IN p_dni VARCHAR(15),
+    IN p_fecha_nacimiento DATE,
+    IN p_direccion VARCHAR(200),
+    IN p_sueldo DECIMAL(8,2),
+    IN p_rol VARCHAR(100),
+    IN p_username VARCHAR(100)
+)
+BEGIN
+    INSERT INTO Administrador (nombre, apellidos, correo, telefono_celular, dni, fecha_nacimiento, direccion, sueldo, rol, username)
+    VALUES (p_nombre, p_apellidos, p_correo, p_telefono_celular, p_dni, p_fecha_nacimiento, p_direccion, p_sueldo, p_rol, p_username);
+END //
+DELIMITER ;
+
+
+DELIMITER //
+CREATE PROCEDURE buscar_administrador(
+    IN p_id INT
+)
+BEGIN
+    SELECT * FROM Administrador WHERE id = p_id;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE editar_administrador(
+    IN p_id INT,
+    IN p_nombre VARCHAR(100),
+    IN p_apellidos VARCHAR(100),
+    IN p_correo VARCHAR(100),
+    IN p_telefono_celular VARCHAR(20),
+    IN p_dni VARCHAR(15),
+    IN p_fecha_nacimiento DATE,
+    IN p_direccion VARCHAR(200),
+    IN p_sueldo DECIMAL(8,2),
+    IN p_rol VARCHAR(100),
+    IN p_username VARCHAR(100)
+)
+BEGIN
+    UPDATE Administrador
+    SET nombre = p_nombre, apellidos = p_apellidos, correo = p_correo, 
+        telefono_celular = p_telefono_celular, dni = p_dni, fecha_nacimiento = p_fecha_nacimiento, 
+        direccion = p_direccion, sueldo = p_sueldo, rol = p_rol, username = p_username
+    WHERE id = p_id;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE eliminar_administrador(
+    IN p_id INT
+)
+BEGIN
+    DELETE FROM Administrador WHERE id = p_id;
+END //
+DELIMITER ;
+
+
+
+
+
+
+
+
+
+
+
+
 -- USUARIO
 
 DELIMITER //
@@ -174,6 +319,20 @@ BEGIN
     SELECT * FROM usuario WHERE id = u_id;
 END //
 DELIMITER ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 -- EMPLEADO
@@ -241,7 +400,16 @@ BEGIN
 END //
 DELIMITER ;
 
+
+
+
+
+
+
+
 -- TIPO DE PRODUCTO
+
+
 
 
 DELIMITER //
@@ -288,6 +456,14 @@ END //
 DELIMITER ;
 
 
+
+
+
+
+
+
+
+
 -- PRODUCTOS
 
 DELIMITER //
@@ -309,60 +485,280 @@ DELIMITER ;
 
 DELIMITER //
 CREATE PROCEDURE editar_producto(
-    IN p_id INT,
+    IN p_producto_id INT,
     IN p_nombre VARCHAR(100),
     IN p_descripcion VARCHAR(200),
-    IN p_presentacion varchar(100),
-	IN p_preciodis DECIMAL(8,2),
-	IN p_preciopub DECIMAL(8,2),
+    IN p_presentacion VARCHAR(100),
+    IN p_precio_dis DECIMAL(8,2),
+    IN p_precio_pub DECIMAL(8,2),
     IN p_stock INT,
     IN p_tipo_producto_id INT
 )
 BEGIN
     UPDATE productos
-    SET nombre = p_nombre, descripcion = p_descripcion, presentacion = p_presentacion, precio_dis = p_preciodis, precio_pub = p_preciopub , stock = p_stock,  tipo_producto_id = p_tipo_producto_id
-    WHERE id = p_id;
+    SET nombre = p_nombre, descripcion = p_descripcion, presentacion = p_presentacion,
+        precio_dis = p_precio_dis, precio_pub = p_precio_pub, stock = p_stock, tipo_producto_id = p_tipo_producto_id
+    WHERE producto_id = p_producto_id;
 END //
 DELIMITER ;
 
 
 DELIMITER //
 CREATE PROCEDURE eliminar_producto(
-    IN p_id INT
+    IN p_producto_id INT
 )
 BEGIN
-    DELETE FROM productos WHERE id = p_id;
+    DELETE FROM productos WHERE producto_id = p_producto_id;
+END //
+DELIMITER ;
+
+
+
+DELIMITER //
+CREATE PROCEDURE buscar_producto(
+    IN p_producto_id INT
+)
+BEGIN
+    SELECT * FROM productos WHERE producto_id = p_producto_id;
+END //
+DELIMITER ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- PEDIDOS
+
+DELIMITER //
+CREATE PROCEDURE agregar_pedido(
+    IN p_id_cliente INT,
+    IN p_nombre_cli VARCHAR(100),
+    IN p_apellido_cli VARCHAR(100),
+    IN p_direccion_pedido VARCHAR(200),
+    IN p_fecha_pedido DATE,
+    IN p_total DECIMAL(10, 2),
+    IN p_estado VARCHAR(20)
+)
+BEGIN
+    INSERT INTO Pedidos (id_cliente, nombre_cli, apellido_cli, direccion_pedido, fecha_pedido, total, estado)
+    VALUES (p_id_cliente, p_nombre_cli, p_apellido_cli, p_direccion_pedido, p_fecha_pedido, p_total, p_estado);
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE buscar_pedido(
+    IN p_pedido_id INT
+)
+BEGIN
+    SELECT * FROM Pedidos WHERE pedido_id = p_pedido_id;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE editar_pedido(
+    IN p_pedido_id INT,
+    IN p_id_cliente INT,
+    IN p_nombre_cli VARCHAR(100),
+    IN p_apellido_cli VARCHAR(100),
+    IN p_direccion_pedido VARCHAR(200),
+    IN p_fecha_pedido DATE,
+    IN p_total DECIMAL(10, 2),
+    IN p_estado VARCHAR(20)
+)
+BEGIN
+    UPDATE Pedidos
+    SET id_cliente = p_id_cliente, nombre_cli = p_nombre_cli, apellido_cli = p_apellido_cli,
+        direccion_pedido = p_direccion_pedido, fecha_pedido = p_fecha_pedido,
+        total = p_total, estado = p_estado
+    WHERE pedido_id = p_pedido_id;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE eliminar_pedido(
+    IN p_pedido_id INT
+)
+BEGIN
+    DELETE FROM Pedidos WHERE pedido_id = p_pedido_id;
+END //
+DELIMITER ;
+
+
+
+
+
+
+
+
+
+
+
+-- PAGOS
+DELIMITER //
+CREATE PROCEDURE agregar_pago(
+    IN p_id_cliente INT,
+    IN p_fecha_pago DATE,
+    IN p_monto DECIMAL(10, 2),
+    IN p_metodo_pago VARCHAR(50),
+    IN p_estado VARCHAR(20)
+)
+BEGIN
+    INSERT INTO Pagos (id_cliente, fecha_pago, monto, metodo_pago, estado)
+    VALUES (p_id_cliente, p_fecha_pago, p_monto, p_metodo_pago, p_estado);
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE buscar_pago(
+    IN p_pago_id INT
+)
+BEGIN
+    SELECT * FROM Pagos WHERE pago_id = p_pago_id;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE editar_pago(
+    IN p_pago_id INT,
+    IN p_id_cliente INT,
+    IN p_fecha_pago DATE,
+    IN p_monto DECIMAL(10, 2),
+    IN p_metodo_pago VARCHAR(50),
+    IN p_estado VARCHAR(20)
+)
+BEGIN
+    UPDATE Pagos
+    SET id_cliente = p_id_cliente, fecha_pago = p_fecha_pago, monto = p_monto,
+        metodo_pago = p_metodo_pago, estado = p_estado
+    WHERE pago_id = p_pago_id;
 END //
 DELIMITER ;
 
 
 DELIMITER //
-CREATE PROCEDURE buscar_producto(
-    IN p_id INT
+CREATE PROCEDURE eliminar_pago(
+    IN p_pago_id INT
 )
 BEGIN
-    SELECT * FROM productos WHERE id = p_id;
+    DELETE FROM Pagos WHERE pago_id = p_pago_id;
 END //
 DELIMITER ;
 
 
 
--- Agregar usuarios
-CALL agregar_usuario('joselp','psw1','cliente');
-CALL agregar_usuario('maria01', 'password123', 'cliente');
-CALL agregar_usuario('juanito95', 'abc123', 'empleado');
-CALL agregar_usuario('admin123', 'adminpass', 'admin');
-CALL agregar_usuario('luisa89', 'lalala123', 'cliente');
-CALL agregar_usuario('pedrito22', 'password456', 'empleado');
-CALL agregar_usuario('ana555', 'ana123', 'cliente');
 
--- Agregar clientes
-CALL agregar_cliente ('Jose','Lopez Borja','josesitolb@gmail.com','987654321','1234567','1990-05-25','Lima','Lima','SJL','jr macumba 221');
-CALL agregar_cliente('María', 'García Pérez', 'maria.garcia@example.com', '987654321', '12345678', '1992-08-10', 'Lima', 'Lima', 'Miraflores', 'Av. Larco 123');
-CALL agregar_cliente('Juan', 'Pérez Rodríguez', 'juanito.perez@example.com', '999888777', '87654321', '1985-03-20', 'Lima', 'Lima', 'San Isidro', 'Av. Arequipa 456');
-CALL agregar_cliente('Luisa', 'Martínez González', 'luisa.martinez@example.com', '987123456', '56789012', '1995-11-15', 'Lima', 'Lima', 'Surco', 'Calle Las Flores 789');
-CALL agregar_cliente('Pedro', 'Vargas López', 'pedro.vargas@example.com', '955772233', '11223344', '1988-07-03', 'Lima', 'Lima', 'Barranco', 'Av. Grau 321');
-CALL agregar_cliente('Ana', 'Sánchez Ramírez', 'ana.sanchez@example.com', '998877665', '99887766', '1990-04-27', 'Lima', 'Lima', 'San Borja', 'Jr. Los Pinos 456');
+
+
+
+
+
+
+
+-- DETALLES PEDIDOS
+
+
+DELIMITER //
+CREATE PROCEDURE agregar_detalle_pedido(
+    IN p_pedido_id INT,
+    IN p_producto_id INT,
+    IN p_nombre_cli VARCHAR(100),
+    IN p_apellido_cli VARCHAR(100),
+    IN p_direccion VARCHAR(200),
+    IN p_fecha_pedido DATE,
+    IN p_cantidad INT,
+    IN p_metodo_pago VARCHAR(40),
+    IN p_precio_unitario DECIMAL(10, 2)
+)
+BEGIN
+    INSERT INTO DetallesPedidos (pedido_id, producto_id, nombre_cli, apellido_cli, direccion, fecha_pedido, cantidad, metodo_pago, precio_unitario)
+    VALUES (p_pedido_id, p_producto_id, p_nombre_cli, p_apellido_cli, p_direccion, p_fecha_pedido, p_cantidad, p_metodo_pago, p_precio_unitario);
+END //
+DELIMITER ;
+
+
+DELIMITER //
+CREATE PROCEDURE buscar_detalle_pedido(
+    IN p_detalle_id INT
+)
+BEGIN
+    SELECT * FROM DetallesPedidos WHERE detalle_id = p_detalle_id;
+END //
+DELIMITER ;
+
+
+DELIMITER //
+CREATE PROCEDURE editar_detalle_pedido(
+    IN p_detalle_id INT,
+    IN p_pedido_id INT,
+    IN p_producto_id INT,
+    IN p_nombre_cli VARCHAR(100),
+    IN p_apellido_cli VARCHAR(100),
+    IN p_direccion VARCHAR(200),
+    IN p_fecha_pedido DATE,
+    IN p_cantidad INT,
+    IN p_metodo_pago VARCHAR(40),
+    IN p_precio_unitario DECIMAL(10, 2)
+)
+BEGIN
+    UPDATE DetallesPedidos
+    SET pedido_id = p_pedido_id, producto_id = p_producto_id, nombre_cli = p_nombre_cli,
+        apellido_cli = p_apellido_cli, direccion = p_direccion, fecha_pedido = p_fecha_pedido,
+        cantidad = p_cantidad, metodo_pago = p_metodo_pago, precio_unitario = p_precio_unitario
+    WHERE detalle_id = p_detalle_id;
+END //
+DELIMITER ;
+
+
+DELIMITER //
+CREATE PROCEDURE eliminar_detalle_pedido(
+    IN p_detalle_id INT
+)
+BEGIN
+    DELETE FROM DetallesPedidos WHERE detalle_id = p_detalle_id;
+END //
+DELIMITER ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 -- TIPO DE PRODUCTOS
 
@@ -417,4 +813,10 @@ CALL agregar_producto('FITO Ca/B/Zn', 'Calcio, Boro, Zinc', '20 litros', 16.00, 
 CALL agregar_producto('FITO Ca/B/Zn', 'Calcio, Boro, Zinc', '200 litros', 13.00, 20.00, 120, 5);
 
 CALL agregar_producto('FITO MAGNESIO', 'Magnesio', '12 litros', 18.00, 28.00, 60, 5);
+
+
+
+
+
+
 

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Ventas</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            padding-top: 20px;
+        }
+        .mes-selector {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Reporte de Ventas del Mes</h1>
+        <div class="mes-selector text-center">
+            <a href="/reporte?mes=1" class="btn btn-primary">Enero</a>
+            <a href="/reporte?mes=2" class="btn btn-primary">Febrero</a>
+            <a href="/reporte?mes=3" class="btn btn-primary">Marzo</a>
+            <a href="/reporte?mes=4" class="btn btn-primary">Abril</a>
+            <a href="/reporte?mes=5" class="btn btn-primary">Mayo</a>
+            <a href="/reporte?mes=6" class="btn btn-primary">Junio</a>
+            <a href="/reporte?mes=7" class="btn btn-primary">Julio</a>
+            <a href="/reporte?mes=8" class="btn btn-primary">Agosto</a>
+            <a href="/reporte?mes=9" class="btn btn-primary">Septiembre</a>
+            <a href="/reporte?mes=10" class="btn btn-primary">Octubre</a>
+            <a href="/reporte?mes=11" class="btn btn-primary">Noviembre</a>
+            <a href="/reporte?mes=12" class="btn btn-primary">Diciembre</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>ID Pedido</th>
+                        <th>Cliente</th>
+                        <th>Dirección</th>
+                        <th>Fecha</th>
+                        <th>Método de Pago</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pedido in pedidos %}
+                    <tr>
+                        <td>{{ pedido.pedido_id }}</td>
+                        <td>{{ pedido.nombre_cli }} {{ pedido.apellido_cli }}</td>
+                        <td>{{ pedido.direccion_pedido }}</td>
+                        <td>{{ pedido.fecha_pedido }}</td>
+                        <td>{{ pedido.metodo_pago }}</td>
+                        <td>{{ pedido.total }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="text-center">
+            <h2>Total Ventas: S/ {{ total_ventas }}</h2>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

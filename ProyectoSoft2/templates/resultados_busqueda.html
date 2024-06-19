@@ -16,7 +16,7 @@
             <div class="navbar-nav ml-auto">  <!-- 'ml-auto' empuja a la izquierda -->
                 <form action="{{ url_for('buscar_productos') }}" method="GET" class="form-inline">
                     <div class="input-group">  
-                        <input type="text" class="form-control typeahead" name="q" placeholder="Buscar productos..." aria-label="Buscar">
+                        <input type="text" class="form-control" name="q" placeholder="Buscar productos..." aria-label="Buscar">
                         <div class="input-group-append">
                             <button class="btn btn-primary" type="submit">Buscar</button>
                         </div>
@@ -64,26 +64,7 @@
                     </div>
                     {% endfor %}
                 </div>
-                <!-- Sección de paginación -->
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-center">
-                        {% if current_page > 1 %}
-                        <li class="page-item">
-                            <a class="page-link" href="{{ url_for('mostrar_catalogo', page=current_page-1) }}">Anterior</a>
-                        </li>
-                        {% endif %}
-                        {% for page in range(1, total_pages + 1) %}
-                        <li class="page-item {% if page == current_page %}active{% endif %}">
-                            <a class="page-link" href="{{ url_for('mostrar_catalogo', page=page) }}">{{ page }}</a>
-                        </li>
-                        {% endfor %}
-                        {% if current_page < total_pages %}
-                        <li class="page-item">
-                            <a class="page-link" href="{{ url_for('mostrar_catalogo', page=current_page+1) }}">Siguiente</a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </nav>
+
             </div>
         </div>
     </div>
