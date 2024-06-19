@@ -63,6 +63,7 @@ db_config = {
     'password': password,
     'host': os.getenv('DB_HOST'),
     'database': os.getenv('DB_NAME'),
+    'secret_key' : os.getenv('SECRET_KEY'),
 }
 
 class Usuario(db.Model):
