@@ -13,16 +13,35 @@
             <div class="welcome-text">
                 <center><h1 class="display-4">Catálogo de Productos</h1></center>
             </div>
-            <div class="navbar-nav ml-auto">  <!-- 'ml-auto' empuja a la izquierda -->
-                <form action="{{ url_for('buscar_productos') }}" method="GET" class="form-inline">
-                    <div class="input-group">  
-                        <input type="text" class="form-control" name="q" placeholder="Buscar productos..." aria-label="Buscar">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary" type="submit">Buscar</button>
-                        </div>
-                    </div>
-                </form>
+       <!-- Barra de búsqueda  -->
+       <div class="navbar-nav ml-auto">  <!-- 'ml-auto' empuja a la izquierda -->
+        <form action="/buscar_productos" method="get" class="form-inline">
+            <div class="input-group">
+                <input type="text" class="form-control" name="q" placeholder="Buscar por nombre o descripción" value="{{ request.args.get('q', '') }}">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">Buscar</button>
+                </div>
             </div>
+            <select name="tipo_producto" class="custom-select ml-2">
+                <option value="">Todos los tipos de productos</option>
+                {% for tipo_producto in tipos_productos %}
+                    <option value="{{ tipo_producto.id }}" {% if tipo_producto.id == request.args.get('tipo_producto') %} selected {% endif %}>{{ tipo_producto.nombre }}</option>
+                {% endfor %}
+            </select>
+            <select name="precio" class="custom-select ml-2">
+                <option value="">Todos los precios</option>
+                <option value="menor" {% if 'menor' == request.args.get('precio') %} selected {% endif %}>Menor precio primero</option>
+                <option value="mayor" {% if 'mayor' == request.args.get('precio') %} selected {% endif %}>Mayor precio primero</option>
+            </select>
+            <select name="presentacion" class="custom-select ml-2">
+                <option value="">Todas las presentaciones</option>
+                <option value="1 litro" {% if '1 litro' == request.args.get('presentacion') %} selected {% endif %}>1 litro</option>
+                <option value="12 litros" {% if '12 litros' == request.args.get('presentacion') %} selected {% endif %}>12 litros</option>
+                <option value="20 litros" {% if '20 litros' == request.args.get('presentacion') %} selected {% endif %}>20 litros</option>
+                <option value="200 litros" {% if '200 litros' == request.args.get('presentacion') %} selected {% endif %}>200 litros</option>
+            </select>
+        </form>
+    </div>
             <div class="btn-inicio ml-auto">
                 <a href="/home_cliente" class="btn btn-primary">
                     <i class="fa-solid fa-house"></i>
@@ -52,9 +71,29 @@
                     <div class="col-md-4">
                         <div class="card my-2">
                             <div class="card-body">
-                                <h5 class="card-title">{{ producto.nombre }}</h5> <!-- Nombre del producto -->
+                                <h5 class="card-title">
+                                    {{ producto.nombre }}
+                                    {% if producto.presentacion == "1 litro" %}
+                                         (1 litro)
+                                    {% elif producto.presentacion == "12 litros" %}
+                                        (12 litros)
+                                    {% elif producto.presentacion == "20 litros" %}
+                                        (20 litros)
+                                    {% elif producto.presentacion == "200 litros" %}
+                                        (200 litros)
+                                    {% endif %}
+                                </h5> <!-- Nombre del producto -->
                                 <p class="card-text">{{ producto.descripcion }}</p> <!-- Descripción del producto -->
-                                <p class="card-text">Precio: S/{{ producto.precio_pub }}</p> <!-- Precio del producto -->
+                                {% if producto.presentacion == "1 litro" %}
+                                    Precio: S/{{ producto.precio_pub }}
+                                 {% elif producto.presentacion == "12 litros" %}
+                                    Precio: S/{{ producto.precio_dis * 12 }}
+                                  {% elif producto.presentacion == "20 litros" %}
+                                    Precio: S/{{ producto.precio_dis * 20 }}
+                                 {% elif producto.presentacion == "200 litros" %}
+                                    Precio: S/{{ producto.precio_dis * 200 }}
+                                 {% endif %}
+                                </p>
                                 <form action="/add_to_cart" method="POST">
                                     <input type="hidden" name="producto_id" value="{{ producto.producto_id  }}">
                                     <button type="submit" class="btn btn-primary">Agregar al carrito <i class="fa-solid fa-cart-plus"></i></button>

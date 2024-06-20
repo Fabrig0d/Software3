@@ -40,6 +40,7 @@
                                 <p><strong>Cliente:</strong> {{ pedido.nombre_cli }} {{ pedido.apellido_cli }}</p>
                                 <p><strong>Dirección de Envío:</strong> {{ pedido.direccion_pedido }}</p>
                                 <p><strong>Método de Pago:</strong> {{ pedido.metodo_pago }}</p>
+                                <p><strong>Total:</strong> S/{{pedido.total}}</p>
                             </div>
                         </div>
                         <div class="col">
@@ -52,10 +53,10 @@
                                     <label for="nuevo_estado"><strong>Cambiar Estado:</strong></label>
                                     <select class="form-control" id="estado" name="estado">
                                         <option value="" disabled selected>Seleccione un estado</option>
-                                        <option value="Pendiente">Pendiente</option>
-                                        <option value="En camino">En Camino</option>
-                                        <option value="Con retraso">Con Retraso</option>
-                                        <option value="Entregado">Entregado</option>
+                                        <option value="Pendiente">Pendiente <i class="fa-solid fa-hourglass-half"></i></option>
+                                        <option value="En camino">En Camino <i class="fa-solid fa-truck-fast"></i></option>
+                                        <option value="Con retraso">Con Retraso <i class="fa-solid fa-clock"></i></option>
+                                        <option value="Entregado">Entregado <i class="fa-solid fa-circle-check"></i></option>
                                     </select>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Guardar Cambios</button>
@@ -70,6 +71,7 @@
                                 <tr>
                                     <th>Producto</th>
                                     <th>Cantidad</th>
+                                    <th>Precio/Litro</th>
                                     <th>Precio Unitario</th>
                                     <th>Total</th>
                                 </tr>
@@ -77,10 +79,19 @@
                             <tbody>
                                 {% for detalle in pedido.detalles_pedidos %}
                                 <tr>
-                                    <td>{{ detalle.producto.nombre }}</td>
+                                    <td>
+                                        <strong>{{ detalle.producto.nombre }} ({{ detalle.producto.presentacion }})</strong><br>
+                                    </td>
                                     <td>{{ detalle.cantidad }}</td>
-                                    <td>{{ detalle.precio_unitario }}</td>
-                                    <td>{{ detalle.cantidad * detalle.precio_unitario }}</td>
+                                    <td>
+                                        {% if detalle.producto.presentacion == "1 litro" %}
+                                            {{ detalle.precio_unitario}}
+                                        {% else %}
+                                            {{ detalle.producto.precio_dis}}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ detalle.precio_unitario}}</td>
+                                    <td>{{ (detalle.cantidad * detalle.precio_unitario)}}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

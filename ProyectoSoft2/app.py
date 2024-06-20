@@ -187,11 +187,24 @@ def carrito():
     for item in cart_items:
         item['price'] = float(item['price']) if isinstance(item['price'], str) else item['price']
         item['quantity'] = int(item['quantity']) if isinstance(item['quantity'], str) else item['quantity']
+        item['precio_dis'] = float(item.get('precio_dis', 0))
 
-    total = sum(item['price'] * item['quantity'] for item in cart_items)
+    # Calcular el subtotal considerando la presentación seleccionada y la cantidad de litros
+    for item in cart_items:
+        if 'presentacion' in item:
+            if item['presentacion'] == "12 litros":
+                item['subtotal'] = item['precio_dis'] * 12 * item['quantity']
+            elif item['presentacion'] == "20 litros":
+                item['subtotal'] = item['precio_dis'] * 20 * item['quantity']
+            elif item['presentacion'] == "200 litros":
+                item['subtotal'] = item['precio_dis'] * 200 * item['quantity']
+            else:
+                item['subtotal'] = item['price'] * item['quantity']  # Si no es una presentación especial, usar el precio normal
+        else:
+            item['subtotal'] = item['price'] * item['quantity']  # Si no hay presentación, usar el precio normal
+
+    total = sum(item['subtotal'] for item in cart_items)
     return render_template('carrito.html', cart_items=cart_items, total=total)
-
-
 
 @app.route('/update_quantity/<int:product_id>', methods=['POST'])
 def update_quantity(product_id):
@@ -223,8 +236,22 @@ def add_to_cart():
                 item['quantity'] += 1  # Incrementar la cantidad
                 session['cart'] = cart
                 return redirect(url_for('mostrar_catalogo'))
-        # Si el producto no está en el carrito, agregarlo
-        cart_item = {'producto_id': product.producto_id, 'name': product.nombre, 'price': product.precio_pub, 'quantity': 1}
+
+        # Determinar el precio unitario a utilizar
+        if product.presentacion in ["12 litros", "20 litros", "200 litros"]:
+            precio_unitario = product.precio_dis
+        else:
+            precio_unitario = product.precio_pub
+
+        # Agregar el producto al carrito
+        cart_item = {
+            'producto_id': product.producto_id,
+            'name': product.nombre,
+            'price': str(precio_unitario),  # Convertir a string para consistencia si es necesario
+            'quantity': 1,
+            'precio_dis': product.precio_dis if product.precio_dis else None,
+            'presentacion': product.presentacion
+        }
         cart.append(cart_item)
         session['cart'] = cart
         print("Carrito actualizado:", session['cart']) 
@@ -239,7 +266,6 @@ def remove_from_cart(product_id):
     cart = [item for item in cart if item['producto_id'] != product_id]
     session['cart'] = cart
     return redirect(url_for('carrito'))
-
 
 @app.route('/borrar_carrito', methods=['POST'])
 def borrar_carrito():
@@ -261,12 +287,17 @@ def pago():
             if not cart_items:
                 flash('El carrito está vacío.', 'error')
                 return redirect(url_for('carrito'))
-            
+
             # Calcular el total del pedido
             for item in cart_items:
                 item['price'] = float(item['price']) if isinstance(item['price'], (int, float, str)) else 0.0
                 item['quantity'] = int(item['quantity']) if isinstance(item['quantity'], (int, str)) else 0
-            total = sum(item['price'] * item['quantity'] for item in cart_items)
+                item['precio_dis'] = float(item.get('precio_dis', 0))
+                if item['presentacion'] in ["12 litros", "20 litros", "200 litros"]:
+                    presentacion_factor = int(item['presentacion'].split()[0])
+                    item['price'] = item['precio_dis'] * presentacion_factor
+                item['subtotal'] = item['price'] * item['quantity']
+            total = sum(item['subtotal'] for item in cart_items)
 
             # Crear un nuevo pedido
             nuevo_pedido = Pedidos(
@@ -276,14 +307,13 @@ def pago():
                 direccion_pedido=cliente.direccion,
                 fecha_pedido=date.today(),
                 metodo_pago=request.form['metodo_pago'],
-                total=total,  # Actualizar con el total real después del cálculo
-                estado='Pendiente'  # Puedes ajustar el estado según tu lógica
+                total=total,
+                estado='Pendiente'
             )
 
             db.session.add(nuevo_pedido)
             db.session.commit()
 
-            # Obtener el ID del pedido recién creado
             pedido_id = nuevo_pedido.pedido_id
 
             # Agregar detalles del pedido a DetallesPedidos
@@ -296,7 +326,7 @@ def pago():
                     direccion=cliente.direccion,
                     fecha_pedido=date.today(),
                     cantidad=item['quantity'],
-                    metodo_pago=request.form['metodo_pago'],  # Ajusta según cómo recibas el método de pago
+                    metodo_pago=request.form['metodo_pago'],
                     precio_unitario=item['price']
                 )
                 db.session.add(detalle_pedido)
@@ -306,14 +336,12 @@ def pago():
             # Limpiar el carrito después de completar la compra
             session.pop('cart', None)
 
-            # Redirigir a la página de confirmación de orden
             return redirect(url_for('orden_confirmada', pedido_id=pedido_id))
 
         except exc.SQLAlchemyError as e:
             db.session.rollback()
             flash(f'Error al procesar el pedido: {str(e)}', 'error')
             return redirect(url_for('pagar'))
-    
     else:
         flash('Por favor, inicia sesión para realizar un pedido.', 'error')
         return redirect(url_for('login'))
@@ -414,19 +442,21 @@ def detalles_pedido(pedido_id):
 
 @app.route("/pagar")
 def pagar():
-    cart_items = session.get('cart', [])  # Obtener los elementos del carrito desde la sesión
+    cart_items = session.get('cart', [])
 
-    # Convertir 'price' y 'quantity' a números adecuados
     for item in cart_items:
         item['price'] = float(item['price']) if isinstance(item['price'], (int, float, str)) else 0.0
         item['quantity'] = int(item['quantity']) if isinstance(item['quantity'], (int, str)) else 0
+        item['precio_dis'] = float(item.get('precio_dis', 0))
+        if item['presentacion'] in ["12 litros", "20 litros", "200 litros"]:
+            presentacion_factor = int(item['presentacion'].split()[0])
+            item['price'] = item['precio_dis'] * presentacion_factor
+        item['subtotal'] = item['price'] * item['quantity']
 
-    total = sum(item['price'] * item['quantity'] for item in cart_items)  # Calcular el total del carrito
-    # Obtener el nombre de usuario desde la sesión
+    total = sum(item['subtotal'] for item in cart_items)
     username = session.get('username')
 
     if username:
-        # Obtener datos del cliente basados en el nombre de usuario
         cliente = Cliente.query.filter_by(username=username).first()
 
         if cliente:
@@ -438,13 +468,11 @@ def pagar():
             apellidos = ''
             direccion = ''
     else:
-        # Manejar el caso donde el nombre de usuario no está en la sesión
         nombre = ''
         apellidos = ''
         direccion = ''
 
     return render_template("Pagar.html", cart_items=cart_items, total=total, nombre=nombre, apellidos=apellidos, direccion=direccion)
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -507,7 +535,7 @@ def enviar():
     email = request.form['email']
     asunto = request.form['asunto']
     mensaje = request.form['mensaje']
-    msg = Message(asunto, sender=app.config['MAIL_DEFAULT_SENDER'], recipients=['fabriziovh01@example.com'])
+    msg = Message(asunto, sender=app.config['MAIL_DEFAULT_SENDER'], recipients=['fabriziovh01@gmail.com'])
     msg.body = f"Nombre: {nombre}\nCorreo: {email}\n\nMensaje:\n{mensaje}"
     try:
         mail.send(msg)
@@ -580,35 +608,29 @@ def catalogo_empleado():
 
 @app.route('/update_product', methods=['POST'])
 def update_product():
-    product_id = request.form['id']
-    nombre = request.form['nombre']
-    descripcion = request.form['descripcion']
-    presentacion = request.form['presentacion']
-    precio_dis = request.form['precio_dis']
-    precio_pub = request.form['precio_pub']
-    stock = request.form['stock']
-    tipo_producto_id = request.form['tipo_producto_id']
-    
-    execute_procedure('editar_producto', [product_id, nombre, descripcion, presentacion, precio_dis, precio_pub, stock, tipo_producto_id])
-    return jsonify({'success': True})
+    data = request.form
+    producto = Producto.query.get(data['id'])
+    if producto:
+        producto.nombre = data['nombre']
+        producto.descripcion = data['descripcion']
+        producto.presentacion = data['presentacion']
+        producto.precio_dis = data['precio_dis']
+        producto.precio_pub = data['precio_pub']
+        producto.stock = data['stock']
+        producto.tipo_producto_id = data['tipo_producto_id']
+        db.session.commit()
+        return jsonify(success=True)
+    return jsonify(success=False)
 
 @app.route('/increase_stock', methods=['POST'])
 def increase_stock():
-    product_id = request.form['id']
-    amount = int(request.form['amount'])
-    
-    conn = mysql.connector.connect(**db_config)
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT stock FROM productos WHERE id = %s", (product_id,))
-    producto = cursor.fetchone()
-    cursor.close()
-    conn.close()
-    
+    data = request.form
+    producto = Producto.query.get(data['id'])
     if producto:
-        nuevo_stock = producto['stock'] + amount
-        execute_procedure('editar_producto', [product_id, producto['nombre'], producto['descripcion'], producto['presentacion'], producto['precio_dis'], producto['precio_pub'], nuevo_stock, producto['tipo_producto_id']])
-        return jsonify({'success': True})
-    return jsonify({'success': False})
+        producto.stock += int(data['amount'])
+        db.session.commit()
+        return jsonify(success=True)
+    return jsonify(success=False)
 
 
 def admin_required(f):
@@ -844,7 +866,7 @@ def registro_cliente():
 
         # Recuperar el usuario recién creado para obtener su id
         user = Usuario.query.filter_by(usuario=username).first()
-        
+            
         if user:
             # Crear nuevo cliente y asociarlo con su propio id
             nuevo_cliente = Cliente(
@@ -969,10 +991,31 @@ def registro_administrador():
 
 @app.route('/reporte')
 def reporte():
-    mes = request.args.get('mes', default=1, type=int)
-    pedidos = db.session.query(Pedidos).filter(extract('month', Pedidos.fecha_pedido) == mes).all()
-    total_ventas = db.session.query(func.sum(Pedidos.total)).filter(extract('month', Pedidos.fecha_pedido) == mes).scalar()
-    return render_template('reporte.html', pedidos=pedidos, total_ventas=total_ventas, mes=mes)
+    year = request.args.get('year')
+    month = request.args.get('month')
+
+    if not year or not month:
+        # Si year o month no están presentes, renderizamos una página sin datos
+        return render_template('reporte.html', pedidos=[], total_ventas=0)
+
+    # Convertimos year y month a enteros para usarlos en la consulta
+    try:
+        year = int(year)
+        month = int(month)
+    except ValueError:
+        flash('Año o mes inválidos. Por favor, selecciona valores correctos.')
+        return redirect(url_for('reporte'))
+
+    # Query para obtener los pedidos del año y mes seleccionados
+    pedidos = db.session.query(Pedidos).filter(
+        extract('year', Pedidos.fecha_pedido) == year,
+        extract('month', Pedidos.fecha_pedido) == month
+    ).all()
+
+    total_ventas = sum(pedido.total for pedido in pedidos)
+
+    return render_template('reporte.html', pedidos=pedidos, total_ventas=total_ventas)
+
 
 sugerencias_estaticas = ['Alga sheer', 'Fito alga', 'Otra sugerencia']
 
@@ -991,39 +1034,103 @@ def obtener_sugerencias(query):
 
 @app.route('/buscar_productos')
 def buscar_productos():
+    # Obtener los parámetros de búsqueda desde la solicitud GET
     query = request.args.get('q', '')
-    categoria = request.args.get('categoria', '')
-    precio = request.args.get('precio', '')
-    tipo_compra = request.args.get('tipo_compra', '')
+    tipo_producto_id = request.args.get('tipo_producto', '')
 
-    # Construcción de la consulta SQL utilizando SQLAlchemy
+    # Convertir tipo_producto_id a entero si es válido
+    try:
+        tipo_producto_id = int(tipo_producto_id)
+    except ValueError:
+        tipo_producto_id = None
+
+    # Consulta para obtener todos los tipos de productos disponibles
+    tipos_productos = TipoProducto.query.all()
+
+    # Comenzar la consulta filtrando por nombre y descripción que contengan el término de búsqueda
     productos_query = Producto.query.filter(or_(
         Producto.nombre.ilike(f'%{query}%'),
         Producto.descripcion.ilike(f'%{query}%')
     ))
 
-    if categoria:
-        productos_query = productos_query.filter_by(tipo_producto_id=categoria)
+    # Filtrar por tipo de producto si se proporciona
+    if tipo_producto_id:
+        # Verificar si el tipo_producto_id proporcionado existe en la base de datos
+        tipo_producto_existente = TipoProducto.query.get(tipo_producto_id)
+        if tipo_producto_existente:
+            productos_query = productos_query.filter_by(tipo_producto_id=tipo_producto_id)
+        else:
+            # Manejar el caso donde el tipo_producto_id no existe
+            return render_template('error.html', mensaje="El tipo de producto especificado no existe."), 404
 
+    # Obtener los resultados finales
+    productos = productos_query.all()
+
+    # Renderizar el template de resultados de búsqueda con los productos encontrados
+    return render_template('resultados_busqueda.html', productos=productos, tipos_productos=tipos_productos)
+    
+
+@app.route('/buscar_productos_e')
+def buscar_productos_e():
+    # Obtener los parámetros de búsqueda desde la solicitud GET
+    query = request.args.get('q', '')
+    tipo_producto_id = request.args.get('tipo_producto', '')
+    precio = request.args.get('precio', '')
+    presentacion = request.args.get('presentacion', '')
+
+    # Consulta para obtener todos los tipos de productos disponibles
+    tipos_productos = TipoProducto.query.all()
+
+    # Comenzar la consulta filtrando por nombre y descripción que contengan el término de búsqueda
+    productos_query = Producto.query.filter(or_(
+        Producto.nombre.ilike(f'%{query}%'),
+        Producto.descripcion.ilike(f'%{query}%')
+    ))
+
+    # Filtrar por tipo de producto si se proporciona
+    if tipo_producto_id:
+        productos_query = productos_query.filter_by(tipo_producto_id=tipo_producto_id)
+
+    # Ordenar por precio si se especifica 'mayor' o 'menor'
     if precio == 'mayor':
         productos_query = productos_query.order_by(Producto.precio_pub.desc())
     elif precio == 'menor':
         productos_query = productos_query.order_by(Producto.precio_pub.asc())
 
-    # Ejemplo de filtrado por tipo de compra (distribuidor o normal)
-    # Dependiendo de tu lógica de negocio, puedes ajustar esto
-    if tipo_compra == 'distribuidor':
-        # Ejemplo: filtrar productos que tienen precio de distribuidor
-        productos_query = productos_query.filter(Producto.precio_dis != None)
-    elif tipo_compra == 'normal':
-        # Ejemplo: filtrar productos que no tienen precio de distribuidor
-        productos_query = productos_query.filter(Producto.precio_dis == None)
+    # Filtrar por presentación si se especifica
+    if presentacion:
+        productos_query = productos_query.filter(Producto.presentacion.ilike(f'%{presentacion}%'))
 
     # Obtener los resultados finales
     productos = productos_query.all()
 
-    # Aquí renderizas tu template de resultados de búsqueda con los productos encontrados
-    return render_template('resultados_busqueda.html', productos=productos)
+    # Renderizar el template de resultados de búsqueda con los productos encontrados
+    return render_template('resultados_busqueda_e.html', productos=productos, tipos_productos=tipos_productos)
+
+
+@app.route('/agregar_producto', methods=['GET', 'POST'])
+def agregar_producto():
+    if request.method == 'GET':
+        tipos_productos = TipoProducto.query.all()
+        return render_template('agregar_producto.html', tipos_productos=tipos_productos)
+    elif request.method == 'POST':
+        nombre = request.form['nombre']
+        descripcion = request.form['descripcion']
+        presentacion = request.form['presentacion']
+        precio_dis = request.form['precio_dis']
+        precio_pub = request.form['precio_pub']
+        stock = request.form['stock']
+        tipo_producto_id = request.form['tipo_producto']
+        
+        nuevo_producto = Producto(nombre=nombre, descripcion=descripcion, presentacion=presentacion,
+                                  precio_dis=precio_dis, precio_pub=precio_pub, stock=stock,
+                                  tipo_producto_id=tipo_producto_id)
+        
+        db.session.add(nuevo_producto)
+        db.session.commit()
+        
+        return redirect(url_for('catalogo_empleado'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

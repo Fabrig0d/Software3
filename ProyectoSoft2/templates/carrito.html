@@ -8,67 +8,82 @@
     <script src="https://kit.fontawesome.com/9e204c657e.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <header>
+<header>
     <div class="header-container">
         <h1 class="display-2">Tu carrito de compras</h1>
-         <div class="btn-inicio ml-auto">
+        <div class="btn-inicio ml-auto">
             <a href="/catalogo" class="btn btn-success">
-             Volver al catalogo   <i class="fa-solid fa-bars"></i>
+                Volver al catálogo   <i class="fa-solid fa-bars"></i>
             </a>
         </div>
-        </header>
-        <table class="table mt-4">
-            <thead>
-                <tr>
-                    <th>Producto</th>
-                    <th>Precio</th>
-                    <th>Cantidad</th>
-                    <th>Subtotal</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <!-- Cuerpo de la tabla -->
-            <tbody>
-                {% for item in cart_items %}
-                <tr>
-                    <td>{{ item.name }}</td>
-                    <td>S/{{ item.price }}</td>
-                    <td>
-                        <form action="/update_quantity/{{ item.producto_id }}" method="POST">
-                            <input type="number" class="form-control" name="quantity" value="{{ item.quantity }}" min="1">
-                            <button type="submit" class="btn btn-primary btn-sm mt-1">Actualizar</button>
-                        </form>
-                    </td>
-                    <td>S/{{ item.price * item.quantity }}</td>
-                    <td>
-                        <a href="/remove_from_cart/{{ item.producto_id }}" class="btn btn-danger btn-sm">Quitar <i class="fa-solid fa-rectangle-xmark"></i></a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div class="botones">
-        <div class="d-flex justify-content-between align-items-center p-3 total-container">
-            <h4>Total: S/{{ total }}</h4>
+    </div>
+</header>
+<div class="container mt-4">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Precio Unitario</th>
+                <th>Cantidad</th>
+                <th>Subtotal</th>
+                <th></th>
+            </tr>
+        </thead>
+        <!-- Cuerpo de la tabla -->
+        <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td>{{ item['name'] }} ({{ item['presentacion'] }})</td> <!-- Nombre del producto con presentación -->
+                <td>
+                    S/
+                    {% if item['presentacion'] == '12 litros' %}
+                        {{ item['precio_dis'] * 12 }}
+                    {% elif item['presentacion'] == '20 litros' %}
+                        {{ item['precio_dis'] * 20 }}
+                    {% elif item['presentacion'] == '200 litros' %}
+                        {{ item['precio_dis'] * 200 }}
+                    {% else %}
+                        {{ item['price'] }}
+                    {% endif %}
+                </td>
+                <td>
+                    <form action="/update_quantity/{{ item['producto_id'] }}" method="POST">
+                        <input type="number" class="form-control" name="quantity" value="{{ item['quantity'] }}" min="1">
+                        <button type="submit" class="btn btn-primary btn-sm mt-1">Actualizar</button>
+                    </form>
+                </td>
+                <td>S/{{ item['subtotal'] }}</td> <!-- Subtotal del producto en el carrito -->
+                <td>
+                    <a href="/remove_from_cart/{{ item['producto_id'] }}" class="btn btn-danger btn-sm">Quitar <i class="fa-solid fa-rectangle-xmark"></i></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center p-3 total-container">
+        <h4>Total: S/{{ total }}</h4> <!-- Mostrar el total del carrito -->
+    </div>
+
+    <!-- Botones de Vaciar Carrito y Pagar -->
+    <div class="row">
+        <div class="col-md-6">
+            <form action="/borrar_carrito" method="POST">
+                <button type="submit" class="btn btn-danger">Vaciar Carrito <i class="fa-solid fa-trash-can"></i></button>
+            </form>
         </div>
         
-        <!-- Botones de Vaciar Carrito y Pagar -->
-        <center><div class="row">
-            <div class="col-md-6">
-                <form action="/borrar_carrito" method="POST">
-                    <button type="submit" class="btn btn-danger">Vaciar Carrito <i class="fa-solid fa-trash-can"></i></i></button>
-                </form>
-            </div>
-            
-            <div class="col-md-6 text-right">
-                <form action="button" method="POST">
-                    <a href="/pagar" class="btn btn-primary">Ir a pagar  <i class="fa-solid fa-money-bills"></i></a> 
-                </form>
-            </div>
-        </div></center>
+        <div class="col-md-6 text-right">
+            <form action="button" method="POST">
+                <a href="/pagar" class="btn btn-primary">Ir a pagar  <i class="fa-solid fa-money-bills"></i></a> 
+            </form>
+        </div>
     </div>
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</div>
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+</html>

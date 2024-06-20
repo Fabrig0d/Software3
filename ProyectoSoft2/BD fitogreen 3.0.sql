@@ -757,7 +757,7 @@ DELIMITER ;
 
 
 
-
+describe productos;
 
 
 -- TIPO DE PRODUCTOS
@@ -771,51 +771,60 @@ CALL agregar_tipo_producto('Nutrientes Específicos');
 -- PRODUCTOS
 
 -- FITO ALGAS: Algas Marinas + Fitohormonas
+CALL agregar_producto('FITO ALGAS', 'Algas Marinas + Fitohormonas', '1 litro', 30.00, 50.00, 20, 1);
 CALL agregar_producto('FITO ALGAS', 'Algas Marinas + Fitohormonas', '12 litros', 30.00, 50.00, 100, 1);
 CALL agregar_producto('FITO ALGAS', 'Algas Marinas + Fitohormonas', '20 litros', 25.00, 40.00, 150, 1);
 CALL agregar_producto('FITO ALGAS', 'Algas Marinas + Fitohormonas', '200 litros', 20.00, 35.00, 200, 1);
 
 -- ALGAS SHEER: Algas marinas
+CALL agregar_producto('ALGAS SHEER', 'Algas marinas', '1 litro', 20.00, 35.00, 10, 1);
 CALL agregar_producto('ALGAS SHEER', 'Algas marinas', '12 litros', 20.00, 35.00, 80, 1);
 CALL agregar_producto('ALGAS SHEER', 'Algas marinas', '20 litros', 15.00, 30.00, 120, 1);
 CALL agregar_producto('ALGAS SHEER', 'Algas marinas', '200 litros', 10.00, 20.00, 50, 1);
 
 -- HONGO STOP: Fungicida Biológico
+CALL agregar_producto('HONGO STOP', 'Fungicida Biológico', '1 litro', 55.00, 65.00, 30, 2);
 CALL agregar_producto('HONGO STOP', 'Fungicida Biológico', '12 litros', 55.00, 65.00, 90, 2);
 CALL agregar_producto('HONGO STOP', 'Fungicida Biológico', '20 litros', 45.00, 60.00, 110, 2);
 CALL agregar_producto('HONGO STOP', 'Fungicida Biológico', '200 litros', 40.00, 55.00, 150, 2);
 
 -- FITO AMINO: Aminoácidos
+CALL agregar_producto('FITO AMINO', 'Aminoácidos', '1 litro', 35.00, 60.00, 25, 3);
 CALL agregar_producto('FITO AMINO', 'Aminoácidos', '12 litros', 35.00, 60.00, 70, 3);
 CALL agregar_producto('FITO AMINO', 'Aminoácidos', '20 litros', 30.00, 50.00, 100, 3);
 CALL agregar_producto('FITO AMINO', 'Aminoácidos', '200 litros', 25.00, 50.00, 130, 3);
 
 -- FITO HUMIC 20: Ácidos Húmicos (Leonardita)
+CALL agregar_producto('FITO HUMIC 20', 'Ácidos Húmicos (Leonardita)', '1 litro', 15.00, 20.00, 15, 4);
 CALL agregar_producto('FITO HUMIC 20', 'Ácidos Húmicos (Leonardita)', '12 litros', 15.00, 20.00, 60, 4);
 CALL agregar_producto('FITO HUMIC 20', 'Ácidos Húmicos (Leonardita)', '20 litros', 11.00, 15.00, 80, 4);
 CALL agregar_producto('FITO HUMIC 20', 'Ácidos Húmicos (Leonardita)', '200 litros', 8.00, 15.00, 100, 4);
 
 -- Nutrientes Específicos (Potasio, Fósforo, Boro, Calcio, Magnesio)
+
+CALL agregar_producto('FITO K – 50', 'Potasio', '1 litro', 18.00, 28.00, 10, 5);
+CALL agregar_producto('FITO K – 50', 'Potasio', '1 litro', 18.00, 28.00, 10, 5);
 CALL agregar_producto('FITO K – 50', 'Potasio', '12 litros', 18.00, 28.00, 50, 5);
 CALL agregar_producto('FITO K – 50', 'Potasio', '20 litros', 16.00, 25.00, 70, 5);
 CALL agregar_producto('FITO K – 50', 'Potasio', '200 litros', 13.00, 20.00, 90, 5);
 
+CALL agregar_producto('FITO POWER', 'Fósforo', '1 litro', 18.00, 28.00, 10, 5);
 CALL agregar_producto('FITO POWER', 'Fósforo', '12 litros', 18.00, 28.00, 40, 5);
 CALL agregar_producto('FITO POWER', 'Fósforo', '20 litros', 16.00, 25.00, 60, 5);
 CALL agregar_producto('FITO POWER', 'Fósforo', '200 litros', 13.00, 20.00, 80, 5);
 
+CALL agregar_producto('FITO BORO', 'Boro', '1 litro', 18.00, 28.00, 10, 5);
 CALL agregar_producto('FITO BORO', 'Boro', '12 litros', 18.00, 28.00, 30, 5);
 CALL agregar_producto('FITO BORO', 'Boro', '20 litros', 16.00, 25.00, 50, 5);
 CALL agregar_producto('FITO BORO', 'Boro', '200 litros', 13.00, 20.00, 70, 5);
 
+CALL agregar_producto('FITO Ca/B/Zn', 'Calcio, Boro, Zinc', '1 litro', 18.00, 28.00, 15, 5);
 CALL agregar_producto('FITO Ca/B/Zn', 'Calcio, Boro, Zinc', '12 litros', 18.00, 28.00, 80, 5);
 CALL agregar_producto('FITO Ca/B/Zn', 'Calcio, Boro, Zinc', '20 litros', 16.00, 25.00, 100, 5);
 CALL agregar_producto('FITO Ca/B/Zn', 'Calcio, Boro, Zinc', '200 litros', 13.00, 20.00, 120, 5);
 
+CALL agregar_producto('FITO MAGNESIO', 'Magnesio', '1 litro', 18.00, 28.00, 12, 5);
 CALL agregar_producto('FITO MAGNESIO', 'Magnesio', '12 litros', 18.00, 28.00, 60, 5);
-
-
-
 
 
 

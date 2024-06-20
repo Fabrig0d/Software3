@@ -5,39 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orden Confirmada</title>
     
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    
-    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://kit.fontawesome.com/9e204c657e.js" crossorigin="anonymous"></script>
-    
-    <!-- Tu hoja de estilos personalizada -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles_p.css') }}">
 </head>
 <body>
-    <div class="container mt-5">
-        <h1>Confirmación de Orden</h1>
-        <h2>Detalles del Pedido</h2>
-        <p>Número de Pedido: {{ pedido.pedido_id }}</p>
-        <p>Fecha del Pedido: {{ pedido.fecha_pedido }}</p>
-        <p>Total del Pedido: S/{{ pedido.total }}</p>
-    
-        <h2>Detalles de los Productos:</h2>
-        <ul>
-            {% for detalle in detalles_pedido %}
-                <li>Producto: {{ detalle.producto }} - Cantidad: {{ detalle.cantidad }} - Precio Unitario: S/{{ detalle.precio_unitario }}</li>
-            {% endfor %}
-        </ul>
-        
-        <div class="buttons mt-3">
-            <a href="{{ url_for('detalles_pedido', pedido_id=pedido.pedido_id) }}" class="btn btn-primary mr-2"><i class="fas fa-list-alt mr-1"></i> Ver detalles del pedido</a>
-            <a href="{{ url_for('home_cliente') }}" class="btn btn-secondary"><i class="fas fa-home mr-1"></i> Ir al inicio</a>
-        </div>
-    </div>
+<div class="container mt-5">
+    <h1>Confirmación de Orden</h1>
+    <h2>Detalles del Pedido</h2>
+    <p>Número de Pedido: {{ pedido.pedido_id }}</p>
+    <p>Fecha del Pedido: {{ pedido.fecha_pedido }}</p>
+    <p>Total del Pedido: S/ {{ pedido.total }}</p>
 
-    <!-- Bootstrap JS y dependencias opcionales (jQuery) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js" integrity="sha384-xxCq2xxd12yn0eXKmGYv2/ljOOj+g3ZnM2U2D3fwGqo8f9XnYF1u3fz1uH+8etbM" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-+0n0xqGYxMIH5OS2kHQmZsZSa4GgXgqFQxk5hCTaiB4Sxfakxqn0Yq3g+gN0f1KJ" crossorigin="anonymous"></script>
+    <h2>Detalles de los Productos:</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detalle in pedido.detalles_pedidos %}
+            <tr>
+                <td>
+                    <strong>{{ detalle.producto.nombre }} ({{ detalle.producto.presentacion }})</strong><br>
+                </td>
+                <td>{{ detalle.cantidad }}</td>
+                <td>{{ detalle.precio_unitario}}</td>
+                <td>{{ (detalle.cantidad * detalle.precio_unitario)}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="buttons mt-3">
+        <a href="{{ url_for('detalles_pedido', pedido_id=pedido.pedido_id) }}" class="btn btn-primary mr-2"><i class="fas fa-list-alt mr-1"></i> Ver detalles del pedido</a>
+        <a href="{{ url_for('home_cliente') }}" class="btn btn-secondary"><i class="fas fa-home mr-1"></i> Ir al inicio</a>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

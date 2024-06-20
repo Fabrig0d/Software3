@@ -17,20 +17,47 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="text-center">Reporte de Ventas del Mes</h1>
+        <h1 class="text-center">Reporte de Ventas</h1>
         <div class="mes-selector text-center">
-            <a href="/reporte?mes=1" class="btn btn-primary">Enero</a>
-            <a href="/reporte?mes=2" class="btn btn-primary">Febrero</a>
-            <a href="/reporte?mes=3" class="btn btn-primary">Marzo</a>
-            <a href="/reporte?mes=4" class="btn btn-primary">Abril</a>
-            <a href="/reporte?mes=5" class="btn btn-primary">Mayo</a>
-            <a href="/reporte?mes=6" class="btn btn-primary">Junio</a>
-            <a href="/reporte?mes=7" class="btn btn-primary">Julio</a>
-            <a href="/reporte?mes=8" class="btn btn-primary">Agosto</a>
-            <a href="/reporte?mes=9" class="btn btn-primary">Septiembre</a>
-            <a href="/reporte?mes=10" class="btn btn-primary">Octubre</a>
-            <a href="/reporte?mes=11" class="btn btn-primary">Noviembre</a>
-            <a href="/reporte?mes=12" class="btn btn-primary">Diciembre</a>
+            <form class="form-inline justify-content-center" action="/reporte" method="get">
+                <div class="form-group mb-2">
+                    <label for="year" class="sr-only">Año</label>
+                    <select class="form-control" id="year" name="year">
+                        <option value="" disabled selected>Seleccione un año</option>
+                        <option value="2027">2027</option>
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                        <option value="2020">2020</option>
+                        <option value="2019">2019</option>
+                        <option value="2018">2018</option>
+
+                        <!-- Añade más años según sea necesario -->
+                    </select>
+                </div>
+                <div class="form-group mx-sm-3 mb-2">
+                    <label for="month" class="sr-only">Mes</label>
+                    <select class="form-control" id="month" name="month">
+                        <option value="" disabled selected>Seleccione un mes</option>
+                        <option value="1">Enero</option>
+                        <option value="2">Febrero</option>
+                        <option value="3">Marzo</option>
+                        <option value="4">Abril</option>
+                        <option value="5">Mayo</option>
+                        <option value="6">Junio</option>
+                        <option value="7">Julio</option>
+                        <option value="8">Agosto</option>
+                        <option value="9">Septiembre</option>
+                        <option value="10">Octubre</option>
+                        <option value="11">Noviembre</option>
+                        <option value="12">Diciembre</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary mb-2">Buscar</button>
+            </form>
         </div>
         <div class="table-responsive">
             <table class="table table-bordered table-striped">

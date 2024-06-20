@@ -6,31 +6,52 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style_cat.css') }}">
     <script src="https://kit.fontawesome.com/9e204c657e.js" crossorigin="anonymous"></script>
+    <style>
+        /* Estilos adicionales si son necesarios */
+    </style>
 </head>
 <body>
     <header>
         <div class="header-container d-flex justify-content-between align-items-center p-3">
             <div class="welcome-text">
-                <center><h1 class="display-4">Catálogo de Productos</h1></center>
+                <h1 class="display-4">Catálogo de Productos</h1>
             </div>
-            <div class="navbar-nav ml-auto">  <!-- 'ml-auto' empuja a la izquierda -->
-                <form action="{{ url_for('buscar_productos') }}" method="GET" class="form-inline">
-                    <div class="input-group">  
-                        <input type="text" class="form-control typeahead" name="q" placeholder="Buscar productos..." aria-label="Buscar">
+            <div class="navbar-nav ml-auto">
+                <form action="/buscar_productos" method="get" class="form-inline">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="q" placeholder="Buscar por nombre o descripción" value="{{ request.args.get('q', '') }}">
                         <div class="input-group-append">
                             <button class="btn btn-primary" type="submit">Buscar</button>
                         </div>
                     </div>
+                    <select name="tipo_producto" class="custom-select ml-2">
+                        <option value="">Todos los tipos de productos</option>
+                        {% for tipo_producto in tipos_productos %}
+                            <option value="{{ tipo_producto.id }}" {% if tipo_producto.id == request.args.get('tipo_producto') %} selected {% endif %}>{{ tipo_producto.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="precio" class="custom-select ml-2">
+                        <option value="">Todos los precios</option>
+                        <option value="menor" {% if 'menor' == request.args.get('precio') %} selected {% endif %}>Menor precio primero</option>
+                        <option value="mayor" {% if 'mayor' == request.args.get('precio') %} selected {% endif %}>Mayor precio primero</option>
+                    </select>
+                    <select name="presentacion" class="custom-select ml-2">
+                        <option value="">Todas las presentaciones</option>
+                        <option value="1 litro" {% if '1 litro' == request.args.get('presentacion') %} selected {% endif %}>1 litro</option>
+                        <option value="12 litros" {% if '12 litros' == request.args.get('presentacion') %} selected {% endif %}>12 litros</option>
+                        <option value="20 litros" {% if '20 litros' == request.args.get('presentacion') %} selected {% endif %}>20 litros</option>
+                        <option value="200 litros" {% if '200 litros' == request.args.get('presentacion') %} selected {% endif %}>200 litros</option>
+                    </select>
                 </form>
             </div>
             <div class="btn-inicio ml-auto">
                 <a href="/home_cliente" class="btn btn-primary">
-                    <i class="fa-solid fa-house"></i>
+                    <i class="fa-solid fa-house"></i> Inicio
                 </a>
             </div>
-            <div class="shopping-cart">
+            <div class="shopping-cart ml-2">
                 <a href="/carrito" class="btn btn-primary">
-                    <i class="fas fa-shopping-cart"></i>   Ver Carrito
+                    <i class="fas fa-shopping-cart"></i> Ver Carrito
                 </a>
             </div>
         </div>
@@ -40,47 +61,66 @@
             <div class="col-md-2 sidebar">
                 <ul class="list-group">
                     {% for tipo in tipos_producto %}
-                    <li class="list-group-item">
-                        <a href="/catalogo?tipo_producto_id={{ tipo.id }}">{{ tipo.nombre }}</a>
-                    </li>
+                        <li class="list-group-item">
+                            <a href="/catalogo?tipo_producto_id={{ tipo.id }}">{{ tipo.nombre }}</a>
+                        </li>
                     {% endfor %}
                 </ul>
             </div>
             <div class="col-md-10">
                 <div class="row">
                     {% for producto in productos %}
-                    <div class="col-md-4">
-                        <div class="card my-2">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ producto.nombre }}</h5> <!-- Nombre del producto -->
-                                <p class="card-text">{{ producto.descripcion }}</p> <!-- Descripción del producto -->
-                                <p class="card-text">Precio: S/{{ producto.precio_pub }}</p> <!-- Precio del producto -->
-                                <form action="/add_to_cart" method="POST">
-                                    <input type="hidden" name="producto_id" value="{{ producto.producto_id  }}">
-                                    <button type="submit" class="btn btn-primary">Agregar al carrito <i class="fa-solid fa-cart-plus"></i></button>
-                                </form>                                
+                        <div class="col-md-4">
+                            <div class="card my-2">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        {{ producto.nombre }}
+                                        {% if producto.presentacion == "1 litro" %}
+                                             (1 litro)
+                                        {% elif producto.presentacion == "12 litros" %}
+                                            (12 litros)
+                                        {% elif producto.presentacion == "20 litros" %}
+                                            (20 litros)
+                                        {% elif producto.presentacion == "200 litros" %}
+                                            (200 litros)
+                                        {% endif %}
+                                    </h5>
+                                    <p class="card-text">{{ producto.descripcion }}</p>
+                                    {% if producto.presentacion == "1 litro" %}
+                                        <p class="card-text">Precio: S/{{ producto.precio_pub }}</p>
+                                    {% elif producto.presentacion == "12 litros" %}
+                                        <p class="card-text">Precio: S/{{ producto.precio_dis * 12 }}</p>
+                                    {% elif producto.presentacion == "20 litros" %}
+                                        <p class="card-text">Precio: S/{{ producto.precio_dis * 20 }}</p>
+                                    {% elif producto.presentacion == "200 litros" %}
+                                        <p class="card-text">Precio: S/{{ producto.precio_dis * 200 }}</p>
+                                    {% endif %}
+                                    <form action="/add_to_cart" method="POST">
+                                        <input type="hidden" name="producto_id" value="{{ producto.producto_id }}">
+                                        <button type="submit" class="btn btn-primary">Agregar al carrito <i class="fa-solid fa-cart-plus"></i></button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     {% endfor %}
                 </div>
                 <!-- Sección de paginación -->
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center">
                         {% if current_page > 1 %}
-                        <li class="page-item">
-                            <a class="page-link" href="{{ url_for('mostrar_catalogo', page=current_page-1) }}">Anterior</a>
-                        </li>
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('mostrar_catalogo', page=current_page-1) }}">Anterior</a>
+                            </li>
                         {% endif %}
                         {% for page in range(1, total_pages + 1) %}
-                        <li class="page-item {% if page == current_page %}active{% endif %}">
-                            <a class="page-link" href="{{ url_for('mostrar_catalogo', page=page) }}">{{ page }}</a>
-                        </li>
+                            <li class="page-item {% if page == current_page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('mostrar_catalogo', page=page) }}">{{ page }}</a>
+                            </li>
                         {% endfor %}
                         {% if current_page < total_pages %}
-                        <li class="page-item">
-                            <a class="page-link" href="{{ url_for('mostrar_catalogo', page=current_page+1) }}">Siguiente</a>
-                        </li>
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('mostrar_catalogo', page=current_page+1) }}">Siguiente</a>
+                            </li>
                         {% endif %}
                     </ul>
                 </nav>
