@@ -22,6 +22,9 @@
         <div class="top-bar">
             <span class="location"><i class="fas fa-map-marker-alt"></i> Pachacamac 285</span>
             <span class="email"><i class="fas fa-envelope"></i> fitogreen@empresa.com</span>
+            <span class="facebook"><i class="fab fa-facebook"></i> Fitogreen</span>
+            <span class="tiktok"><i class="fab fa-tiktok"></i> Fitogreen</span>
+            <span class="instagram"><i class="fab fa-instagram"></i> Fitogreen</span>
         </div>
         <nav class="navbar">
             <div class="logo">Fitogreen</div>
@@ -50,7 +53,7 @@
                 </div>
                 <div class="navbar-nav ml-auto">
                     <a href="/login" class="btn">
-                        <i class="fas fa-user"></i>
+                        <i class="fa-solid fa-user-plus" style="color: #13cd42;"></i>
                     </a>
                 </div>
             </div>
@@ -129,7 +132,7 @@
     </div>
     <br>
     
-    <script src="script.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
 

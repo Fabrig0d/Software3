@@ -53,4 +53,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     });
+    document.getElementById('search-button').addEventListener('click', function() {
+        var popover = document.getElementById('search-filters');
+        if (popover.style.display === 'none' || popover.style.display === '') {
+            popover.style.display = 'block';
+        } else {
+            popover.style.display = 'none';
+        }
+    });
 });
