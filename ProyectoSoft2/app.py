@@ -365,9 +365,8 @@ def orden_confirmada(pedido_id):
 
 @app.route('/detalles_pedido_e')
 def lista_pedidos_e():
-    if 'logged_in' in session and session['logged_in']:
-        if session.get('tipo') == 'empleado'or session.get('role') == 'admin':
-         pedidos = Pedidos.query.all()  # Obtener todos los pedidos
+    if 'logged_in' in session and session['logged_in'] and session.get('tipo') == 'empleado':
+        pedidos = Pedidos.query.all()  # Obtener todos los pedidos
         return render_template('lista_pedidos_e.html', pedidos=pedidos)
     else:
         flash('Debes iniciar sesión como empleado para ver los pedidos.', 'error')
@@ -375,9 +374,8 @@ def lista_pedidos_e():
 
 @app.route('/detalles_pedido_e/<int:pedido_id>')
 def detalles_pedido_e(pedido_id):
-    if 'logged_in' in session and session['logged_in']:
-        if session.get('tipo') == 'empleado'or session.get('role') == 'admin':
-             pedido = Pedidos.query.get(pedido_id)
+    if 'logged_in' in session and session['logged_in'] and session.get('tipo') == 'empleado':
+        pedido = Pedidos.query.get(pedido_id)
         if pedido:
             return render_template('detalles_pedido_e.html', pedido=pedido)
         else:
@@ -481,16 +479,12 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
+        print(f"Contraseña ingresada por el usuario: {password}")
         user = Usuario.query.filter_by(usuario=username).first()  
         if user and check_password_hash(user.contrasena, password):
             session['logged_in'] = True
             session['username'] = username
             session['tipo'] = user.tipo  # Almacenar el tipo de usuario en la sesión
-            if user.tipo == 'admin':
-                session['role'] = 'admin'
-            else:
-                session['role'] = user.tipo
-
             if user.tipo == 'cliente':
                 return redirect(url_for('home_cliente'))
             elif user.tipo == 'empleado':
