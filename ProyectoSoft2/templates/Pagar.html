@@ -60,7 +60,23 @@
 </div>
     </div>
 </header>
-
+<div class="container">
+    <div class="toast-container">
+        {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <strong class="me-auto">Notificación</strong>
+                    </div>
+                    <div class="toast-body">
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
 <div class="container">
     <div class="row">
         <div class="col-md-5">
@@ -122,6 +138,13 @@
     </div>
 </div>
 <script>
+
+        $(document).ready(function(){
+            setTimeout(function(){
+                $(".alert").alert('close');
+            }, 15000); // 15000 ms = 15 segundos
+        });
+
     document.getElementById('confirmCancel').addEventListener('click', function() {
         // Aquí puedes realizar la lógica para borrar el carrito
         // Esto podría implicar una llamada a la API para limpiar el carrito en el servidor

@@ -613,3 +613,29 @@ button:hover {
 .mes-selector {
     margin-bottom: 20px;
 }
+a.facebook {
+    display: flex;
+    color: inherit; /* Hereda el color del elemento padre */
+    text-decoration: none; /* Elimina el subrayado */
+}
+
+a.facebook:hover, 
+a.facebook:focus, 
+a.facebook:active {
+    display: flex;
+    color: inherit; /* Mantiene el color del enlace en todos los estados */
+    text-decoration: none; /* Mantiene sin subrayado en todos los estados */
+}
+a.tiktok {
+    display: flex;
+    color: inherit; /* Hereda el color del elemento padre */
+    text-decoration: none; /* Elimina el subrayado */
+}
+
+a.tiktok:hover, 
+a.tiktok:focus, 
+a.tiktok:active {
+    display: flex;
+    color: inherit; /* Mantiene el color del enlace en todos los estados */
+    text-decoration: none; /* Mantiene sin subrayado en todos los estados */
+}

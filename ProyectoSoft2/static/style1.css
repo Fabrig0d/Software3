@@ -41,6 +41,32 @@ header {
     color: inherit;         /* Heredar color del texto */
     cursor: pointer;        /* Cambiar cursor a puntero */
 }
+a.facebook {
+    display: flex;
+    color: inherit; /* Hereda el color del elemento padre */
+    text-decoration: none; /* Elimina el subrayado */
+}
+
+a.facebook:hover, 
+a.facebook:focus, 
+a.facebook:active {
+    display: flex;
+    color: inherit; /* Mantiene el color del enlace en todos los estados */
+    text-decoration: none; /* Mantiene sin subrayado en todos los estados */
+}
+a.tiktok {
+    display: flex;
+    color: inherit; /* Hereda el color del elemento padre */
+    text-decoration: none; /* Elimina el subrayado */
+}
+
+a.tiktok:hover, 
+a.tiktok:focus, 
+a.tiktok:active {
+    display: flex;
+    color: inherit; /* Mantiene el color del enlace en todos los estados */
+    text-decoration: none; /* Mantiene sin subrayado en todos los estados */
+}
 .logo {
     font-size: 37px;
     color: #2cd132;
