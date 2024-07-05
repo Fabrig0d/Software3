@@ -4,23 +4,44 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agregar Producto</title>
-    
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    
-    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
     <script src="https://kit.fontawesome.com/9e204c657e.js" crossorigin="anonymous"></script>
-    
-    <style>
-        /* Personalización adicional si es necesaria */
-        body {
-            padding: 20px;
-        }
-    </style>
 </head>
 <body>
+    <header>
+        <div class="top-bar">
+            <span class="location"><i class="fas fa-map-marker-alt"></i> Pachacamac 285</span>
+            <span class="email"><i class="fas fa-envelope"></i> fitogreen@empresa.com</span>
+            <span class="tiktok"><i class="fa-brands fa-tiktok"></i> Fitogreen</span>
+            <span class="facebook"><i class="fa-brands fa-facebook"></i> Fitogreen</span>
+        </div>
+        <nav class="navbar">
+            <a class="logo-link" href="/home_empleado">
+                <div class="logo">Fitogreen</div>
+            </a>
+            <ul class="nav-links">
+                <li><a class="nav-link active" href="/catalogo_e">Inventario</a></li>
+                <li><a class="nav-link" href="/agregar_producto">Agregar nuevo producto</a></li>
+                <li><a class="nav-link" href="/reporte">Reporte Mensual</a></li>
+                <li><a class="nav-link" href="/datos_e">Mis datos</a></li>
+                <li><a class="nav-link" href="{{ url_for('lista_pedidos_e') }}">Lista de Pedidos</a></li>
+            </ul>
+            <div class="nav-icons">
+                <form action="/buscar_productos_e" method="get" class="search-form">
+                    <input type="text" class="search-input" name="q" placeholder="Buscar por nombre o descripción" value="{{ request.args.get('q', '') }}">
+                    <button class="search-button" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                <a href="/logout" class="logout-button btn btn-danger"><i class="fa-solid fa-right-from-bracket" style="color: #ffffff;"></i></a>
+            </div>
+            <div class="hamburger-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
     <div class="container">
         <h1 class="mt-4 mb-4">Agregar Nuevo Producto</h1>
         <form action="/agregar_producto" method="POST">

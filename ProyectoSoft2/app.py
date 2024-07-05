@@ -60,7 +60,7 @@ db = SQLAlchemy(app)
 
 db_config = {
     'user': os.getenv('DB_USER'),
-    'password': password,
+    'password': os.getenv('DB_PASSWORD'),
     'host': os.getenv('DB_HOST'),
     'database': os.getenv('DB_NAME'),
     'secret_key' : os.getenv('SECRET_KEY'),
@@ -271,6 +271,11 @@ def remove_from_cart(product_id):
 def borrar_carrito():
     session.pop('cart', None)
     return redirect(url_for('carrito'))
+@app.route('/carrito_rapido', methods=['GET'])
+def carrito_rapido():
+    cart_items = session.get('cart', [])
+    total = sum(item['subtotal'] for item in cart_items)
+    return render_template('carrito_rapido.html', cart_items=cart_items, total=total)
 
 
 @app.route('/pago', methods=['POST'])
@@ -365,17 +370,22 @@ def orden_confirmada(pedido_id):
 
 @app.route('/detalles_pedido_e')
 def lista_pedidos_e():
-    if 'logged_in' in session and session['logged_in'] and session.get('tipo') == 'empleado':
-        pedidos = Pedidos.query.all()  # Obtener todos los pedidos
-        return render_template('lista_pedidos_e.html', pedidos=pedidos)
+    if 'logged_in' in session and session['logged_in']:
+        if session.get('tipo') == 'empleado' or session.get('role') == 'admin':
+            pedidos = Pedidos.query.all()  # Obtener todos los pedidos
+            return render_template('lista_pedidos_e.html', pedidos=pedidos)
+        else:
+            flash('Debes iniciar sesión como empleado para ver los pedidos.', 'error')
+            return redirect(url_for('login'))
     else:
-        flash('Debes iniciar sesión como empleado para ver los pedidos.', 'error')
+        flash('Debes iniciar sesión para ver los pedidos.', 'error')
         return redirect(url_for('login'))
 
 @app.route('/detalles_pedido_e/<int:pedido_id>')
 def detalles_pedido_e(pedido_id):
-    if 'logged_in' in session and session['logged_in'] and session.get('tipo') == 'empleado':
-        pedido = Pedidos.query.get(pedido_id)
+    if 'logged_in' in session and session['logged_in']:
+        if session.get('tipo') == 'empleado'or session.get('role') == 'admin':
+             pedido = Pedidos.query.get(pedido_id)
         if pedido:
             return render_template('detalles_pedido_e.html', pedido=pedido)
         else:
@@ -404,9 +414,10 @@ def lista_pedidos():
 
 @app.route('/cambiar_estado_pedido/<int:pedido_id>', methods=['POST'])
 def cambiar_estado_pedido(pedido_id):
-    if 'logged_in' in session and session['logged_in'] and session.get('tipo') == 'empleado':
-        nuevo_estado = request.form.get('estado')
-        pedido = Pedidos.query.get(pedido_id)
+    if 'logged_in' in session and session['logged_in']:
+        if session.get('tipo') == 'empleado'or session.get('role') == 'admin':
+         nuevo_estado = request.form.get('estado')
+         pedido = Pedidos.query.get(pedido_id)
         if pedido:
             pedido.estado = nuevo_estado
             db.session.commit()
@@ -479,12 +490,16 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        print(f"Contraseña ingresada por el usuario: {password}")
         user = Usuario.query.filter_by(usuario=username).first()  
         if user and check_password_hash(user.contrasena, password):
             session['logged_in'] = True
             session['username'] = username
             session['tipo'] = user.tipo  # Almacenar el tipo de usuario en la sesión
+            if user.tipo == 'admin':
+                session['role'] = 'admin'
+            else:
+                session['role'] = user.tipo
+
             if user.tipo == 'cliente':
                 return redirect(url_for('home_cliente'))
             elif user.tipo == 'empleado':

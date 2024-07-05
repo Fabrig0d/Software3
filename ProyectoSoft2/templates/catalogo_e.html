@@ -4,61 +4,97 @@
     <meta charset="UTF-8">
     <title>Inventario</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style_cat.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
     <script src="https://kit.fontawesome.com/9e204c657e.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <header>
-        <div class="header-container d-flex justify-content-between align-items-center p-3">
-            <div class="welcome-text">
-                <center><h1 class="display-4">Inventario de Productos</h1></center>
-            </div>
-                   <!-- Barra de búsqueda  -->
-       <div class="navbar-nav ml-auto">  <!-- 'ml-auto' empuja a la izquierda -->
-        <form action="/buscar_productos_e" method="get" class="form-inline">
-            <div class="input-group">
-                <input type="text" class="form-control" name="q" placeholder="Buscar por nombre o descripción" value="{{ request.args.get('q', '') }}">
-                <div class="input-group-append">
-                    <button class="btn btn-primary" type="submit">Buscar</button>
-                </div>
-            </div>
-            <select name="tipo_producto" class="custom-select ml-2">
-                <option value="">Todos los tipos de productos</option>
-                {% for tipo_producto in tipos_productos %}
-                    <option value="{{ tipo_producto.id }}" {% if tipo_producto.id == request.args.get('tipo_producto') %} selected {% endif %}>{{ tipo_producto.nombre }}</option>
-                {% endfor %}
-            </select>
-            <select name="precio" class="custom-select ml-2">
-                <option value="">Todos los precios</option>
-                <option value="menor" {% if 'menor' == request.args.get('precio') %} selected {% endif %}>Menor precio primero</option>
-                <option value="mayor" {% if 'mayor' == request.args.get('precio') %} selected {% endif %}>Mayor precio primero</option>
-            </select>
-            <select name="presentacion" class="custom-select ml-2">
-                <option value="">Todas las presentaciones</option>
-                <option value="1 litro" {% if '1 litro' == request.args.get('presentacion') %} selected {% endif %}>1 litro</option>
-                <option value="12 litros" {% if '12 litros' == request.args.get('presentacion') %} selected {% endif %}>12 litros</option>
-                <option value="20 litros" {% if '20 litros' == request.args.get('presentacion') %} selected {% endif %}>20 litros</option>
-                <option value="200 litros" {% if '200 litros' == request.args.get('presentacion') %} selected {% endif %}>200 litros</option>
-            </select>
-        </form>
-    </div>
-            <div class="btn-inicio ml-auto">
-                <a href="/home_empleado" class="btn btn-primary">
-                    <i class="fa-solid fa-house"></i>
-                </a>
-            </div>
+        <div class="top-bar">
+            <span class="location"><i class="fas fa-map-marker-alt"></i> Pachacamac 285</span>
+            <span class="email"><i class="fas fa-envelope"></i> fitogreen@empresa.com</span>
+            <span class="tiktok"><i class="fa-brands fa-tiktok"></i> Fitogreen</span>
+            <span class="facebook"><i class="fa-brands fa-facebook"></i> Fitogreen</span>
         </div>
+        <nav class="navbar">
+            <a class="logo-link" href="/home_empleado">
+                <div class="logo">Fitogreen</div>
+            </a>
+            <ul class="nav-links">
+                <li><a class="nav-link active" href="/catalogo_e">Inventario</a></li>
+                <li><a class="nav-link" href="/agregar_producto">Agregar nuevo producto</a></li>
+                <li><a class="nav-link" href="/reporte">Reporte Mensual</a></li>
+                <li><a class="nav-link" href="/datos_e">Mis datos</a></li>
+                <li><a class="nav-link" href="{{ url_for('lista_pedidos_e') }}">Lista de Pedidos</a></li>
+            </ul>
+            <div class="nav-icons">
+                <form action="/buscar_productos_e" method="get" class="search-form">
+                    <input type="text" class="search-input" name="q" placeholder="Buscar por nombre o descripción" value="{{ request.args.get('q', '') }}">
+                    <button class="search-button" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                <a href="/logout" class="logout-button btn btn-danger"><i class="fa-solid fa-right-from-bracket" style="color: #ffffff;"></i></a>
+            </div>
+            <div class="hamburger-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
     </header>
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-2 sidebar">
-                <ul class="list-group">
-                    {% for tipo in tipos_producto %}
-                    <li class="list-group-item">
-                        <a href="/catalogo_e?tipo_producto_id={{ tipo.id }}">{{ tipo.nombre }}</a>
-                    </li>
-                    {% endfor %}
-                </ul>
+                <form action="/buscar_productos_e" method="GET" id="filtroForm">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <label for="tipo_producto">Tipo de Producto:</label>
+                            <select name="tipo_producto" id="tipo_producto" class="custom-select ml-2" onchange="showOptions('tipo_producto')">
+                                <option value="">Todos los tipos de productos</option>
+                                {% for tipo_producto in tipos_productos %}
+                                    <option value="{{ tipo_producto.id }}" {% if tipo_producto.id == request.args.get('tipo_producto') %} selected {% endif %}>{{ tipo_producto.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                            <div id="tipo_producto_options" class="filter-options" style="display: none;">
+                                <input type="checkbox" id="tipo_producto_option1" name="tipo_producto_option1" value="value1">
+                                <label for="tipo_producto_option1">Opción 1</label><br>
+                                <input type="checkbox" id="tipo_producto_option2" name="tipo_producto_option2" value="value2">
+                                <label for="tipo_producto_option2">Opción 2</label><br>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <label for="precio">Precio:</label>
+                            <select name="precio" id="precio" class="custom-select ml-2" onchange="showOptions('precio')">
+                                <option value="">Todos los precios</option>
+                                <option value="menor" {% if 'menor' == request.args.get('precio') %} selected {% endif %}>Menor precio primero</option>
+                                <option value="mayor" {% if 'mayor' == request.args.get('precio') %} selected {% endif %}>Mayor precio primero</option>
+                            </select>
+                            <div id="precio_options" class="filter-options" style="display: none;">
+                                <input type="checkbox" id="precio_option1" name="precio_option1" value="value1">
+                                <label for="precio_option1">Menor precio</label><br>
+                                <input type="checkbox" id="precio_option2" name="precio_option2" value="value2">
+                                <label for="precio_option2">Mayor precio</label><br>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <label for="presentacion">Presentación:</label>
+                            <select name="presentacion" id="presentacion" class="custom-select ml-2" onchange="showOptions('presentacion')">
+                                <option value="">Todas las presentaciones</option>
+                                <option value="1 litro" {% if '1 litro' == request.args.get('presentacion') %} selected {% endif %}>1 litro</option>
+                                <option value="12 litros" {% if '12 litros' == request.args.get('presentacion') %} selected {% endif %}>12 litros</option>
+                                <option value="20 litros" {% if '20 litros' == request.args.get('presentacion') %} selected {% endif %}>20 litros</option>
+                                <option value="200 litros" {% if '200 litros' == request.args.get('presentacion') %} selected {% endif %}>200 litros</option>
+                            </select>
+                            <div id="presentacion_options" class="filter-options" style="display: none;">
+                                <input type="checkbox" id="presentacion_option1" name="presentacion_option1" value="value1">
+                                <label for="presentacion_option1">1 litro</label><br>
+                                <input type="checkbox" id="presentacion_option2" name="presentacion_option2" value="value2">
+                                <label for="presentacion_option2">200 litros</label><br>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <button type="submit" class="btn btn-primary">Filtrar</button>
+                        </li>
+                    </ul>
+                </form>
             </div>
             <div class="col-md-10">
                 <div class="row">
@@ -271,6 +307,19 @@
             }
         })
     })
+    function showOptions(filter) {
+        // Ocultar todos los paneles de opciones primero
+        var allOptions = document.querySelectorAll('.filter-options');
+        allOptions.forEach(function(option) {
+            option.style.display = 'none';
+        });
+
+        // Mostrar el panel de opciones correspondiente al filtro seleccionado
+        var selectedOption = document.getElementById(filter + '_options');
+        if (selectedOption) {
+            selectedOption.style.display = 'block';
+        }
+    }
 </script>
 </body>
 </html>

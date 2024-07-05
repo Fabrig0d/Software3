@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fitogreen</title>
-    <link rel="stylesheet" href="style1.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,34 +29,23 @@
                 <li><a class="nav-link active" href="/catalogo_in">Tienda</a></li>
                 <li><a class="nav-link" href="/login">Asesoría virtual</a></li>
                 <li><a class="nav-link" href="/login">Contacto</a></li>
-                <li><a class="nav-link" href="/login">Mis datos</a></li>
-                <br>
+                <li><a class="nav-link" href="/login">Actualizar mis datos</a></li>
+                <li><a class="nav-link" href="/login">Pedidos</a></li>
             </ul>
             <div class="nav-icons">
-                <div class="navbar-nav ml-auto">
-                    <div class="nav-icons">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Buscar productos..." aria-label="Buscar">
-                                <div class="input-group-append">
-                                    <button class="btn" type="button"><i class="fas fa-search"></i></button>
-                                </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="shopping-cart">
-                    <a href="/cart" class="btn">
-                        <i class="fas fa-shopping-bag"></i>
-                    </a>
-                </div>
-                <div class="navbar-nav ml-auto">
-                    <a href="/login" class="btn">
-                        <i class="fas fa-user"></i>
-                    </a>
-                </div>
+                <form action="/buscar_productos" method="get" class="search-form">
+                    <input type="text" class="search-input" name="q" placeholder="Buscar por nombre o descripción" value="{{ request.args.get('q', '') }}">
+                    <button class="search-button" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                <a href="/login" class="shopping-cart btn btn-secondary">
+                    <i class="fas fa-shopping-bag"></i>
+                </a>
+                <a href="/login" class="logout-button btn btn-primary"><i class="fa-solid fa-right-to-bracket" style="color: #ffffff;"></i></a>
             </div>
             <div class="hamburger-menu">
                 <i class="fas fa-bars"></i>
-                <br>
             </div>
         </nav>
     </header>

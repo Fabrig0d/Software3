@@ -6,20 +6,41 @@
     <title>Datos Cliente</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://kit.fontawesome.com/9e204c657e.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style_con.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
 </head>
 <body>
     <header>
-        <div class="header-container d-flex justify-content-between align-items-center p-3">
-            <div class="welcome-text">
-                <center><h1 class="display-4">Datos personales:</h1></center>
-            </div>
-            <div class="btn-inicio ml-auto">
-                <a href="/home_cliente" class="btn btn-primary">
-                    <i class="fa-solid fa-house"></i>
-                </a>
-            </div>
+        <div class="top-bar">
+            <span class="location"><i class="fas fa-map-marker-alt"></i> Pachacamac 285</span>
+            <span class="email"><i class="fas fa-envelope"></i> fitogreen@empresa.com</span>
+            <span class="tiktok"><i class="fa-brands fa-tiktok"></i> Fitogreen</span>
+            <span class="facebook"><i class="fa-brands fa-facebook"></i> Fitogreen</span>
         </div>
+        <nav class="navbar">
+            <div class="logo">Fitogreen</div>
+            <ul class="nav-links">
+                <li><a class="nav-link active" href="/catalogo">Tienda</a></li>
+                <li><a class="nav-link" href="/chat">Asesoría virtual</a></li>
+                <li><a class="nav-link" href="/contacto">Contacto</a></li>
+                <li><a class="nav-link" href="/actualizar_datos">Actualizar mis datos</a></li>
+                <li><a class="nav-link" href="{{ url_for('lista_pedidos') }}">Pedidos</a></li>
+            </ul>
+            <div class="nav-icons">
+                <form action="/buscar_productos" method="get" class="search-form">
+                    <input type="text" class="search-input" name="q" placeholder="Buscar por nombre o descripción" value="{{ request.args.get('q', '') }}">
+                    <button class="search-button" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                <a href="/carrito" class="shopping-cart btn ">
+                    <i class="fas fa-shopping-bag"></i>
+                </a>
+                <a href="/logout" class="logout-button btn btn-danger"><i class="fa-solid fa-right-from-bracket" style="color: #ffffff;"></i></a>
+            </div>
+            <div class="hamburger-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
     </header>
     <br><br>
     <div class="container">

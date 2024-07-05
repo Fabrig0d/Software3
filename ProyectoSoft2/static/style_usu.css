@@ -1,15 +1,617 @@
 body {
-    background-color: #4ea93b !important; /* Usar !important para aumentar la especificidad */
+    margin: 0;
+    font-family: Arial, sans-serif;
 }
 
-.header-container {
+header {
+    width: 100%;
+    background-color: #797a7900;
+}
 
-    background-color: #006414; 
+.top-bar {
+    display: flex;
+    border-radius: 20px;
+    justify-content: flex-start;
+    padding: 14px 20px;
+    background-color: #2cd132;
     color: white;
+    font-size: 18px;
+}
+
+.top-bar span {
+    margin-right: 95px;
+}
+
+.top-bar i {
+    margin-right: 5px;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: white;
+    position: relative;
+    z-index: 2;
+}
+
+.logo {
+    font-size: 37px;
+    color: #2cd132;
+    font-weight: bold;
+    font-family: "Lilita One", sans-serif;
+    font-weight: 00;
+    font-style: normal;
+    position: relative;
+    bottom: -5px;
+}
+
+.nav-links, .nav-item {
+    display: flex;
+    list-style: none;
+    
+}
+
+.nav-links li, .nav-item li {
+    margin: 0 10px;
+    position: relative;
+    bottom: -13px;
+}
+
+.nav-links a, .nav-item a {
+    text-decoration: none;
+    color: grey;
+    padding: 8px 10px;
+    font-size: 18px;
+}
+
+.nav-links a:hover, .nav-item a:hover {
+    color: #4CAF50;
+}
+
+.nav-icons {
+    display: flex;
+    align-items: center; 
+}
+
+.nav-icons a {
+    color: #4CAF50;
+    font-size: 25px;
+    margin-left: 28px;
+    position: relative;
+    bottom: -7px;
+}
+
+.logout a {
+    text-decoration: none;
+    color: white; /* Color del botón de Cerrar Sesión */
+    background-color: #dc3545; /* Color del botón */
+    padding: 8px 12px; /* Espacio interno del botón */
+    border-radius: 5px; /* Bordes redondeados */
+}
+
+.logout a:hover {
+    background-color: #c82333; /* Color al pasar el ratón por encima */
+}
+
+
+.badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: orange;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+}
+
+/* Estilos para el botón de agregar nuevo usuario */
+.dropdown-toggle {
+    color: #fff;
+    background-color: #343a40; /* Color de fondo del botón */
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    min-width: 200px;
+    background-color: #fff; /* Color de fondo del menú desplegable */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 10px 0;
+}
+
+.dropdown-item {
+    color: #333;
+    text-decoration: none;
+    display: block;
+    padding: 8px 20px;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa; /* Color de fondo al pasar el mouse */
+}
+
+.hamburger-menu {
+    display: none;
+    align-items: center;
+    color: #4CAF50;
+    font-size: 24px;
+    position: relative;
+    bottom: -7px;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .nav-links, .nav-item {
+        display: none;
+        flex-direction: column;
+        background-color: white;
+        border-top: 1px solid #eaeaea;
+        position: absolute;
+        width: 100%;
+        left: 0;
+        top: 60px;
+        z-index: 1;
+    }
+    
+    .nav-links li, .nav-item li {
+        margin: 0;
+        padding: 10px 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    .hamburger-menu {
+        display: flex;
+    }
+    
+    .navbar.active .nav-links .nav-item {
+        display: flex;
+    }
+
+}
+
+/* New CSS for Hero Banner with Carousel */
+.hero-banner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    color: #2cd132;
+    text-align: center;
+    background-color: #f0f0f0;
+    height: 620px; /* Si no especificamos una altura la imagen no será visible */
+    background-image: url("https://static.vecteezy.com/system/resources/previews/028/135/264/non_2x/green-leaves-on-a-white-background-vector.jpg"); /* La imagen y su ruta */
+    background-size: cover; /* Usamos cover para que nuestra imagen no se deforme al adaptarse a cada pantalla */
+    background-position: center; /* Para centrar la imagen horizontal y verticalmente en el contenedor */
+    background-repeat: no-repeat; /* Para que no repita la imagen */
+}
+
+.hero-content {
+    max-width: 600px;
+    margin-bottom: 20px;
+    font-family: "Lilita One", sans-serif;
+    font-weight: 00;
+    font-style: normal;
+    position: relative;
+}
+
+.tagline {
+    font-size: 35px;
+    color: orange;
+    margin: 0;
+}
+
+.tagline1 {
+    font-size: 45px;
+    color: #2cd132;
+    margin: 0;
+}
+
+h1 {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.search-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.search-container input {
+    padding: 10px;
+    border: 2px solid #FFB74D;
+    border-radius: 30px 0 0 30px;
+    font-size: 16px;
+    outline: none;
+    width: 200px;
+}
+
+.search-container button {
+    padding: 10px 20px;
+    border: 2px solid #FFB74D;
+    background-color: #8AD04B;
+    color: white;
+    border-radius: 0 30px 30px 0;
+    cursor: pointer;
+    outline: none;
+    font-size: 16px;
+}
+
+.search-container button:hover {
+    background-color: #4CAF50;
+}
+
+/* Carousel Styles */
+.carousel {
+    position: relative;
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.carousel-inner {
+    display: flex;
+    overflow: hidden;
+    border-radius: 15px;
+    position: relative;
+}
+
+.carousel-item {
+    min-width: 100%;
+    transition: transform 0.5s ease-in-out;
+    position: relative;
+}
+
+.carousel-item img {
+    width: 100%;
+    border-radius: 15px;
+}
+
+.carousel-caption {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background-color: rgba(255, 165, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.carousel-control-prev, .carousel-control-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 30px;
+    color: #4CAF50;
+    cursor: pointer;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    padding: 10px;
+}
+
+.carousel-control-prev {
+    left: 10px;
+}
+
+.carousel-control-next {
+    right: 10px;
+}
+
+.features {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 20px;
+    background-color: #ffffff;
+    flex-wrap: wrap;
+}
+
+.feature {
+    background-color: #f5f7fa;
+    border-radius: 8px;
     padding: 20px;
     text-align: center;
-
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    flex: 1;
+    margin: 10px;
+    min-width: 220px; /* Para mantener un tamaño mínimo en pantallas más pequeñas */
 }
+
+.feature:hover {
+    transform: translateY(-10px);
+}
+
+.icon {
+    background-color: #ffc107;
+    border-radius: 50%;
+    padding: 50px;
+    display: inline-block;
+    margin-bottom: 1px;
+}
+
+.icon img {
+    width: 80px;
+    height: 80px;
+}
+
+h3 {
+    color: #333333;
+    margin: 10px 0;
+    
+}
+
+.descrip {
+    color: #777777;
+    margin: 0;
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+  
+}
+
+@media (max-width: 768px) {
+    .features {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .feature {
+        width: 100%;
+        max-width: 500px;
+    }
+}
+
+.popover-content {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    display: none;
+    width: 100%;
+    max-width: 400px;
+    padding: 1rem;
+    margin: 0.5rem 0 0;
+    font-size: 1rem;
+    color: #212529;
+    text-align: left;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.3rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+}
+
+.search-form {
+    display: flex;
+    align-items: center; /* Asegura que los elementos dentro del formulario estén alineados verticalmente */
+    margin-right: 9px; /* Ajusta este margen según sea necesario */
+}
+.search-input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+    width: 300px; 
+    box-sizing: border-box; 
+}
+
+.search-button {
+    padding: 8px;
+    border: 1px solid #000000;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+.search-button i {
+    font-size: 16px;
+}
+.shopping-cart {
+    margin-left: 10px; /* Reduce el margen para ajustar el espacio */
+    text-decoration: none;
+    color: #333;
+    font-size: 24px;
+}
+
+.logout-button {
+    margin-left: 10px; /* Reduce el margen para ajustar el espacio */
+}
+
+.hamburger-menu {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .nav-links, .nav-icons {
+        display: none;
+    }
+    .hamburger-menu {
+        display: block;
+    }
+}
+.sidebar {
+    width: 20%;
+    float: left;
+}
+.content {
+    width: 80%;
+    float: left;
+}
+.pagination {
+    clear: both;
+    /* Limpiar los flotantes */
+}
+.pedido-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+.pedido-item:hover {
+    background-color: #f1f1f1;
+}
+.pedido-info {
+    flex-grow: 1;
+}
+.pedido-estado {
+    margin-left: 20px;
+    font-weight: bold;
+}
+
+.card {
+    margin-bottom: 20px;
+}
+.pedido-lista {
+    cursor: pointer;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    flex: 1;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 30px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    flex: 1;
+    margin-right: 20px;
+    margin-bottom: 15px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 30px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    flex: 1 1 calc(25% - 20px); /* Distribución equitativa, ajustable */
+    margin-right: 20px;
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #495057;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 16px;
+}
+.logo-link {
+    text-decoration: none;  /* Quitar subrayado predeterminado */
+    color: inherit;         /* Heredar color del texto */
+    cursor: pointer;        /* Cambiar cursor a puntero */
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box; /* Garantiza que el padding no incremente el ancho total */
+}
+
+textarea {
+    height: 150px; /* Altura inicial del textarea */
+    resize: vertical; /* Permite redimensionar verticalmente */
+}
+
+#contador-palabras {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #6c757d;
+}
+button {
+    padding: 12px 24px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .form-group {
+        flex: 1 1 100%; /* En pantallas pequeñas, ocupar toda la anchura */
+        margin-right: 0;
+    }
+}
+
+
+
 .table-container {
     margin-top: 20px;  /* Ajusta el margen superior */
     margin-bottom: 20px;  /* Ajusta el margen inferior */
@@ -34,12 +636,3 @@ body {
     display: block;
 }
 
-.mt-4 {
-
-    width: 90%;  /* Ajusta el ancho de la tabla */
-    max-width: 90%;  /* Asegura que no se desborde del contenedor */
-    margin-left: auto;  /* Centra la tabla horizontalmente */
-    margin-right: auto;  /* Centra la tabla horizontalmente */
-    color: white;
-
-}

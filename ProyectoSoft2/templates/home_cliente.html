@@ -5,7 +5,7 @@
     <title>Home Cliente</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fitogreen</title>
-    <link rel="stylesheet" href="style1.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,58 +22,32 @@
         <div class="top-bar">
             <span class="location"><i class="fas fa-map-marker-alt"></i> Pachacamac 285</span>
             <span class="email"><i class="fas fa-envelope"></i> fitogreen@empresa.com</span>
+            <span class="tiktok"><i class="fa-brands fa-tiktok"></i> Fitogreen</span>
+            <span class="facebook"><i class="fa-brands fa-facebook"></i> Fitogreen</span>
         </div>
         <nav class="navbar">
-            <div class="logo">Fitogreen</div>
+            <div class="logo" href="/home_cliente">Fitogreen</div>
             <ul class="nav-links">
                 <li><a class="nav-link active" href="/catalogo">Tienda</a></li>
                 <li><a class="nav-link" href="/chat">Asesoría virtual</a></li>
                 <li><a class="nav-link" href="/contacto">Contacto</a></li>
                 <li><a class="nav-link" href="/actualizar_datos">Actualizar mis datos</a></li>
                 <li><a class="nav-link" href="{{ url_for('lista_pedidos') }}">Pedidos</a></li>
-                <br>
             </ul>
             <div class="nav-icons">
-                <div class="navbar-nav ml-auto">  
-                    <form action="/buscar_productos" method="get" class="form-inline">
-                        <div class="input-group">
-                            <input type="text" class="form-control" name="q" placeholder="Buscar por nombre o descripción" value="{{ request.args.get('q', '') }}">
-                            <div class="input-group-append">
-                                <button class="btn" type="button"><i class="fas fa-search"></i></button>
-                            </div>
-                        </div>
-                        <select name="tipo_producto" class="custom-select ml-2">
-                            <option value="">Todos los tipos de productos</option>
-                            {% for tipo_producto in tipos_productos %}
-                                <option value="{{ tipo_producto.id }}" {% if tipo_producto.id == request.args.get('tipo_producto') %} selected {% endif %}>{{ tipo_producto.nombre }}</option>
-                            {% endfor %}
-                        </select>
-                        <select name="precio" class="custom-select ml-2">
-                            <option value="">Todos los precios</option>
-                            <option value="menor" {% if 'menor' == request.args.get('precio') %} selected {% endif %}>Menor precio primero</option>
-                            <option value="mayor" {% if 'mayor' == request.args.get('precio') %} selected {% endif %}>Mayor precio primero</option>
-                        </select>
-                        <select name="presentacion" class="custom-select ml-2">
-                            <option value="">Todas las presentaciones</option>
-                            <option value="1 litro" {% if '1 litro' == request.args.get('presentacion') %} selected {% endif %}>1 litro</option>
-                            <option value="12 litros" {% if '12 litros' == request.args.get('presentacion') %} selected {% endif %}>12 litros</option>
-                            <option value="20 litros" {% if '20 litros' == request.args.get('presentacion') %} selected {% endif %}>20 litros</option>
-                            <option value="200 litros" {% if '200 litros' == request.args.get('presentacion') %} selected {% endif %}>200 litros</option>
-                        </select>
-                    </form>
-                </div>
-                <div class="shopping-cart">
-                    <a href="/cart" class="btn">
-                        <i class="fas fa-shopping-bag"></i>
-                    </a>
-                </div>
-                <div class="navbar-nav ml-auto">  
-                    <a href="/logout" class="btn btn-danger">Cerrar Sesión</a>
-                </div>
+                <form action="/buscar_productos" method="get" class="search-form">
+                    <input type="text" class="search-input" name="q" placeholder="Buscar por nombre o descripción" value="{{ request.args.get('q', '') }}">
+                    <button class="search-button" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                <a href="/carrito" class="shopping-cart btn ">
+                    <i class="fas fa-shopping-bag"></i>
+                </a>
+                <a href="/logout" class="logout-button btn btn-danger"><i class="fa-solid fa-right-from-bracket" style="color: #ffffff;"></i></a>
             </div>
             <div class="hamburger-menu">
                 <i class="fas fa-bars"></i>
-                <br>
             </div>
         </nav>
     </header>
