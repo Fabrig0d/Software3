@@ -13,6 +13,11 @@
             right: 20px;
             z-index: 1050;
         }
+
+        .quantity-input {
+            width: 20px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -72,9 +77,12 @@
                         {% endif %}
                     </td>
                     <td>
-                        <form action="/update_quantity/{{ item['producto_id'] }}" method="POST">
-                            <input type="number" class="form-control" name="quantity" value="{{ item['quantity'] }}" min="1">
-                            <button type="submit" class="btn btn-primary btn-sm mt-1">Actualizar</button>
+                        <form action="/update_quantity/{{ item['producto_id'] }}" method="POST" class="quantity-form">
+                            <div class="input-group">
+                                <button type="button" class="btn btn-outline-secondary btn-sm decrement-quantity">-</button>
+                                <input type="number" class="form-control form-control-sm quantity-input" name="quantity" value="{{ item['quantity'] }}" min="1" readonly>
+                                <button type="button" class="btn btn-outline-secondary btn-sm increment-quantity">+</button>
+                            </div>
                         </form>
                     </td>
                     <td>S/{{ item['subtotal'] }}</td> <!-- Subtotal del producto en el carrito -->
@@ -110,6 +118,24 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
+    <script>
+        $(document).ready(function() {
+            $('.increment-quantity').click(function() {
+                var input = $(this).closest('.input-group').find('.quantity-input');
+                var newValue = parseInt(input.val()) + 1;
+                input.val(newValue);
+                input.closest('form').submit();
+            });
+
+            $('.decrement-quantity').click(function() {
+                var input = $(this).closest('.input-group').find('.quantity-input');
+                var newValue = parseInt(input.val()) - 1;
+                if (newValue >= 1) {
+                    input.val(newValue);
+                    input.closest('form').submit();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

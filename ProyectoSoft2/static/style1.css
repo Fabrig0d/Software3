@@ -512,3 +512,28 @@ h3 {
 .pedido-lista {
     cursor: pointer;
 }
+
+.pedido-estado {
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.estado-pendiente {
+    color: orange;
+}
+
+.estado-en-camino {
+    color: blue;
+}
+
+.estado-con-retraso {
+    color: yellow;
+}
+
+.estado-entregado {
+    color: green;
+}
+
+.estado-cancelado, .estado-anulado {
+    color: red;
+}

@@ -92,13 +92,14 @@
                             <form action="{{ url_for('cambiar_estado_pedido', pedido_id=pedido.pedido_id) }}" method="POST">
                                 <div class="form-group">
                                     <label for="estado"><strong>Estado Actual:</strong></label>
-                                    <p>{{ pedido.estado }}</p>
+                                    <span class="pedido-estado estado-{{ pedido.estado | lower | replace(' ', '-') }}">{{ pedido.estado }}</span>
                                 </div>
                                 <div class="form-group">
                                     <label for="nuevo_estado"><strong>Cambiar Estado:</strong></label>
                                     <select class="form-control" id="estado" name="estado">
                                         <option value="" disabled selected>Seleccione un estado</option>
-                                        <option value="Pendiente">Pendiente <i class="fa-solid fa-hourglass-half"></i></option>
+                                        <option value="Anulado">Anulado <i class="fa-solid fa-square-xmark"></i></option>
+                                        <option value="Pendiente">Pendiente <i class="fa-solid fa-hourglass-start"></i></option>
                                         <option value="En camino">En Camino <i class="fa-solid fa-truck-fast"></i></option>
                                         <option value="Con retraso">Con Retraso <i class="fa-solid fa-clock"></i></option>
                                         <option value="Entregado">Entregado <i class="fa-solid fa-circle-check"></i></option>
@@ -154,6 +155,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
     <script>
         $(document).ready(function(){
             setTimeout(function(){

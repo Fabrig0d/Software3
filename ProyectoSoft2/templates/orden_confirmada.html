@@ -28,52 +28,60 @@
                 {% endwith %}
             </div>
         </div>
-<div class="container mt-5">
-    <h1>Confirmación de Orden</h1>
-    <h2>Detalles del Pedido</h2>
-    <p>Número de Pedido: {{ pedido.pedido_id }}</p>
-    <p>Fecha del Pedido: {{ pedido.fecha_pedido }}</p>
-    <p>Total del Pedido: S/ {{ pedido.total }}</p>
+        <div class="container mt-5">
+            <h1>Confirmación de Orden</h1>
+            <h2>Detalles del Pedido</h2>
+            <p>Número de Pedido: {{ pedido.pedido_id }}</p>
+            <p>Fecha del Pedido: {{ pedido.fecha_pedido }}</p>
+            <p>Total del Pedido: S/ {{ pedido.total }}</p>
 
-    <h2>Detalles de los Productos:</h2>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio Unitario</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for detalle in pedido.detalles_pedidos %}
-            <tr>
-                <td>
-                    <strong>{{ detalle.producto.nombre }} ({{ detalle.producto.presentacion }})</strong><br>
-                </td>
-                <td>{{ detalle.cantidad }}</td>
-                <td>{{ detalle.precio_unitario}}</td>
-                <td>{{ (detalle.cantidad * detalle.precio_unitario)}}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            <h2>Detalles de los Productos:</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detalle in detalles_pedido %}
+                    <tr>
+                        <td>
+                            <strong>{{ detalle.producto.nombre }} ({{ detalle.producto.presentacion }})</strong><br>
+                        </td>
+                        <td>{{ detalle.cantidad }}</td>
+                        <td>{{ detalle.precio_unitario }}</td>
+                        <td>{{ detalle.cantidad * detalle.precio_unitario }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
 
-    <div class="buttons mt-3">
-        <a href="{{ url_for('detalles_pedido', pedido_id=pedido.pedido_id) }}" class="btn btn-primary mr-2"><i class="fas fa-list-alt mr-1"></i> Ver detalles del pedido</a>
-        <a href="{{ url_for('home_cliente') }}" class="btn btn-secondary"><i class="fas fa-home mr-1"></i> Ir al inicio</a>
+            <div class="buttons mt-3">
+                <a href="{{ url_for('detalles_pedido', pedido_id=pedido.pedido_id) }}" class="btn btn-primary mr-2"><i class="fas fa-list-alt mr-1"></i> Ver detalles del pedido</a>
+                <a href="{{ url_for('home_cliente') }}" class="btn btn-secondary"><i class="fas fa-home mr-1"></i> Ir al inicio</a>
+            </div>
+
+            {% if codigo_orden %}
+            <div class="mt-4">
+                <h3>Código de Orden de Pago:</h3>
+                <p class="alert alert-success">{{ codigo_orden }}</p>
+            </div>
+            {% endif %}
+        </div>
     </div>
-</div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script>
-    $(document).ready(function(){
-        setTimeout(function(){
-            $(".alert").alert('close');
-        }, 15000); // 15000 ms = 15 segundos
-    });
-</script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            setTimeout(function(){
+                $(".alert").alert('close');
+            }, 15000); // 15000 ms = 15 segundos
+        });
+    </script>
 </body>
 </html>

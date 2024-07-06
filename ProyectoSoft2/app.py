@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
+import random
+import string
 import urllib.parse
 from math import ceil
 from sqlalchemy import exc, extract, func, or_
@@ -52,10 +54,8 @@ password = os.getenv('DB_PASSWORD')
 if password is None:
     raise ValueError("La variable de entorno DB_PASSWORD no está definida en el archivo .env")
 encoded_password = urllib.parse.quote_plus(password.encode('utf-8'))
-
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root:{encoded_password}@localhost/fitogreen'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 db = SQLAlchemy(app)
 
 db_config = {
@@ -152,6 +152,7 @@ class Pedidos(db.Model):
     metodo_pago = db.Column(db.String(45))
     total = db.Column(db.Numeric(10, 2))
     estado = db.Column(db.String(20))
+    codigo_orden = db.Column(db.String(100))
 
 class DetallesPedidos(db.Model):
     __tablename__ = 'DetallesPedidos'
@@ -172,6 +173,7 @@ class DetallesPedidos(db.Model):
 
 # Carrito de compra (almacenado en memoria, en una aplicación real podría ser una base de datos)
 cart = []
+
 
 @app.route('/')
 def index():
@@ -356,13 +358,23 @@ def obtener_detalles_pedido(pedido_id):
     detalles_pedido = DetallesPedidos.query.filter_by(pedido_id=pedido_id).all()
     return detalles_pedido
 
+# Función para generar código de orden de pago aleatorio
+def generar_codigo_orden():
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+
+# Vista para mostrar la orden confirmada
 @app.route('/orden_confirmada/<int:pedido_id>')
 def orden_confirmada(pedido_id):
-    print(f"Pedido ID: {pedido_id}")
     pedido = Pedidos.query.get(pedido_id)
     if pedido:
-        detalles_pedido = obtener_detalles_pedido(pedido_id)
-        return render_template('orden_confirmada.html', pedido=pedido, detalles_pedido=detalles_pedido)
+        detalles_pedido = DetallesPedidos.query.filter_by(pedido_id=pedido_id).all()
+        
+        # Generar código de orden de pago solo si el método de pago es 'transferencia_bancaria'
+        codigo_orden = generar_codigo_orden() if pedido.metodo_pago == 'codigo_orden' else None
+        pedido.codigo_orden = codigo_orden  # Asigna el código al pedido
+        db.session.commit()  # Guarda en la base de datos
+        
+        return render_template('orden_confirmada.html', pedido=pedido, detalles_pedido=detalles_pedido, codigo_orden=codigo_orden)
     else:
         flash('Pedido no encontrado.', 'error')
         return redirect(url_for('carrito'))
@@ -433,22 +445,18 @@ def cambiar_estado_pedido(pedido_id):
 
 @app.route('/detalles_pedido/<int:pedido_id>')
 def detalles_pedido(pedido_id):
-    if 'logged_in' in session and session['logged_in'] and session.get('tipo') == 'cliente':
-        username = session.get('username')
-        cliente = Cliente.query.filter_by(username=username).first()
-        if cliente:
-            pedido = Pedidos.query.get(pedido_id)
-            if pedido and pedido.id_cliente == cliente.id_cli:
-                return render_template('detalles_pedido.html', pedido=pedido)
-            else:
-                flash('Pedido no encontrado o no autorizado.', 'error')
-                return redirect(url_for('lista_pedidos'))
-        else:
-            flash('No se encontraron datos del cliente.', 'error')
-            return redirect(url_for('index'))
+    pedido = Pedidos.query.get(pedido_id)
+    if pedido:
+        detalles_pedido = obtener_detalles_pedido(pedido_id)
+        codigo_orden = None
+        if pedido.metodo_pago == 'codigo_orden':
+
+            codigo_orden = pedido.codigo_orden if pedido.metodo_pago == 'codigo_orden' else None
+
+        return render_template('detalles_pedido.html', pedido=pedido, detalles_pedido=detalles_pedido, codigo_orden=codigo_orden)
     else:
-        flash('Debes iniciar sesión para ver los detalles del pedido.', 'error')
-        return redirect(url_for('login'))
+        flash('Pedido no encontrado.', 'error')
+        return redirect(url_for('lista_pedidos'))
 
 
 @app.route("/pagar")
@@ -484,6 +492,22 @@ def pagar():
         direccion = ''
 
     return render_template("Pagar.html", cart_items=cart_items, total=total, nombre=nombre, apellidos=apellidos, direccion=direccion)
+
+@app.route('/cancelar_pedido/<int:pedido_id>', methods=['POST'])
+def cancelar_pedido(pedido_id):
+    pedido = Pedidos.query.get_or_404(pedido_id)
+    if pedido.estado == 'Pendiente':
+        pedido.estado = 'Cancelado'
+        db.session.commit()
+    return redirect(url_for('detalles_pedido', pedido_id=pedido_id))
+
+def get_pedido_by_id(pedido_id):
+    # Implementar esta función para obtener el pedido desde la base de datos
+    pass
+
+def save_pedido(pedido):
+    # Implementar esta función para guardar el pedido en la base de datos
+    pass
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

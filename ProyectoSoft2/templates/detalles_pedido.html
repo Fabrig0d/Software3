@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
-    
 </head>
 <body>
     <header>
@@ -54,19 +53,33 @@
 
         {% if pedido %}
             <div class="card">
-                <div class="card-header" id="heading{{ pedido.pedido_id }}">
+                <div class="card-header d-flex justify-content-between align-items-center" id="heading{{ pedido.pedido_id }}">
                     <h2 class="mb-0">
                         Pedido #{{ pedido.pedido_id }} - {{ pedido.fecha_pedido }}
                     </h2>
+                    <div>
+                        {% if pedido.estado == 'Pendiente' %}
+                            <button class="btn btn-danger" data-toggle="modal" data-target="#cancelModal"><i class="fas"></i> Cancelar pedido</button>
+                        {% endif %}
+                        <a href="{{ url_for('lista_pedidos') }}" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Volver</a>
+                    </div>
                 </div>
 
                 <div class="card-body">
                     <p><strong>Cliente:</strong> {{ pedido.nombre_cli }} {{ pedido.apellido_cli }}</p>
                     <p><strong>Dirección de Envío:</strong> {{ pedido.direccion_pedido }}</p>
                     <p><strong>Método de Pago:</strong> {{ pedido.metodo_pago }}</p>
-                    <p><strong>Estado:</strong> {{ pedido.estado }}</p>
+                        {% if pedido.metodo_pago == 'codigo_orden' %}
+                        <strong>Código de Orden de Pago:</strong>
+                        <p class="alert ">{{ codigo_orden }}</p>
+                    {% endif %}
+
+                    <p><strong>Estado:</strong><span class="pedido-estado estado-{{ pedido.estado | lower | replace(' ', '-') }}">{{ pedido.estado }}</span></p> 
+                    {% if pedido.estado == 'Pendiente' %}
+                        <p><em>El pedido solo se podrá cancelar si está en estado pendiente.</em></p>
+                    {% endif %}
                     <p><strong>Total:</strong> S/{{pedido.total}}</p>
-                    
+
                     <h5 class="card-title">Productos</h5>
                     <div class="table-responsive">
                         <table class="table table-bordered">
@@ -106,7 +119,29 @@
             <p>Aún no tienes ningún pedido.</p>
         {% endif %}
 
-        <a href="{{ url_for('lista_pedidos') }}" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Volver</a>
+    </div>
+
+    <!-- Modal de Confirmación -->
+    <div class="modal fade" id="cancelModal" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cancelModalLabel">Confirmar Cancelación</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ¿Seguro que quieres cancelar este pedido?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <form action="{{ url_for('cancelar_pedido', pedido_id=pedido.pedido_id) }}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Sí, cancelar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Bootstrap JS y dependencias -->
@@ -115,4 +150,3 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
-

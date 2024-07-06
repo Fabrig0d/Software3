@@ -2,98 +2,161 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Inventario</title>
+    <title>Catálogo</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style_cat.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
     <script src="https://kit.fontawesome.com/9e204c657e.js" crossorigin="anonymous"></script>
+
 </head>
 <body>
     <header>
-        <div class="header-container d-flex justify-content-between align-items-center p-3">
-            <div class="welcome-text">
-                <center><h1 class="display-4">Inventario de Productos</h1></center>
-            </div>
-            <div class="btn-inicio ml-auto">
-                <a href="/" class="btn btn-primary">
-                    <i class="fa-solid fa-house"></i>
-                </a>
-            </div>
-            <div class="shopping-cart">
-                <a href="/carrito" class="btn btn-primary">
-                    <i class="fas fa-shopping-cart"></i>   Ver Carrito
-                </a>
-            </div>
+        <div class="top-bar">
+            <span class="location"><i class="fas fa-map-marker-alt"></i>Cañete, Peru</span>
+            <span class="email"><i class="fas fa-envelope"></i>fitogreen1424@gmail.com</span>
+            <a href="https://www.tiktok.com/@vivero.julio.vice?lang=es" target="_blank">
+            <span class="tiktok"><i class="fa-brands fa-tiktok"></i> Fitogreen</span></a>
+            <a href="https://www.facebook.com/FitogreenV/?locale=es_LA" target="_blank">
+            <span class="facebook"><i class="fa-brands fa-facebook"></i> Fitogreen</span></a>
+                <span class="phone"><i class="fa-solid fa-phone"></i>+51 976 330 835</span>
         </div>
+        <nav class="navbar">
+            <a class="logo-link" href="/home_cliente">
+                <div class="logo">Fitogreen</div>
+            </a>
+            <ul class="nav-links">
+                <li><a class="nav-link active" href="/catalogo">Tienda</a></li>
+                <li><a class="nav-link" href="/login">Asesoría virtual</a></li>
+                <li><a class="nav-link" href="/contacto">Contacto</a></li>
+                <li><a class="nav-link" href="/login">Actualizar mis datos</a></li>
+                <li><a class="nav-link" href="/login">Pedidos</a></li>
+            </ul>
+            <div class="nav-icons">
+                <form action="/buscar_productos" method="get" class="search-form">
+                    <input type="text" class="search-input" name="q" placeholder="Buscar por nombre o descripción" value="{{ request.args.get('q', '') }}">
+                    <button class="search-button" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                <a href="/login" class="shopping-cart btn ">
+                    <i class="fas fa-shopping-bag"></i>
+                </a>
+                <a href="/logout" class="logout-button btn btn-danger"><i class="fa-solid fa-right-from-bracket" style="color: #ffffff;"></i></a>
+            </div>
+            <div class="hamburger-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
     </header>
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-2 sidebar">
-                <ul class="list-group">
-                    {% for tipo in tipos_producto %}
-                    <li class="list-group-item">
-                        <a href="/catalogo?tipo_producto_id={{ tipo.id }}">{{ tipo.nombre }}</a>
-                    </li>
-                    {% endfor %}
-                </ul>
+                <form action="/buscar_productos" method="GET" id="filtroForm">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <label for="tipo_producto">Tipo de Producto:</label>
+                            <select name="tipo_producto" id="tipo_producto" class="custom-select ml-2" onchange="showOptions('tipo_producto')">
+                                <option value="">Todos los tipos de productos</option>
+                                {% for tipo_producto in tipos_productos %}
+                                    <option value="{{ tipo_producto.id }}" {% if tipo_producto.id == request.args.get('tipo_producto') %} selected {% endif %}>{{ tipo_producto.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                            <div id="tipo_producto_options" class="filter-options" style="display: none;">
+                                <input type="checkbox" id="tipo_producto_option1" name="tipo_producto_option1" value="value1">
+                                <label for="tipo_producto_option1">Opción 1</label><br>
+                                <input type="checkbox" id="tipo_producto_option2" name="tipo_producto_option2" value="value2">
+                                <label for="tipo_producto_option2">Opción 2</label><br>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <label for="precio">Precio:</label>
+                            <select name="precio" id="precio" class="custom-select ml-2" onchange="showOptions('precio')">
+                                <option value="">Todos los precios</option>
+                                <option value="menor" {% if 'menor' == request.args.get('precio') %} selected {% endif %}>Menor precio primero</option>
+                                <option value="mayor" {% if 'mayor' == request.args.get('precio') %} selected {% endif %}>Mayor precio primero</option>
+                            </select>
+                            <div id="precio_options" class="filter-options" style="display: none;">
+                                <input type="checkbox" id="precio_option1" name="precio_option1" value="value1">
+                                <label for="precio_option1">Menor precio</label><br>
+                                <input type="checkbox" id="precio_option2" name="precio_option2" value="value2">
+                                <label for="precio_option2">Mayor precio</label><br>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <label for="presentacion">Presentación:</label>
+                            <select name="presentacion" id="presentacion" class="custom-select ml-2" onchange="showOptions('presentacion')">
+                                <option value="">Todas las presentaciones</option>
+                                <option value="1 litro" {% if '1 litro' == request.args.get('presentacion') %} selected {% endif %}>1 litro</option>
+                                <option value="12 litros" {% if '12 litros' == request.args.get('presentacion') %} selected {% endif %}>12 litros</option>
+                                <option value="20 litros" {% if '20 litros' == request.args.get('presentacion') %} selected {% endif %}>20 litros</option>
+                                <option value="200 litros" {% if '200 litros' == request.args.get('presentacion') %} selected {% endif %}>200 litros</option>
+                            </select>
+                            <div id="presentacion_options" class="filter-options" style="display: none;">
+                                <input type="checkbox" id="presentacion_option1" name="presentacion_option1" value="value1">
+                                <label for="presentacion_option1">1 litro</label><br>
+                                <input type="checkbox" id="presentacion_option2" name="presentacion_option2" value="value2">
+                                <label for="presentacion_option2">200 litros</label><br>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <button type="submit" class="btn btn-primary">Filtrar</button>
+                        </li>
+                    </ul>
+                </form>
             </div>
             <div class="col-md-10">
                 <div class="row">
                     {% for producto in productos %}
-                    <div class="col-md-4">
-                        <div class="card my-2">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    {{ producto.nombre }}
+                        <div class="col-md-4">
+                            <div class="card my-2">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        {{ producto.nombre }}
+                                        {% if producto.presentacion == "1 litro" %}
+                                             (1 litro)
+                                        {% elif producto.presentacion == "12 litros" %}
+                                            (12 litros)
+                                        {% elif producto.presentacion == "20 litros" %}
+                                            (20 litros)
+                                        {% elif producto.presentacion == "200 litros" %}
+                                            (200 litros)
+                                        {% endif %}
+                                    </h5>
+                                    <p class="card-text">{{ producto.descripcion }}</p>
                                     {% if producto.presentacion == "1 litro" %}
-                                         (1 litro)
+                                        <p class="card-text">Precio: S/{{ producto.precio_pub }}</p>
                                     {% elif producto.presentacion == "12 litros" %}
-                                        (12 litros)
+                                        <p class="card-text">Precio: S/{{ producto.precio_dis * 12 }}</p>
                                     {% elif producto.presentacion == "20 litros" %}
-                                        (20 litros)
+                                        <p class="card-text">Precio: S/{{ producto.precio_dis * 20 }}</p>
                                     {% elif producto.presentacion == "200 litros" %}
-                                        (200 litros)
+                                        <p class="card-text">Precio: S/{{ producto.precio_dis * 200 }}</p>
                                     {% endif %}
-                                </h5> <!-- Nombre del producto -->
-                                <p class="card-text">{{ producto.descripcion }}</p> <!-- Descripción del producto -->
-                                <p class="card-text">Precio:
-                                    {% if producto.presentacion == "1 litro" %}
-                                        S/{{ producto.precio_pub }}
-                                    {% elif producto.presentacion == "12 litros" %}
-                                        S/{{ producto.precio_dis * 12 }}
-                                    {% elif producto.presentacion == "20 litros" %}
-                                        S/{{ producto.precio_dis * 20 }}
-                                    {% elif producto.presentacion == "200 litros" %}
-                                        S/{{ producto.precio_dis * 200 }}
-                                    {% else %}
-                                        S/{{ producto.precio_pub }}
-                                    {% endif %}
-                                </p>
-                                <form action="/add_to_cart" method="POST">
-                                    <input type="hidden" name="producto_id" value="{{ producto.id }}">
-                                    <button type="submit" class="btn btn-primary">Agregar al carrito</button>
-                                </form>
+                                    <form action="/add_to_cart" method="POST">
+                                        <input type="hidden" name="producto_id" value="{{ producto.producto_id }}">
+                                        <button type="submit" class="btn btn-primary">Agregar al carrito <i class="fa-solid fa-cart-plus"></i></button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     {% endfor %}
                 </div>
                 <!-- Sección de paginación -->
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center">
                         {% if current_page > 1 %}
-                        <li class="page-item">
-                            <a class="page-link" href="{{ url_for('mostrar_catalogo', page=current_page-1) }}">Anterior</a>
-                        </li>
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('mostrar_catalogo', page=current_page-1) }}">Anterior</a>
+                            </li>
                         {% endif %}
                         {% for page in range(1, total_pages + 1) %}
-                        <li class="page-item {% if page == current_page %}active{% endif %}">
-                            <a class="page-link" href="{{ url_for('mostrar_catalogo', page=page) }}">{{ page }}</a>
-                        </li>
+                            <li class="page-item {% if page == current_page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('mostrar_catalogo', page=page) }}">{{ page }}</a>
+                            </li>
                         {% endfor %}
                         {% if current_page < total_pages %}
-                        <li class="page-item">
-                            <a class="page-link" href="{{ url_for('mostrar_catalogo', page=current_page+1) }}">Siguiente</a>
-                        </li>
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('mostrar_catalogo', page=current_page+1) }}">Siguiente</a>
+                            </li>
                         {% endif %}
                     </ul>
                 </nav>

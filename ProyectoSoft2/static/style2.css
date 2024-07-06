@@ -639,3 +639,28 @@ a.tiktok:active {
     color: inherit; /* Mantiene el color del enlace en todos los estados */
     text-decoration: none; /* Mantiene sin subrayado en todos los estados */
 }
+
+.pedido-estado {
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.estado-pendiente {
+    color: orange;
+}
+
+.estado-en-camino {
+    color: blue;
+}
+
+.estado-con-retraso {
+    color: yellow;
+}
+
+.estado-entregado {
+    color: green;
+}
+
+.estado-cancelado, .estado-anulado {
+    color: red;
+}

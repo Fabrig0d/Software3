@@ -94,6 +94,7 @@ CREATE TABLE Pedidos (
     metodo_pago Varchar(40),
     total DECIMAL(10, 2),
     estado VARCHAR(20),
+    codigo_orden VARCHAR(100),
 	FOREIGN KEY (id_cliente) REFERENCES clientes(id_cli)
 );
 

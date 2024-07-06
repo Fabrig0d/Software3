@@ -81,7 +81,7 @@
                     </a>
                 </div>
                 <div class="pedido-estado">
-                    Estado: {{ pedido.estado }}
+                    <p><strong>Estado:</strong> <span class="pedido-estado estado-{{ pedido.estado | lower | replace(' ', '-') }}">{{ pedido.estado }}</span></p>
                 </div>
             </div>
             {% endfor %}
