@@ -120,6 +120,36 @@ CREATE TABLE DetallesPedidos (
 
 
 
+CREATE TABLE MensajeContacto (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100),
+    email VARCHAR(100),
+    asunto VARCHAR(200),
+    mensaje TEXT,
+    fecha_envio DATETIME,
+    imagen VARCHAR(255),
+    estado VARCHAR(100)
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 -- PROCEDIMIENTOS ALMACENADOS

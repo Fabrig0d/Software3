@@ -57,12 +57,6 @@
                                     <option value="{{ tipo_producto.id }}" {% if tipo_producto.id == request.args.get('tipo_producto') %} selected {% endif %}>{{ tipo_producto.nombre }}</option>
                                 {% endfor %}
                             </select>
-                            <div id="tipo_producto_options" class="filter-options" style="display: none;">
-                                <input type="checkbox" id="tipo_producto_option1" name="tipo_producto_option1" value="value1">
-                                <label for="tipo_producto_option1">Opción 1</label><br>
-                                <input type="checkbox" id="tipo_producto_option2" name="tipo_producto_option2" value="value2">
-                                <label for="tipo_producto_option2">Opción 2</label><br>
-                            </div>
                         </li>
                         <li class="list-group-item">
                             <label for="precio">Precio:</label>
@@ -71,12 +65,6 @@
                                 <option value="menor" {% if 'menor' == request.args.get('precio') %} selected {% endif %}>Menor precio primero</option>
                                 <option value="mayor" {% if 'mayor' == request.args.get('precio') %} selected {% endif %}>Mayor precio primero</option>
                             </select>
-                            <div id="precio_options" class="filter-options" style="display: none;">
-                                <input type="checkbox" id="precio_option1" name="precio_option1" value="value1">
-                                <label for="precio_option1">Menor precio</label><br>
-                                <input type="checkbox" id="precio_option2" name="precio_option2" value="value2">
-                                <label for="precio_option2">Mayor precio</label><br>
-                            </div>
                         </li>
                         <li class="list-group-item">
                             <label for="presentacion">Presentación:</label>
@@ -87,12 +75,6 @@
                                 <option value="20 litros" {% if '20 litros' == request.args.get('presentacion') %} selected {% endif %}>20 litros</option>
                                 <option value="200 litros" {% if '200 litros' == request.args.get('presentacion') %} selected {% endif %}>200 litros</option>
                             </select>
-                            <div id="presentacion_options" class="filter-options" style="display: none;">
-                                <input type="checkbox" id="presentacion_option1" name="presentacion_option1" value="value1">
-                                <label for="presentacion_option1">1 litro</label><br>
-                                <input type="checkbox" id="presentacion_option2" name="presentacion_option2" value="value2">
-                                <label for="presentacion_option2">200 litros</label><br>
-                            </div>
                         </li>
                         <li class="list-group-item">
                             <button type="submit" class="btn btn-primary">Filtrar</button>

@@ -8,7 +8,9 @@ from functools import wraps
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 import os
+from datetime import datetime
 import random
 import string
 import urllib.parse
@@ -40,14 +42,20 @@ initial_options = ["envios", "recepcion", "pagos", "compras"]
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 # Configuración de Mail
-app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
-app.config['MAIL_PORT'] = os.getenv('MAIL_PORT')
-app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS')
-app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
-app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'Fabriziovh01@gmail.com'
+app.config['MAIL_PASSWORD'] = '925024936fabri'
+app.config['MAIL_DEFAULT_SENDER'] = 'Fabriziovh01@gmail.com'
 
 mail = Mail(app)
+
+
+UPLOAD_FOLDER = '/uploads'
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Configuración de la base de datos
 password = os.getenv('DB_PASSWORD')
@@ -170,6 +178,20 @@ class DetallesPedidos(db.Model):
     pedido = db.relationship('Pedidos', backref=db.backref('detalles_pedidos', lazy=True))
     producto = db.relationship('Producto', backref=db.backref('detalles_pedidos', lazy=True))
 
+class MensajeContacto(db.Model):
+    __tablename__ = 'MensajeContacto'
+
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100))
+    email = db.Column(db.String(100))
+    asunto = db.Column(db.String(200))
+    mensaje = db.Column(db.Text)
+    fecha_envio = db.Column(db.DateTime, default=datetime.utcnow)
+    imagen = db.Column(db.String(255))
+    estado = db.Column(db.String(20), nullable=False, default='Pendiente')
+
+    def __repr__(self):
+        return f"<MensajeContacto {self.id}: {self.nombre} - {self.email}>"
 
 # Carrito de compra (almacenado en memoria, en una aplicación real podría ser una base de datos)
 cart = []
@@ -378,6 +400,16 @@ def orden_confirmada(pedido_id):
     else:
         flash('Pedido no encontrado.', 'error')
         return redirect(url_for('carrito'))
+    
+@app.route('/eliminar_producto/<int:producto_id>', methods=['DELETE'])
+def eliminar_producto(producto_id):
+    producto = Producto.query.get(producto_id)
+    if producto:
+        db.session.delete(producto)
+        db.session.commit()
+        return jsonify({'message': 'Producto eliminado correctamente'}), 200
+    else:
+        return jsonify({'message': 'Producto no encontrado'}), 404
 
 
 @app.route('/detalles_pedido_e')
@@ -574,14 +606,52 @@ def enviar():
     email = request.form['email']
     asunto = request.form['asunto']
     mensaje = request.form['mensaje']
-    msg = Message(asunto, sender=app.config['MAIL_DEFAULT_SENDER'], recipients=['fabriziovh01@gmail.com'])
-    msg.body = f"Nombre: {nombre}\nCorreo: {email}\n\nMensaje:\n{mensaje}"
-    try:
-        mail.send(msg)
-        flash('¡Tu mensaje ha sido enviado correctamente!')
-    except smtplib.SMTPException as e:
-        flash('Error al enviar el mensaje: ' + str(e))
+
+    # Manejo de la imagen
+    if 'imagen' in request.files:
+        imagen = request.files['imagen']
+        # Guardar la imagen en el sistema de archivos
+        if imagen.filename != '':
+            filename = secure_filename(imagen.filename)
+            imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        else:
+            filename = None
+    else:
+        filename = None
+
+    # Ahora guarda los datos en la base de datos
+    nuevo_mensaje = MensajeContacto(nombre=nombre, email=email, asunto=asunto, mensaje=mensaje, imagen=filename)
+    db.session.add(nuevo_mensaje)
+    db.session.commit()
+
+    flash('¡Tu mensaje ha sido enviado correctamente!')
     return redirect(url_for('home_cliente'))
+
+
+@app.route('/subir_imagen', methods=['POST'])
+def subir_imagen():
+    if 'imagen' in request.files:
+        imagen = request.files['imagen']
+        if imagen.filename != '':
+            # Guarda el archivo de manera segura en el directorio UPLOAD_FOLDER
+            filename = secure_filename(imagen.filename)
+            imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            # Aquí deberías guardar 'filename' en tu base de datos
+
+    return 'Imagen subida correctamente'
+
+@app.route('/ver_solicitudes')
+def ver_solicitudes():
+    mensajes = MensajeContacto.query.all()
+    return render_template('ver_solicitudes.html', mensajes=mensajes)
+
+@app.route('/cambiar_estado/<int:mensaje_id>', methods=['POST'])
+def cambiar_estado(mensaje_id):
+    mensaje = MensajeContacto.query.get_or_404(mensaje_id)
+    nuevo_estado = request.form['estado']
+    mensaje.estado = nuevo_estado
+    db.session.commit()
+    return redirect(url_for('ver_solicitudes'))
 
 @app.route('/logout')
 def logout():
@@ -594,7 +664,7 @@ def logout():
 def mostrar_catalogo():
     page = request.args.get('page', 1, type=int)
     per_page = 9  # Número de productos por página
-    tipo_producto_id = request.args.get('tipo_producto_id', type=int)
+    tipo_producto_id = request.args.get('tipo_producto', type=int)
 
     if tipo_producto_id:
         productos = Producto.query.filter_by(tipo_producto_id=tipo_producto_id).paginate(page=page, per_page=per_page)
@@ -602,8 +672,9 @@ def mostrar_catalogo():
         productos = Producto.query.paginate(page=page, per_page=per_page)
 
     total_pages = ceil(productos.total / per_page)
-    tipos_producto = TipoProducto.query.all()  # Obtener todos los tipos de productos
-    return render_template('catalogo.html', productos=productos.items, total_pages=total_pages, current_page=page, tipos_producto=tipos_producto)
+    tipos_productos = TipoProducto.query.all()  # Obtener todos los tipos de productos
+
+    return render_template('catalogo.html', productos=productos.items, total_pages=total_pages, current_page=page, tipos_productos=tipos_productos)
 
 @app.route('/catalogo_in')
 def catalogo_index():
@@ -617,8 +688,8 @@ def catalogo_index():
         productos = Producto.query.paginate(page=page, per_page=per_page)
 
     total_pages = ceil(productos.total / per_page)
-    tipos_producto = TipoProducto.query.all()  # Obtener todos los tipos de productos
-    return render_template('catalogo_in.html', productos=productos.items, total_pages=total_pages, current_page=page, tipos_producto=tipos_producto)
+    tipos_productos= TipoProducto.query.all()  # Obtener todos los tipos de productos
+    return render_template('catalogo_in.html', productos=productos.items, total_pages=total_pages, current_page=page, tipos_producto=tipos_productos)
 
 def execute_procedure(proc_name, params):
     conn = mysql.connector.connect(**db_config)
@@ -642,8 +713,9 @@ def catalogo_empleado():
         productos = Producto.query.paginate(page=page, per_page=per_page)
 
     total_pages = ceil(productos.total / per_page)
-    tipos_producto = TipoProducto.query.all()  # Obtener todos los tipos de productos
-    return render_template('catalogo_e.html', productos=productos.items, total_pages=total_pages, current_page=page, tipos_producto=tipos_producto)
+    tipos_productos = TipoProducto.query.all()  # Obtener todos los tipos de productos
+
+    return render_template('catalogo_e.html', productos=productos.items, total_pages=total_pages, current_page=page, tipos_productos=tipos_productos)
 
 @app.route('/update_product', methods=['POST'])
 def update_product():
@@ -1076,6 +1148,8 @@ def buscar_productos():
     # Obtener los parámetros de búsqueda desde la solicitud GET
     query = request.args.get('q', '')
     tipo_producto_id = request.args.get('tipo_producto', '')
+    precio = request.args.get('precio', '')
+    presentacion = request.args.get('presentacion', '')
 
     # Convertir tipo_producto_id a entero si es válido
     try:
@@ -1101,6 +1175,16 @@ def buscar_productos():
         else:
             # Manejar el caso donde el tipo_producto_id no existe
             return render_template('error.html', mensaje="El tipo de producto especificado no existe."), 404
+
+    # Filtrar por precio si se especifica 'menor' o 'mayor'
+    if precio == 'menor':
+        productos_query = productos_query.order_by(Producto.precio_pub.asc())
+    elif precio == 'mayor':
+        productos_query = productos_query.order_by(Producto.precio_pub.desc())
+
+    # Filtrar por presentación si se especifica
+    if presentacion:
+        productos_query = productos_query.filter(Producto.presentacion.ilike(f'%{presentacion}%'))
 
     # Obtener los resultados finales
     productos = productos_query.all()

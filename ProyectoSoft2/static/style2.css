@@ -654,7 +654,7 @@ a.tiktok:active {
 }
 
 .estado-con-retraso {
-    color: yellow;
+    color: #ffdf00;
 }
 
 .estado-entregado {
@@ -663,4 +663,64 @@ a.tiktok:active {
 
 .estado-cancelado, .estado-anulado {
     color: red;
+}
+
+.table-container {
+    margin-top: 20px;  /* Ajusta el margen superior */
+    margin-bottom: 20px;  /* Ajusta el margen inferior */
+    padding: auto;  /* Ajusta el relleno si es necesario */
+    display: none;
+    
+}
+
+.table {
+    width: 90%;  /* Ajusta el ancho de la tabla */
+    max-width: 100%;  /* Asegura que no se desborde del contenedor */
+    margin-left: auto;  /* Centra la tabla horizontalmente */
+    margin-right: auto;  /* Centra la tabla horizontalmente */
+}
+
+
+.table th {
+    white-space: nowrap; /* Evita el salto de línea dentro de las celdas */
+}
+
+.table-container.active {
+    display: block;
+}
+
+.total-container {
+    width: 100%;
+    margin-left: auto;
+}
+.btn-sm {
+            font-size: 14px; /* Tamaño de botón aumentado */
+            padding: 6px 12px; /* Ajuste de padding del botón */
+        }
+.custom-select{
+
+    width: 65%;
+ }
+
+ .estado-pendiente {
+    color: #ffc107; /* Naranja */
+}
+
+.estado-abierto {
+    color: #17a2b8; /* Celeste */
+}
+
+.estado-resuelta {
+    color: #28a745; /* Verde */
+}
+
+.mensaje {
+    max-width: 550px; /* Ajusta el ancho máximo según tu diseño */
+    word-wrap: break-word; /* Para que las palabras largas se ajusten */
+    overflow-wrap: break-word; /* Manejo adicional de wrap para navegadores más antiguos */
+}
+
+.acciones {
+    max-width: 200px; /* Ajusta el ancho máximo según tu diseño */
+
 }
