@@ -1,47 +1,322 @@
-.chat-container {
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom right, #C8E6C9, #4CAF50);
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 80vh;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    position: relative;
 }
-.chat-box {
-    width: 90%;
-    background: #f1f1f1;
-    padding: 20px;
-    border-radius: 10px;
+
+/* Animación de hojas */
+.leaf-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.leaf {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background: url('https://toppng.com/uploads/thumbnail/hojas-en-png-dibujo-de-hoja-verde-11562899901itt0c8hg9g.png') no-repeat center;
+    background-size: contain;
+    animation: fall 4s linear infinite;
+    opacity: 0.8;
+}
+
+@keyframes fall {
+    from {
+        transform: translateY(-100px) rotate(0deg);
+    }
+    to {
+        transform: translateY(100vh) rotate(360deg);
+    }
+}
+
+.leaf:nth-child(2) {
+    left: 25%;
+    animation-delay: 2s;
+}
+
+.leaf:nth-child(3) {
+    left: 50%;
+    animation-delay: 4s;
+}
+
+.leaf:nth-child(4) {
+    left: 75%;
+    animation-delay: 6s;
+}
+
+.leaf:nth-child(5) {
+    left: 75%;
+    animation-delay: 6s;
+}
+
+.leaf:nth-child(6) {
+    left: 75%;
+    animation-delay: 6s;
+}
+
+/* Botón de regreso */
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: white;
+    color: #4CAF50;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 1em;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+    z-index: 10;
 }
-.chat-log {
-    height: 300px;
-    overflow-y: auto;
-    border: 1px solid #ccc;
-    padding: 10px;
-    background: #fff;
-    margin-bottom: 10px;
+
+.back-button:hover {
+    background: #4CAF50;
+    color: white;
+    transform: scale(1.05);
 }
-.chat-input {
+
+/* Estilo del contenedor del chat */
+.chat-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    max-width: 100%;
+    overflow: hidden;
+    animation: slideIn 0.5s ease-out;
+    z-index: 5;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estilo del header */
+header {
+    background: #388E3C;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    position: relative;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
-.chat-input input {
+
+header .logo {
+    height: 40px;
+    width: auto;
+}
+
+header h1 {
+    font-size: 1.2em;
+    margin: 0;
     flex: 1;
-    margin-right: 10px;
+    text-align: left;
+    font-weight: bold;
 }
-.faq {
-    margin-top: 20px;
+
+/* Estilo del contenido del chat */
+.chat-content {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    position: relative;
+    background: url('leaf-background.png') no-repeat center center;
+    background-size: cover;
 }
-.faq h5 {
-    font-size: 16px;
+
+/* Estilo del chat box */
+.chat-box {
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    height: 300px;
     margin-bottom: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+
+.messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.message-bubble {
+    padding: 10px;
+    border-radius: 10px;
+    margin: 5px;
+    max-width: 70%;
+    display: inline-block;
+}
+
+.user-message .message-bubble {
+    background-color: #d1f4d1;
+    align-self: flex-end;
+    margin-left: 237px;
+}
+
+.bot-message .message-bubble {
+    background-color: #e6e6e6;
+    align-self: flex-start;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.messages p {
+    background: #eee;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 5px 0;
+    max-width: 80%;
+    word-wrap: break-word;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    animation: messageIn 0.5s ease-in-out;
+}
+
+@keyframes messageIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.messages .user-message {
+    background: transparent;
+    color: #4CAF50;
+    margin-left: auto;
+}
+
+.input-container {
+    display: flex;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border-top: 1px solid #ddd;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.input-container input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-right: 10px;
+    transition: box-shadow 0.2s;
+}
+
+.input-container input:focus {
+    box-shadow: 0 0 5px rgba(0, 150, 0, 0.3);
+    outline: none;
+}
+
+.input-container button {
+    padding: 10px;
+    border: none;
+    background: #388E3C;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.input-container button:hover {
+    background: #2E7D32;
+    transform: scale(1.05);
+}
+
+/* Estilo del FAQ */
+.faq {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    text-align: center;
+    border-top: 1px solid #ddd;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.faq h2 {
+    margin-top: 0;
+}
+
 .faq ul {
     list-style-type: none;
     padding: 0;
 }
+
 .faq ul li {
-    cursor: pointer;
-    color: #007bff;
+    margin: 10px 0;
 }
-.faq ul li:hover {
+
+.faq ul li a {
+    text-decoration: none;
+    color: #388E3C;
+    transition: color 0.2s;
+}
+
+.faq ul li a:hover {
     text-decoration: underline;
+    color: #2E7D32;
+}
+
+/* Estilos adicionales de animación */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.logo {
+    font-size: 37px;
+    color: #2cd132;
+    font-weight: bold;
+    font-family: "Lilita One", sans-serif;
+    font-weight: 00;
+    font-style: normal;
+    position: relative;
+    bottom: 1px;
 }

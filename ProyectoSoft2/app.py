@@ -137,6 +137,7 @@ class Producto(db.Model):
     precio_dis = db.Column(db.Numeric(8, 2))
     precio_pub = db.Column(db.Numeric(8, 2))
     stock = db.Column(db.Integer)
+    imagen = db.Column(db.String(500))
     tipo_producto_id = db.Column(db.Integer, db.ForeignKey('tipo_producto.id'))
     tipo_producto = db.relationship('TipoProducto', backref=db.backref('productos', lazy=True))
 

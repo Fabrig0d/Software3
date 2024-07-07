@@ -3,82 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <title>Asesoría Virtual</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style_chat.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/9e204c657e.js" crossorigin="anonymous"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <h1>Bienvenido al ChatBot! <i class="fa-solid fa-robot"></i></h1>
-        </div>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a href="/home_cliente" class="btn btn-primary"> <i class="fa-solid fa-house"></i></a>
-                </li>
+    <a href="/home_cliente"><button class="back-button"><i class="fa-solid fa-house"></i></button></a>
+    <div class="leaf-container">
+        <div class="leaf"></div>
+        <div class="leaf"></div>
+        <div class="leaf"></div>
+        <div class="leaf"></div>
+        <div class="leaf"></div>
+        <div class="leaf"></div>
+    </div>
+    <div class="chat-container">
+        <header>
+            <h1>Bienvenido al ChatBot!</h1>
+            <div class="logo">Fitogreen</div>
+        </header>
+        <div class="chat-content">
+            <div class="chat-box">
+                <div class="messages" id="messages"></div>
+            </div>
+            <div class="input-container">
+                <input type="text" id="user-input" placeholder="Escribe tu mensaje..." class="form-control" >
+                <button id="send-button">Enviar</button>
+            </div>
+        <div class="faq">
+            <h2>Preguntas frecuentes:</h2>
+            <ul id="initial-options">
+                <li><a href="#" data-question="envios">Envíos</a></li>
+                <li><a href="#" data-question="recepcion">Recepción</a></li>
+                <li><a href="#" data-question="pagos">Pagos</a></li>
+                <li><a href="#" data-question="compras">Compras</a></li>
             </ul>
         </div>
-    </nav>
-    <div class="container chat-container">
-        <div class="chat-box">
-            <div id="chat-log" class="chat-log"></div>
-            <div class="chat-input">
-                <input type="text" id="user-input" placeholder="Escribe tu mensaje..." class="form-control" disabled>
-                <button id="send-button" class="btn btn-primary" disabled>Enviar</button>
-            </div>
-            <div class="faq">
-                <h5>Preguntas frecuentes:</h5>
-                <ul id="initial-options">
-                    {% for option in initial_options %}
-                        <li>{{ option }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script>
         $(document).ready(function() {
+            const messages = $('#messages');
+            const userInput = $('#user-input');
+            const sendButton = $('#send-button');
+
+            // Manejar clic en opciones iniciales
             $('#initial-options li').click(function() {
-                var userInput = $(this).text();
-                $('#chat-log').append('<div><strong>Tú:</strong> ' + userInput + '</div>');
+                const userInputText = $(this).text();
+                addMessage(userInputText, 'user');
+                sendAjaxRequest(userInputText);
+            });
+
+            // Manejar clic en el botón de envío
+            sendButton.click(function() {
+                const userInputText = userInput.val();
+                if (userInputText) {
+                    addMessage(userInputText, 'user');
+                    userInput.val('');
+                    sendAjaxRequest(userInputText);
+                }
+            });
+
+            // Manejar el evento de tecla 'Enter'
+            userInput.keypress(function(e) {
+                if (e.which === 13) {
+                    sendButton.click();
+                }
+            });
+
+            // Función para añadir mensajes
+            function addMessage(text, sender) {
+                const messageElem = $('<div>').addClass(sender === 'user' ? 'user-message' : 'bot-message');
+                messageElem.html(`<div class="message-bubble">${text}</div>`);
+                messages.append(messageElem);
+                animateMessage(messageElem, sender);
+                messages.scrollTop(messages[0].scrollHeight);
+            }
+
+            // Función para animar los mensajes
+            function animateMessage(elem, sender) {
+                elem.css({
+                    opacity: 0,
+                    transform: sender === 'user' ? 'translateX(20px)' : 'translateX(-20px)'
+                });
+                setTimeout(() => {
+                    elem.css({
+                        opacity: 1,
+                        transform: 'translateX(0)'
+                    });
+                }, 10);
+            }
+
+            // Función para enviar solicitudes AJAX
+            function sendAjaxRequest(message) {
                 $.ajax({
                     url: '/get_response',
                     method: 'POST',
-                    data: { message: userInput },
+                    data: { message: message },
                     success: function(response) {
-                        $('#chat-log').append('<div><strong>Bot:</strong> ' + response.response + '</div>');
-                        $('#user-input').prop('disabled', false);
-                        $('#send-button').prop('disabled', false);
+                        addMessage(response.response, 'bot');
                     }
                 });
-            });
-
-            $('#send-button').click(function() {
-                var userInput = $('#user-input').val();
-                if (userInput) {
-                    $('#chat-log').append('<div><strong>Tú:</strong> ' + userInput + '</div>');
-                    $('#user-input').val('');
-                    $.ajax({
-                        url: '/get_response',
-                        method: 'POST',
-                        data: { message: userInput },
-                        success: function(response) {
-                            $('#chat-log').append('<div><strong>Bot:</strong> ' + response.response + '</div>');
-                        }
-                    });
-                }
-            });
-
-            $('#user-input').keypress(function(e) {
-                if (e.which === 13) {
-                    $('#send-button').click();
-                }
-            });
+            }
         });
     </script>
 </body>

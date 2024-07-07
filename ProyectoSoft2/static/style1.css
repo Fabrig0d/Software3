@@ -537,3 +537,198 @@ h3 {
 .estado-cancelado, .estado-anulado {
     color: red;
 }
+
+aside {
+    width: 210px;
+    padding: 20px;
+    background-color: #2cd132;
+    border-radius: 0 15px 15px 0;
+    color: white;
+    height: calc(80vh - 410px);
+    position: fixed;
+    font-size: 18px;
+    top: 89px;
+    overflow-y: auto;
+}
+
+aside ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+aside ul li {
+    margin: 10px 0;
+    border-bottom: 1px solid #fff; /* Línea divisoria */
+}
+
+aside ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    border-radius: 10px;
+    transition: background-color 0.3s, color 0.3s; /* Transiciones suaves */
+}
+
+aside ul li a:hover,
+aside ul li a:focus,
+aside ul li a:active {
+    background-color: #28a745; /* Fondo azul al seleccionar */
+    color: white;
+}
+
+main {
+    flex: 1;
+    padding: 20px;
+    margin-left: 200px;
+    margin-top: 20px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(409px, 1fr));
+    gap: 20px;
+}
+
+.product-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.product-image {
+    max-width: 100px;
+    margin-left: 20px;
+    border-radius: 8px;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+}
+
+.product-card h2 {
+    font-size: 1.4em;
+    margin-bottom: 10px;
+}
+
+.product-card .price {
+    color: #2cd132;
+    padding: 10px 1px;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 4px;
+    margin: 5 14px;
+}
+
+.product-card button {
+    background-color: #2cd132;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.product-card button:hover {
+    background-color: #2cd132;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pagination a {
+    margin: 0 5px;
+    text-decoration: none;
+    color: #2cd132;
+}
+
+.pagination a:hover {
+    text-decoration: underline;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #2cd132;
+    color: white;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.fa-shopping-bag {
+    font-size: 18px;
+    padding: 2px 6px;
+    width: 20px;
+    
+}
+
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css');
+
+#cart-button {
+    background-color: #32cd32; /* Verde lime */
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    margin-left: 30px;
+    margin-right: 21px;
+    position: relative;
+    bottom: 1px;
+}
+
+#cart-button i {
+    color: white;
+    font-size: 25px; /* Ajusta el tamaño según sea necesario */
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    aside {
+        position: relative;
+        width: 100%;
+        height: auto;
+        background-color: #2cd132;
+        top: 0;
+    }
+
+    main {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+
+    header nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    header .logo {
+        flex-basis: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    header nav input {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    header nav select,
+    header nav button,
+    header nav a.cart {
+        margin: 5px 0;
+        width: 100%;
+    }
+}

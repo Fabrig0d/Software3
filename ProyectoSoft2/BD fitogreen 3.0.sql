@@ -71,6 +71,7 @@ CREATE TABLE productos (
 	precio_pub DECIMAL(8,2),
 	stock INT,
     tipo_producto_id INT,
+    imagen varchar(100),
     FOREIGN KEY (tipo_producto_id) REFERENCES tipo_producto(id)
 );
 
