@@ -87,8 +87,8 @@
                 <div class="row">
                     {% for producto in productos %}
                     <div class="col-md-4">
-                        <div class="card my-2">
-                            <div class="card-body">
+                        <article class="product-card">
+                            <div class="product-info">
                                 <h5 class="card-title">
                                     {{ producto.nombre }}
                                     {% if producto.presentacion == "1 litro" %}
@@ -117,7 +117,8 @@
                                     <button type="submit" class="btn btn-primary">Agregar al carrito <i class="fa-solid fa-cart-plus"></i></button>
                                 </form>                                
                             </div>
-                        </div>
+                            <img src="https://algaex.pe/wp-content/uploads/2020/05/Algaex-Agro-Premium-aminoacidos-1.png" alt="Imagen de Fito Algas 1 litro" class="product-image">
+                        </article>
                     </div>
                     {% endfor %}
                 </div>

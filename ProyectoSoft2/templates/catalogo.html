@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Catálogo</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style11.css') }}">
     <script src="https://kit.fontawesome.com/9e204c657e.js" crossorigin="anonymous"></script>
 
 </head>
@@ -89,9 +89,9 @@
                 <div class="row">
                     {% for producto in productos %}
                         <div class="col-md-4">
-                            <div class="card my-2">
-                                <div class="card-body">
-                                    <h5 class="card-title">
+                            <article class="product-card">
+                                <div class="product-info">
+                                    <h2 class="card-title">
                                         {{ producto.nombre }}
                                         {% if producto.presentacion == "1 litro" %}
                                              (1 litro)
@@ -102,7 +102,7 @@
                                         {% elif producto.presentacion == "200 litros" %}
                                             (200 litros)
                                         {% endif %}
-                                    </h5>
+                                    </h2>
                                     <p class="card-text">{{ producto.descripcion }}</p>
                                     {% if producto.presentacion == "1 litro" %}
                                         <p class="card-text">Precio: S/{{ producto.precio_pub }}</p>
@@ -118,12 +118,13 @@
                                         <button type="submit" class="btn btn-primary">Agregar al carrito <i class="fa-solid fa-cart-plus"></i></button>
                                     </form>
                                 </div>
-                            </div>
+                                <img src="https://algaex.pe/wp-content/uploads/2020/05/Algaex-Agro-Premium-aminoacidos-1.png" alt="Imagen de Fito Algas 1 litro" class="product-image">
+                            </article>
                         </div>
                     {% endfor %}
                 </div>
                 <!-- Sección de paginación -->
-                <nav aria-label="Page navigation">
+                <nav class="pagination">
                     <ul class="pagination justify-content-center">
                         {% if current_page > 1 %}
                             <li class="page-item">
@@ -144,7 +145,9 @@
                 </nav>
             </div>
         </div>
+        
     </div>
+    
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

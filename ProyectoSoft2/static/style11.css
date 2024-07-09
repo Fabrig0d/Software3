@@ -36,6 +36,37 @@ header {
     z-index: 2;
 }
 
+.logo-link {
+    text-decoration: none;  /* Quitar subrayado predeterminado */
+    color: inherit;         /* Heredar color del texto */
+    cursor: pointer;        /* Cambiar cursor a puntero */
+}
+a.facebook {
+    display: flex;
+    color: inherit; /* Hereda el color del elemento padre */
+    text-decoration: none; /* Elimina el subrayado */
+}
+
+a.facebook:hover, 
+a.facebook:focus, 
+a.facebook:active {
+    display: flex;
+    color: inherit; /* Mantiene el color del enlace en todos los estados */
+    text-decoration: none; /* Mantiene sin subrayado en todos los estados */
+}
+a.tiktok {
+    display: flex;
+    color: inherit; /* Hereda el color del elemento padre */
+    text-decoration: none; /* Elimina el subrayado */
+}
+
+a.tiktok:hover, 
+a.tiktok:focus, 
+a.tiktok:active {
+    display: flex;
+    color: inherit; /* Mantiene el color del enlace en todos los estados */
+    text-decoration: none; /* Mantiene sin subrayado en todos los estados */
+}
 .logo {
     font-size: 37px;
     color: #2cd132;
@@ -482,164 +513,6 @@ h3 {
     cursor: pointer;
 }
 
-.container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.form-row {
-    display: flex;
-    flex-wrap: wrap;
-    margin-bottom: 15px;
-}
-
-.form-group {
-    flex: 1;
-    margin-right: 10px;
-    margin-bottom: 10px;
-}
-
-.container {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 30px;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.form-row {
-    display: flex;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-}
-
-.form-group {
-    flex: 1;
-    margin-right: 20px;
-    margin-bottom: 15px;
-}
-
-.container {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 30px;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.form-row {
-    display: flex;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-}
-
-.form-group {
-    flex: 1 1 calc(25% - 20px); /* Distribución equitativa, ajustable */
-    margin-right: 20px;
-    margin-bottom: 15px;
-}
-
-label {
-    display: block;
-    margin-bottom: 8px;
-    color: #495057;
-    font-weight: bold;
-}
-
-input[type="text"],
-input[type="email"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    font-size: 16px;
-}
-.logo-link {
-    text-decoration: none;  /* Quitar subrayado predeterminado */
-    color: inherit;         /* Heredar color del texto */
-    cursor: pointer;        /* Cambiar cursor a puntero */
-}
-
-textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    font-size: 16px;
-    box-sizing: border-box; /* Garantiza que el padding no incremente el ancho total */
-}
-
-textarea {
-    height: 150px; /* Altura inicial del textarea */
-    resize: vertical; /* Permite redimensionar verticalmente */
-}
-
-#contador-palabras {
-    margin-top: 5px;
-    font-size: 14px;
-    color: #6c757d;
-}
-button {
-    padding: 12px 24px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 18px;
-    transition: background-color 0.3s ease;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-@media (max-width: 768px) {
-    .form-group {
-        flex: 1 1 100%; /* En pantallas pequeñas, ocupar toda la anchura */
-        margin-right: 0;
-    }
-}
-
-.mes-selector {
-    margin-bottom: 20px;
-}
-a.facebook {
-    display: flex;
-    color: inherit; /* Hereda el color del elemento padre */
-    text-decoration: none; /* Elimina el subrayado */
-}
-
-a.facebook:hover, 
-a.facebook:focus, 
-a.facebook:active {
-    display: flex;
-    color: inherit; /* Mantiene el color del enlace en todos los estados */
-    text-decoration: none; /* Mantiene sin subrayado en todos los estados */
-}
-a.tiktok {
-    display: flex;
-    color: inherit; /* Hereda el color del elemento padre */
-    text-decoration: none; /* Elimina el subrayado */
-}
-
-a.tiktok:hover, 
-a.tiktok:focus, 
-a.tiktok:active {
-    display: flex;
-    color: inherit; /* Mantiene el color del enlace en todos los estados */
-    text-decoration: none; /* Mantiene sin subrayado en todos los estados */
-}
-
 .pedido-estado {
     font-weight: bold;
     margin: 10px 0;
@@ -665,64 +538,323 @@ a.tiktok:active {
     color: red;
 }
 
-.table-container {
-    margin-top: 20px;  /* Ajusta el margen superior */
-    margin-bottom: 20px;  /* Ajusta el margen inferior */
-    padding: auto;  /* Ajusta el relleno si es necesario */
-    display: none;
+aside {
+    width: 210px;
+    padding: 20px;
+    background-color: #2cd132;
+    border-radius: 0 15px 15px 0;
+    color: white;
+    height: calc(80vh - 410px);
+    position: fixed;
+    font-size: 18px;
+    top: 89px;
+    overflow-y: auto;
+}
+
+aside ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+aside ul li {
+    margin: 10px 0;
+    border-bottom: 1px solid #fff; /* Línea divisoria */
+}
+
+aside ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    border-radius: 10px;
+    transition: background-color 0.3s, color 0.3s; /* Transiciones suaves */
+}
+
+aside ul li a:hover,
+aside ul li a:focus,
+aside ul li a:active {
+    background-color: #28a745; /* Fondo azul al seleccionar */
+    color: white;
+}
+
+main {
+    flex: 1;
+    padding: 20px;
+    margin-left: 200px;
+    margin-top: 20px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(409px, 1fr));
+    gap: 20px;
+}
+
+.product-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.product-image {
+    max-width: 100px;
+    margin-left: 20px;
+    border-radius: 8px;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+}
+
+.product-card h2 {
+    font-size: 1.4em;
+    margin-bottom: 10px;
+}
+
+.product-card .price {
+    color: #2cd132;
+    padding: 10px 1px;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 4px;
+    margin: 5 14px;
+}
+
+.product-card button {
+    background-color: #2cd132;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.product-card button:hover {
+    background-color: #2cd132;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pagination a {
+    margin: 0 5px;
+    text-decoration: none;
+    color: #2cd132;
+}
+
+.pagination a:hover {
+    text-decoration: underline;
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #2cd132;
+    color: white;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.fa-shopping-bag {
+    font-size: 18px;
+    padding: 2px 6px;
+    width: 20px;
     
 }
 
-.table {
-    width: 90%;  /* Ajusta el ancho de la tabla */
-    max-width: 100%;  /* Asegura que no se desborde del contenedor */
-    margin-left: auto;  /* Centra la tabla horizontalmente */
-    margin-right: auto;  /* Centra la tabla horizontalmente */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css');
+
+#cart-button {
+    background-color: #32cd32; /* Verde lime */
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    margin-left: 30px;
+    margin-right: 21px;
+    position: relative;
+    bottom: 1px;
 }
 
-
-.table th {
-    white-space: nowrap; /* Evita el salto de línea dentro de las celdas */
+#cart-button i {
+    color: white;
+    font-size: 25px; /* Ajusta el tamaño según sea necesario */
 }
 
-.table-container.active {
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    aside {
+        position: relative;
+        width: 100%;
+        height: auto;
+        background-color: #2cd132;
+        top: 0;
+    }
+
+    main {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+
+    header nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    header .logo {
+        flex-basis: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    header nav input {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    header nav select,
+    header nav button,
+    header nav a.cart {
+        margin: 5px 0;
+        width: 100%;
+    }
+}
+
+.container {
+    display: flex;
+    margin-top: 50px;
+    height: 100%;
+}
+
+aside {
+    width: 210px;
+    padding: 20px;
+    background-color: #2cd132;
+    border-radius: 0 15px 15px 0;
+    color: white;
+    height: calc(80vh - 410px);
+    position: fixed;
+    font-size: 18px;
+    top: 89px;
+    overflow-y: auto;
+}
+
+aside ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+aside ul li {
+    margin: 10px 0;
+    border-bottom: 1px solid #fff; /* Línea divisoria */
+}
+
+aside ul li a {
+    color: white;
+    text-decoration: none;
     display: block;
+    border-radius: 10px;
+    transition: background-color 0.3s, color 0.3s; /* Transiciones suaves */
 }
 
-.total-container {
-    width: 100%;
-    margin-left: auto;
-}
-.btn-sm {
-            font-size: 14px; /* Tamaño de botón aumentado */
-            padding: 6px 12px; /* Ajuste de padding del botón */
-        }
-.custom-select{
-
-    width: 65%;
- }
-
- .estado-pendiente {
-    color: #ffc107; /* Naranja */
+aside ul li a:hover,
+aside ul li a:focus,
+aside ul li a:active {
+    background-color: #28a745; /* Fondo azul al seleccionar */
+    color: white;
 }
 
-.estado-abierto {
-    color: #17a2b8; /* Celeste */
+main {
+    flex: 1;
+    padding: 20px;
+    margin-left: 200px;
+    margin-top: 20px;
 }
 
-.estado-resuelta {
-    color: #28a745; /* Verde */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(409px, 1fr));
+    gap: 20px;
 }
 
-.mensaje {
-    max-width: 550px; /* Ajusta el ancho máximo según tu diseño */
-    word-wrap: break-word; /* Para que las palabras largas se ajusten */
-    overflow-wrap: break-word; /* Manejo adicional de wrap para navegadores más antiguos */
+.product-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
 }
 
-.acciones {
-    max-width: 200px; /* Ajusta el ancho máximo según tu diseño */
+.product-image {
+    max-width: 100px;
+    margin-left: 20px;
+    border-radius: 8px;
+}
 
+.product-card:hover {
+    transform: translateY(-10px);
+}
+
+.product-card h2 {
+    font-size: 1.4em;
+    margin-bottom: 10px;
+}
+
+.product-card .price {
+    color: #2cd132;
+    padding: 10px 1px;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 4px;
+    margin: 5 14px;
+}
+
+.product-card button {
+    background-color: #2cd132;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.product-card button:hover {
+    background-color: #2cd132;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pagination a {
+    margin: 0 5px;
+    text-decoration: none;
+    color: #2cd132;
+}
+
+.pagination a:hover {
+    text-decoration: underline;
 }
 
 footer {
@@ -733,4 +865,71 @@ footer {
     position: fixed;
     bottom: 0;
     width: 100%;
+}
+
+.fa-shopping-bag {
+    font-size: 18px;
+    padding: 2px 6px;
+    width: 20px;
+    
+}
+
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css');
+
+#cart-button {
+    background-color: #32cd32; /* Verde lime */
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    margin-left: 30px;
+    margin-right: 21px;
+    position: relative;
+    bottom: 1px;
+}
+
+#cart-button i {
+    color: white;
+    font-size: 25px; /* Ajusta el tamaño según sea necesario */
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    aside {
+        position: relative;
+        width: 100%;
+        height: auto;
+        background-color: #2cd132;
+        top: 0;
+    }
+
+    main {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+
+    header nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    header .logo {
+        flex-basis: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    header nav input {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    header nav select,
+    header nav button,
+    header nav a.cart {
+        margin: 5px 0;
+        width: 100%;
+    }
 }
