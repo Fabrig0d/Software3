@@ -28,14 +28,14 @@
         <nav class="navbar">
             <div class="logo">Fitogreen</div>
             <ul class="nav-links">
-                <li><a class="nav-link active" href="/catalogo_e">Inventario</a></li>
+                <li><a class="nav-link active" href="/inventario">Inventario</a></li>
                 <li><a class="nav-link" href="/agregar_producto">Agregar nuevo producto</a></li>
                 <li><a class="nav-link" href="/reporte">Reporte Mensual</a></li>
                 <li><a class="nav-link" href="/ad_usuarios">Administrar usuarios</a></li>
-                <li><a class="nav-link" href="{{ url_for('lista_pedidos_e') }}">Lista de Pedidos</a></li>
+                <li><a class="nav-link" href="{{ url_for('lista_pedidos_ad') }}">Lista de Pedidos</a></li>
             </ul>
             <div class="nav-icons">
-                <form action="/buscar_productos_e" method="get" class="search-form">
+                <form action="/buscar_productos_ad" method="get" class="search-form">
                     <input type="text" class="search-input" name="q" placeholder="Buscar por nombre o descripción" value="{{ request.args.get('q', '') }}">
                     <button class="search-button" type="submit">
                         <i class="fas fa-search"></i>

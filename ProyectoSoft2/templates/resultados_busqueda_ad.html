@@ -19,14 +19,16 @@
                 <span class="phone"><i class="fa-solid fa-phone"></i>+51 976 330 835</span>
         </div>
         <nav class="navbar">
-            <div class="logo">Fitogreen</div>
+            <a class="logo-link" href="/home_admin">
+                <div class="logo">Fitogreen</div>
+            </a>
             <ul class="nav-links">
-                <li><a class="nav-link active" href="/catalogo_e">Inventario</a></li>
-                <li><a class="nav-link" href="/agregar_producto">Agregar nuevo producto</a></li>
-                <li><a class="nav-link" href="/reporte">Reporte Mensual</a></li>
-                <li><a class="nav-link" href="/datos_e">Mis datos</a></li>
-                <li><a class="nav-link" href="/ver_solicitudes">Solicitudes de contacto</a></li>
-                <li><a class="nav-link" href="{{ url_for('lista_pedidos_e') }}">Lista de Pedidos</a></li>
+                <li><a class="nav-link active" href="/inventario">Inventario</a></li>
+                <li><a class="nav-link" href="/agregar_producto_ad">Agregar nuevo producto</a></li>
+                <li><a class="nav-link" href="/reporte_ad">Reporte Mensual</a></li>
+                <li><a class="nav-link" href="/ad_usuarios">Administrar Usuarios</a></li>
+                <li><a class="nav-link" href="/ver_solicitudes_ad">Solicitudes de contacto</a></li>
+                <li><a class="nav-link" href="{{ url_for('lista_pedidos_ad') }}">Lista de Pedidos</a></li>
             </ul>
             <div class="nav-icons">
                 <form action="/buscar_productos_e" method="get" class="search-form">
@@ -46,7 +48,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-2 sidebar">
-                    <form action="/buscar_productos_e" method="GET" id="filtroForm">
+                    <form action="/buscar_productos_ad" method="GET" id="filtroForm">
                         <ul class="list-group">
                             <li class="list-group-item">
                                 <label for="tipo_producto">Tipo de Producto:</label>

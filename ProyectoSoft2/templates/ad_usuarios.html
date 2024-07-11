@@ -20,24 +20,25 @@
                 <span class="phone"><i class="fa-solid fa-phone"></i>+51 976 330 835</span>
         </div>
         <nav class="navbar">
-            <a class="logo-link" href="/home_empleado">
+            <a class="logo-link" href="/home_admin">
                 <div class="logo">Fitogreen</div>
             </a>
             <ul class="nav-links">
-                <li><a class="nav-link active" href="/catalogo_e">Inventario</a></li>
-                <li><a class="nav-link" href="/agregar_producto">Agregar nuevo producto</a></li>
-                <li><a class="nav-link" href="/reporte">Reporte Mensual</a></li>
-                <li><a class="nav-link" href="/datos_e">Mis datos</a></li>
-                <li><a class="nav-link" href="/ver_solicitudes">Solicitudes de contacto</a></li>
-                <li><a class="nav-link" href="{{ url_for('lista_pedidos_e') }}">Lista de Pedidos</a></li>
+                <li><a class="nav-link active" href="/inventario">Inventario</a></li>
+                <li><a class="nav-link" href="/agregar_producto_ad">Agregar nuevo producto</a></li>
+                <li><a class="nav-link" href="/reporte_ad">Reporte Mensual</a></li>
+                <li><a class="nav-link" href="/ad_usuarios">Administrar Usuarios</a></li>
+                <li><a class="nav-link" href="/ver_solicitudes_ad">Solicitudes de contacto</a></li>
+                <li><a class="nav-link" href="{{ url_for('lista_pedidos_ad') }}">Lista de Pedidos</a></li>
             </ul>
             <div class="nav-icons">
-                <form action="/buscar_productos_e" method="get" class="search-form">
+                <form action="/buscar_productos_ad" method="get" class="search-form">
                     <input type="text" class="search-input" name="q" placeholder="Buscar por nombre o descripción" value="{{ request.args.get('q', '') }}">
                     <button class="search-button" type="submit">
                         <i class="fas fa-search"></i>
                     </button>
                 </form>
+                
                 <a href="/logout" class="logout-button btn btn-danger"><i class="fa-solid fa-right-from-bracket" style="color: #ffffff;"></i></a>
             </div>
             <div class="hamburger-menu">
@@ -87,7 +88,7 @@
                     {% endfor %}
                 </tbody>
             </table>
-        </div><br><br>
+        </div><br>
         
         <div id="empleados" class="table-container">
             <h2 class="mt-4">Empleados</h2>
@@ -126,8 +127,7 @@
                     {% endfor %}
                 </tbody>
             </table>
-        </div><br><br>
-        
+        </div><br>
         <div id="administradores" class="table-container">
             <h2 class="mt-4">Administradores</h2>
             <table class="table table-bordered">

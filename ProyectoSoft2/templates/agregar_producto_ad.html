@@ -1,0 +1,100 @@
+<!-- templates/agregar_producto.html -->
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agregar Producto</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
+    <script src="https://kit.fontawesome.com/9e204c657e.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header>
+        <div class="top-bar">
+            <span class="location"><i class="fas fa-map-marker-alt"></i>Cañete, Peru</span>
+            <span class="email"><i class="fas fa-envelope"></i>fitogreen1424@gmail.com</span>
+            <a href="https://www.tiktok.com/@vivero.julio.vice?lang=es" target="_blank">
+            <span class="tiktok"><i class="fa-brands fa-tiktok"></i> Fitogreen</span></a>
+            <a href="https://www.facebook.com/FitogreenV/?locale=es_LA" target="_blank">
+            <span class="facebook"><i class="fa-brands fa-facebook"></i> Fitogreen</span></a>
+                <span class="phone"><i class="fa-solid fa-phone"></i>+51 976 330 835</span>
+        </div>
+        <nav class="navbar">
+            <a class="logo-link" href="/home_admin">
+                <div class="logo">Fitogreen</div>
+            </a>
+            <ul class="nav-links">
+                <li><a class="nav-link active" href="/inventario">Inventario</a></li>
+                <li><a class="nav-link" href="/agregar_producto_ad">Agregar nuevo producto</a></li>
+                <li><a class="nav-link" href="/reporte_ad">Reporte Mensual</a></li>
+                <li><a class="nav-link" href="/ad_usuarios">Administrar Usuarios</a></li>
+                <li><a class="nav-link" href="/ver_solicitudes_ad">Solicitudes de contacto</a></li>
+                <li><a class="nav-link" href="{{ url_for('lista_pedidos_ad') }}">Lista de Pedidos</a></li>
+            </ul>
+            <div class="nav-icons">
+                <form action="/buscar_productos_ad" method="get" class="search-form">
+                    <input type="text" class="search-input" name="q" placeholder="Buscar por nombre o descripción" value="{{ request.args.get('q', '') }}">
+                    <button class="search-button" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                <a href="/logout" class="logout-button btn btn-danger"><i class="fa-solid fa-right-from-bracket" style="color: #ffffff;"></i></a>
+            </div>
+            <div class="hamburger-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <h1 class="mt-4 mb-4">Agregar Nuevo Producto</h1>
+        <form action="/agregar_producto" method="POST">
+            <div class="form-group">
+                <label for="nombre">Nombre:</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="descripcion">Descripción:</label>
+                <textarea class="form-control" id="descripcion" name="descripcion" rows="4" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="presentacion">Presentación:</label>
+                <input type="text" class="form-control" id="presentacion" name="presentacion" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="precio_dis">Precio Distribuidor:</label>
+                <input type="number" class="form-control" id="precio_dis" name="precio_dis" step="0.01" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="precio_pub">Precio Público:</label>
+                <input type="number" class="form-control" id="precio_pub" name="precio_pub" step="0.01" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="stock">Stock:</label>
+                <input type="number" class="form-control" id="stock" name="stock" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="tipo_producto">Tipo de Producto:</label>
+                <select class="form-control" id="tipo_producto" name="tipo_producto" required>
+                    {% for tipo in tipos_productos %}
+                        <option value="{{ tipo.id }}">{{ tipo.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Agregar Producto</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS y dependencias -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RH+8N1U+5yZG4+I1ddZcFtG5KZmXwxz6/ZgVv9q0EW2kN/dJYU3YbAj2IdKT" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+8kCk2O/nCk6YmZ6p0yJ7Bf5BkzBtb0eBJ" crossorigin="anonymous"></script>
+</body>
+</html>

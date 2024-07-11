@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Ventas</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
+    <script src="https://kit.fontawesome.com/9e204c657e.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header>
+        <div class="top-bar">
+            <span class="location"><i class="fas fa-map-marker-alt"></i>Cañete, Peru</span>
+            <span class="email"><i class="fas fa-envelope"></i>fitogreen1424@gmail.com</span>
+            <a href="https://www.tiktok.com/@vivero.julio.vice?lang=es" target="_blank">
+            <span class="tiktok"><i class="fa-brands fa-tiktok"></i> Fitogreen</span></a>
+            <a href="https://www.facebook.com/FitogreenV/?locale=es_LA" target="_blank">
+            <span class="facebook"><i class="fa-brands fa-facebook"></i> Fitogreen</span></a>
+                <span class="phone"><i class="fa-solid fa-phone"></i>+51 976 330 835</span>
+        </div>
+        <nav class="navbar">
+            <a class="logo-link" href="/home_admin">
+                <div class="logo">Fitogreen</div>
+            </a>
+            <ul class="nav-links">
+                <li><a class="nav-link active" href="/inventario">Inventario</a></li>
+                <li><a class="nav-link" href="/agregar_producto_ad">Agregar nuevo producto</a></li>
+                <li><a class="nav-link" href="/reporte_ad">Reporte Mensual</a></li>
+                <li><a class="nav-link" href="/ad_usuarios">Administrar Usuarios</a></li>
+                <li><a class="nav-link" href="/ver_solicitudes_ad">Solicitudes de contacto</a></li>
+                <li><a class="nav-link" href="{{ url_for('lista_pedidos_ad') }}">Lista de Pedidos</a></li>
+            </ul>
+            <div class="nav-icons">
+                <form action="/buscar_productos_ad" method="get" class="search-form">
+                    <input type="text" class="search-input" name="q" placeholder="Buscar por nombre o descripción" value="{{ request.args.get('q', '') }}">
+                    <button class="search-button" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                <a href="/logout" class="logout-button btn btn-danger"><i class="fa-solid fa-right-from-bracket" style="color: #ffffff;"></i></a>
+            </div>
+            <div class="hamburger-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="toast-container">
+            {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast-header">
+                            <strong class="me-auto">Notificación</strong>
+                        </div>
+                        <div class="toast-body">
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
+        </div>
+    <div class="container">
+        <h1 class="text-center">Reporte de Ventas</h1>
+        <div class="mes-selector text-center">
+            <form class="form-inline justify-content-center" action="/reporte" method="get">
+                <div class="form-group mb-2">
+                    <label for="year" class="sr-only">Año</label>
+                    <select class="form-control" id="year" name="year">
+                        <option value="" disabled selected>Seleccione un año</option>
+                        <option value="2027">2027</option>
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                        <option value="2020">2020</option>
+                        <option value="2019">2019</option>
+                        <option value="2018">2018</option>
+
+                        <!-- Añade más años según sea necesario -->
+                    </select>
+                </div>
+                <div class="form-group mx-sm-3 mb-2">
+                    <label for="month" class="sr-only">Mes</label>
+                    <select class="form-control" id="month" name="month">
+                        <option value="" disabled selected>Seleccione un mes</option>
+                        <option value="1">Enero</option>
+                        <option value="2">Febrero</option>
+                        <option value="3">Marzo</option>
+                        <option value="4">Abril</option>
+                        <option value="5">Mayo</option>
+                        <option value="6">Junio</option>
+                        <option value="7">Julio</option>
+                        <option value="8">Agosto</option>
+                        <option value="9">Septiembre</option>
+                        <option value="10">Octubre</option>
+                        <option value="11">Noviembre</option>
+                        <option value="12">Diciembre</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary mb-2">Buscar</button>
+            </form>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>ID Pedido</th>
+                        <th>Cliente</th>
+                        <th>Dirección</th>
+                        <th>Fecha</th>
+                        <th>Método de Pago</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pedido in pedidos %}
+                    <tr>
+                        <td>{{ pedido.pedido_id }}</td>
+                        <td>{{ pedido.nombre_cli }} {{ pedido.apellido_cli }}</td>
+                        <td>{{ pedido.direccion_pedido }}</td>
+                        <td>{{ pedido.fecha_pedido }}</td>
+                        <td>{{ pedido.metodo_pago }}</td>
+                        <td>{{ pedido.total }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="text-center">
+            <h2>Total Ventas: S/ {{ total_ventas }}</h2>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

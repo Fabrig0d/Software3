@@ -439,6 +439,34 @@ def detalles_pedido_e(pedido_id):
     else:
         flash('Debes iniciar sesión como empleado para ver los detalles del pedido.', 'error')
         return redirect(url_for('login'))
+    
+@app.route('/detalles_pedido_ad/<int:pedido_id>')
+def detalles_pedido_ad(pedido_id):
+    if 'logged_in' in session and session['logged_in']:
+        if session.get('tipo') == 'empleado'or session.get('role') == 'admin':
+             pedido = Pedidos.query.get(pedido_id)
+        if pedido:
+            return render_template('detalles_pedido_ad.html', pedido=pedido)
+        else:
+            flash('Pedido no encontrado.', 'error')
+            return redirect(url_for('lista_pedidos_ad'))
+    else:
+        flash('Debes iniciar sesión como empleado para ver los detalles del pedido.', 'error')
+        return redirect(url_for('login'))
+
+
+@app.route('/detalles_pedido_ad')
+def lista_pedidos_ad():
+    if 'logged_in' in session and session['logged_in']:
+        if session.get('tipo') == 'empleado' or session.get('role') == 'admin':
+            pedidos = Pedidos.query.all()  # Obtener todos los pedidos
+            return render_template('lista_pedidos_ad.html', pedidos=pedidos)
+        else:
+            flash('Debes iniciar sesión como empleado para ver los pedidos.', 'error')
+            return redirect(url_for('login'))
+    else:
+        flash('Debes iniciar sesión para ver los pedidos.', 'error')
+        return redirect(url_for('login'))
 
 
 @app.route('/detalles_pedido')
@@ -460,19 +488,45 @@ def lista_pedidos():
 @app.route('/cambiar_estado_pedido/<int:pedido_id>', methods=['POST'])
 def cambiar_estado_pedido(pedido_id):
     if 'logged_in' in session and session['logged_in']:
-        if session.get('tipo') == 'empleado'or session.get('role') == 'admin':
-         nuevo_estado = request.form.get('estado')
-         pedido = Pedidos.query.get(pedido_id)
-        if pedido:
-            pedido.estado = nuevo_estado
-            db.session.commit()
-            flash('Estado del pedido actualizado correctamente.', 'success')
-            return redirect(url_for('detalles_pedido_e', pedido_id=pedido_id))
+        if session.get('tipo') == 'empleado' or session.get('role') == 'admin':
+            nuevo_estado = request.form.get('estado')
+            pedido = Pedidos.query.get(pedido_id)
+            
+            if pedido:
+                
+                # Obtén los detalles del pedido
+                detalles_pedido = DetallesPedidos.query.filter_by(pedido_id=pedido_id).all()
+                
+                # Manejar el cambio de estado a Anulado
+                if nuevo_estado == 'Anulado' and pedido.estado != 'Anulado':
+                    for detalle in detalles_pedido:
+                        producto = Producto.query.get(detalle.producto_id)
+                        if producto:
+                            producto.stock += detalle.cantidad
+                            db.session.add(producto)
+                
+                # Manejar el cambio desde Anulado a otro estado
+                if pedido.estado == 'Anulado' and nuevo_estado != 'Anulado':
+                    for detalle in detalles_pedido:
+                        producto = Producto.query.get(detalle.producto_id)
+                        if producto:
+                            producto.stock -= detalle.cantidad
+                            db.session.add(producto)
+                
+                # Actualizar el estado del pedido
+                pedido.estado = nuevo_estado
+                db.session.commit()
+                
+                flash('Estado del pedido actualizado correctamente.', 'success')
+                return redirect(url_for('detalles_pedido_e', pedido_id=pedido_id))
+            else:
+                flash('Pedido no encontrado.', 'error')
+                return redirect(url_for('lista_pedidos_e'))
         else:
-            flash('Pedido no encontrado.', 'error')
-            return redirect(url_for('lista_pedidos_e'))
+            flash('Debes iniciar sesión como empleado para cambiar el estado del pedido.', 'error')
+            return redirect(url_for('login'))
     else:
-        flash('Debes iniciar sesión como empleado para cambiar el estado del pedido.', 'error')
+        flash('Debes iniciar sesión para cambiar el estado del pedido.', 'error')
         return redirect(url_for('login'))
 
 
@@ -492,7 +546,7 @@ def detalles_pedido(pedido_id):
         return redirect(url_for('lista_pedidos'))
 
 
-@app.route("/pagar")
+@app.route("/pagar", methods=['GET'])
 def pagar():
     cart_items = session.get('cart', [])
 
@@ -504,10 +558,10 @@ def pagar():
             presentacion_factor = int(item['presentacion'].split()[0])
             item['price'] = item['precio_dis'] * presentacion_factor
         item['subtotal'] = item['price'] * item['quantity']
-
-    total = sum(item['subtotal'] for item in cart_items)
+    total = sum(float(item['subtotal']) for item in cart_items)
     username = session.get('username')
 
+    # Obtiene los datos del cliente si hay una sesión de usuario activa
     if username:
         cliente = Cliente.query.filter_by(username=username).first()
 
@@ -524,14 +578,39 @@ def pagar():
         apellidos = ''
         direccion = ''
 
+    # Actualiza el stock de los productos comprados
+    for item in cart_items:
+        producto_id = item['producto_id']
+        cantidad_comprada = int(item['quantity'])
+
+        # Busca el producto en la base de datos y actualiza el stock
+        producto = Producto.query.get(producto_id)
+        if producto:
+            producto.stock -= cantidad_comprada
+            db.session.commit()
+
+    # Renderiza la plantilla de pago con los datos necesarios
     return render_template("Pagar.html", cart_items=cart_items, total=total, nombre=nombre, apellidos=apellidos, direccion=direccion)
 
 @app.route('/cancelar_pedido/<int:pedido_id>', methods=['POST'])
 def cancelar_pedido(pedido_id):
     pedido = Pedidos.query.get_or_404(pedido_id)
+    
     if pedido.estado == 'Pendiente':
+        # Obtén los detalles del pedido
+        detalles_pedido = DetallesPedidos.query.filter_by(pedido_id=pedido_id).all()
+        
+        # Devuelve el stock de los productos
+        for detalle in detalles_pedido:
+            producto = Producto.query.get(detalle.producto_id)
+            if producto:
+                producto.stock += detalle.cantidad
+                db.session.add(producto)
+        
+        # Actualiza el estado del pedido
         pedido.estado = 'Cancelado'
         db.session.commit()
+    
     return redirect(url_for('detalles_pedido', pedido_id=pedido_id))
 
 def get_pedido_by_id(pedido_id):
@@ -654,6 +733,19 @@ def cambiar_estado(mensaje_id):
     db.session.commit()
     return redirect(url_for('ver_solicitudes'))
 
+@app.route('/ver_solicitudes_ad')
+def ver_solicitudes_ad():
+    mensajes = MensajeContacto.query.all()
+    return render_template('ver_solicitudes_ad.html', mensajes=mensajes)
+
+@app.route('/cambiar_estado_ad/<int:mensaje_id>', methods=['POST'])
+def cambiar_estado_ad(mensaje_id):
+    mensaje = MensajeContacto.query.get_or_404(mensaje_id)
+    nuevo_estado = request.form['estado']
+    mensaje.estado = nuevo_estado
+    db.session.commit()
+    return redirect(url_for('ver_solicitudes_ad'))
+
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
@@ -718,21 +810,47 @@ def catalogo_empleado():
 
     return render_template('catalogo_e.html', productos=productos.items, total_pages=total_pages, current_page=page, tipos_productos=tipos_productos)
 
+@app.route('/inventario')
+def catalogo_admin():
+    page = request.args.get('page', 1, type=int)
+    per_page = 9  # Número de productos por página
+    tipo_producto_id = request.args.get('tipo_producto_id', type=int)
+
+    if tipo_producto_id:
+        productos = Producto.query.filter_by(tipo_producto_id=tipo_producto_id).paginate(page=page, per_page=per_page)
+    else:
+        productos = Producto.query.paginate(page=page, per_page=per_page)
+
+    total_pages = ceil(productos.total / per_page)
+    tipos_productos = TipoProducto.query.all()  # Obtener todos los tipos de productos
+
+    return render_template('inventario.html', productos=productos.items, total_pages=total_pages, current_page=page, tipos_productos=tipos_productos)
+
 @app.route('/update_product', methods=['POST'])
 def update_product():
-    data = request.form
-    producto = Producto.query.get(data['id'])
-    if producto:
-        producto.nombre = data['nombre']
-        producto.descripcion = data['descripcion']
-        producto.presentacion = data['presentacion']
-        producto.precio_dis = data['precio_dis']
-        producto.precio_pub = data['precio_pub']
-        producto.stock = data['stock']
-        producto.tipo_producto_id = data['tipo_producto_id']
-        db.session.commit()
-        return jsonify(success=True)
-    return jsonify(success=False)
+    try:
+        data = request.form
+        producto_id = data.get('id')  # Asegúrate de obtener el 'id' del formulario
+        producto = Producto.query.get(producto_id)
+
+        tipo_producto_id = data.get('tipo_producto_id', type=int)
+
+        if producto:
+            producto.nombre = data['nombre']
+            producto.descripcion = data['descripcion']
+            producto.presentacion = data['presentacion']
+            producto.precio_dis = data['precio_dis']
+            producto.precio_pub = data['precio_pub']
+            producto.stock = data['stock']
+            producto.tipo_producto_id = tipo_producto_id  # Usar el tipo_producto_id correcto
+
+            db.session.commit()
+            return jsonify(success=True)
+        else:
+            return jsonify(success=False, error="Producto no encontrado")
+    except Exception as e:
+        print(f"Error al actualizar el producto: {e}")
+        return jsonify(success=False, error=str(e)), 500
 
 @app.route('/increase_stock', methods=['POST'])
 def increase_stock():
@@ -1128,6 +1246,33 @@ def reporte():
 
     return render_template('reporte.html', pedidos=pedidos, total_ventas=total_ventas)
 
+@app.route('/reporte_ad')
+def reporte_ad():
+    year = request.args.get('year')
+    month = request.args.get('month')
+
+    if not year or not month:
+        # Si year o month no están presentes, renderizamos una página sin datos
+        return render_template('reporte_ad.html', pedidos=[], total_ventas=0)
+
+    # Convertimos year y month a enteros para usarlos en la consulta
+    try:
+        year = int(year)
+        month = int(month)
+    except ValueError:
+        flash('Año o mes inválidos. Por favor, selecciona valores correctos.')
+        return redirect(url_for('reporte'))
+
+    # Query para obtener los pedidos del año y mes seleccionados
+    pedidos = db.session.query(Pedidos).filter(
+        extract('year', Pedidos.fecha_pedido) == year,
+        extract('month', Pedidos.fecha_pedido) == month
+    ).all()
+
+    total_ventas = sum(pedido.total for pedido in pedidos)
+
+    return render_template('reporte_ad.html', pedidos=pedidos, total_ventas=total_ventas)
+
 
 sugerencias_estaticas = ['Alga sheer', 'Fito alga', 'Otra sugerencia']
 
@@ -1231,6 +1376,42 @@ def buscar_productos_e():
     # Renderizar el template de resultados de búsqueda con los productos encontrados
     return render_template('resultados_busqueda_e.html', productos=productos, tipos_productos=tipos_productos)
 
+@app.route('/buscar_productos_ad')
+def buscar_productos_ad():
+    # Obtener los parámetros de búsqueda desde la solicitud GET
+    query = request.args.get('q', '')
+    tipo_producto_id = request.args.get('tipo_producto', '')
+    precio = request.args.get('precio', '')
+    presentacion = request.args.get('presentacion', '')
+
+    # Consulta para obtener todos los tipos de productos disponibles
+    tipos_productos = TipoProducto.query.all()
+
+    # Comenzar la consulta filtrando por nombre y descripción que contengan el término de búsqueda
+    productos_query = Producto.query.filter(or_(
+        Producto.nombre.ilike(f'%{query}%'),
+        Producto.descripcion.ilike(f'%{query}%')
+    ))
+
+    # Filtrar por tipo de producto si se proporciona
+    if tipo_producto_id:
+        productos_query = productos_query.filter_by(tipo_producto_id=tipo_producto_id)
+
+    # Ordenar por precio si se especifica 'mayor' o 'menor'
+    if precio == 'mayor':
+        productos_query = productos_query.order_by(Producto.precio_pub.desc())
+    elif precio == 'menor':
+        productos_query = productos_query.order_by(Producto.precio_pub.asc())
+
+    # Filtrar por presentación si se especifica
+    if presentacion:
+        productos_query = productos_query.filter(Producto.presentacion.ilike(f'%{presentacion}%'))
+
+    # Obtener los resultados finales
+    productos = productos_query.all()
+
+    # Renderizar el template de resultados de búsqueda con los productos encontrados
+    return render_template('resultados_busqueda_ad.html', productos=productos, tipos_productos=tipos_productos)
 
 @app.route('/agregar_producto', methods=['GET', 'POST'])
 def agregar_producto():
@@ -1254,6 +1435,29 @@ def agregar_producto():
         db.session.commit()
         
         return redirect(url_for('catalogo_empleado'))
+    
+@app.route('/agregar_producto_ad', methods=['GET', 'POST'])
+def agregar_producto_ad():
+    if request.method == 'GET':
+        tipos_productos = TipoProducto.query.all()
+        return render_template('agregar_producto_ad.html', tipos_productos=tipos_productos)
+    elif request.method == 'POST':
+        nombre = request.form['nombre']
+        descripcion = request.form['descripcion']
+        presentacion = request.form['presentacion']
+        precio_dis = request.form['precio_dis']
+        precio_pub = request.form['precio_pub']
+        stock = request.form['stock']
+        tipo_producto_id = request.form['tipo_producto']
+        
+        nuevo_producto = Producto(nombre=nombre, descripcion=descripcion, presentacion=presentacion,
+                                  precio_dis=precio_dis, precio_pub=precio_pub, stock=stock,
+                                  tipo_producto_id=tipo_producto_id)
+        
+        db.session.add(nuevo_producto)
+        db.session.commit()
+        
+        return redirect(url_for('catalogo_admin'))
 
 
 if __name__ == '__main__':

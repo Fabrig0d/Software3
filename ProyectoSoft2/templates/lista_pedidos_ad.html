@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Pedidos</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/9e204c657e.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
+    <style>
+        .pedido-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .pedido-item:hover {
+            background-color: #f1f1f1;
+        }
+        .pedido-info {
+            flex-grow: 1;
+        }
+        .pedido-estado {
+
+            margin-left: 160px;
+            font-weight: bold;
+        }
+        .pedido-pago {
+            white-space: nowrap;
+            width: 150px; /* Ancho fijo para el método de pago */
+            margin-left: 20px;
+            font-weight: bold;
+            text-align: right; /* Alineación del texto a la izquierda */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="top-bar">
+            <span class="location"><i class="fas fa-map-marker-alt"></i>Cañete, Peru</span>
+            <span class="email"><i class="fas fa-envelope"></i>fitogreen1424@gmail.com</span>
+            <a href="https://www.tiktok.com/@vivero.julio.vice?lang=es" target="_blank">
+            <span class="tiktok"><i class="fa-brands fa-tiktok"></i> Fitogreen</span></a>
+            <a href="https://www.facebook.com/FitogreenV/?locale=es_LA" target="_blank">
+            <span class="facebook"><i class="fa-brands fa-facebook"></i> Fitogreen</span></a>
+                <span class="phone"><i class="fa-solid fa-phone"></i>+51 976 330 835</span>
+        </div>
+        <nav class="navbar">
+            <a class="logo-link" href="/home_admin">
+                <div class="logo">Fitogreen</div>
+            </a>
+            <ul class="nav-links">
+                <li><a class="nav-link active" href="/inventario">Inventario</a></li>
+                <li><a class="nav-link" href="/agregar_producto_ad">Agregar nuevo producto</a></li>
+                <li><a class="nav-link" href="/reporte_ad">Reporte Mensual</a></li>
+                <li><a class="nav-link" href="/ad_usuarios">Administrar Usuarios</a></li>
+                <li><a class="nav-link" href="/ver_solicitudes_ad">Solicitudes de contacto</a></li>
+                <li><a class="nav-link" href="{{ url_for('lista_pedidos_ad') }}">Lista de Pedidos</a></li>
+            </ul>
+            <div class="nav-icons">
+                <form action="/buscar_productos_ad" method="get" class="search-form">
+                    <input type="text" class="search-input" name="q" placeholder="Buscar por nombre o descripción" value="{{ request.args.get('q', '') }}">
+                    <button class="search-button" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                <a href="/logout" class="logout-button btn btn-danger"><i class="fa-solid fa-right-from-bracket" style="color: #ffffff;"></i></a>
+            </div>
+            <div class="hamburger-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <h1>Lista de Pedidos</h1>
+
+        {% if pedidos %}
+            {% for pedido in pedidos %}
+                <div class="pedido-item">
+                    <div class="pedido-info">
+                        <a href="{{ url_for('detalles_pedido_ad', pedido_id=pedido.pedido_id) }}">
+                            Pedido #{{ pedido.pedido_id }} - {{ pedido.fecha_pedido }}
+                        </a>
+                    </div>
+                    <div class="pedido-pago">
+                        Método de Pago: {{ pedido.metodo_pago }}
+                    </div>
+                    <div class="pedido-estado">
+                        <p><strong>Estado:</strong> <span class="pedido-estado estado-{{ pedido.estado | lower | replace(' ', '-') }}">{{ pedido.estado }}</span></p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No hay pedidos disponibles.</p>
+        {% endif %}
+
+        <a href="{{ url_for('home_admin') }}" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Volver</a>
+    </div>
+    <div class="container">
+        <div class="toast-container">
+            {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast-header">
+                            <strong class="me-auto">Notificación</strong>
+                        </div>
+                        <div class="toast-body">
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
+        </div>
+    <!-- Bootstrap JS y dependencias -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            setTimeout(function(){
+                $(".alert").alert('close');
+            }, 15000); // 15000 ms = 15 segundos
+        });
+    </script>
+</body>
+</html>

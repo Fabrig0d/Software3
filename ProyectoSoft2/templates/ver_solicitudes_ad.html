@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Solicitudes de Contacto</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/9e204c657e.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style2.css') }}">
+
+</head>
+<body>
+    <header>
+        <div class="top-bar">
+            <span class="location"><i class="fas fa-map-marker-alt"></i>Cañete, Peru</span>
+            <span class="email"><i class="fas fa-envelope"></i>fitogreen1424@gmail.com</span>
+            <a href="https://www.tiktok.com/@vivero.julio.vice?lang=es" target="_blank">
+            <span class="tiktok"><i class="fa-brands fa-tiktok"></i> Fitogreen</span></a>
+            <a href="https://www.facebook.com/FitogreenV/?locale=es_LA" target="_blank">
+            <span class="facebook"><i class="fa-brands fa-facebook"></i> Fitogreen</span></a>
+                <span class="phone"><i class="fa-solid fa-phone"></i>+51 976 330 835</span>
+        </div>
+        <nav class="navbar">
+            <a class="logo-link" href="/home_admin">
+                <div class="logo">Fitogreen</div>
+            </a>
+            <ul class="nav-links">
+                <li><a class="nav-link active" href="/inventario">Inventario</a></li>
+                <li><a class="nav-link" href="/agregar_producto_ad">Agregar nuevo producto</a></li>
+                <li><a class="nav-link" href="/reporte_ad">Reporte Mensual</a></li>
+                <li><a class="nav-link" href="/ad_usuarios">Administrar Usuarios</a></li>
+                <li><a class="nav-link" href="/ver_solicitudes_ad">Solicitudes de contacto</a></li>
+                <li><a class="nav-link" href="{{ url_for('lista_pedidos_ad') }}">Lista de Pedidos</a></li>
+            </ul>
+            <div class="nav-icons">
+                <form action="/buscar_productos_ad" method="get" class="search-form">
+                    <input type="text" class="search-input" name="q" placeholder="Buscar por nombre o descripción" value="{{ request.args.get('q', '') }}">
+                    <button class="search-button" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                <a href="/logout" class="logout-button btn btn-danger"><i class="fa-solid fa-right-from-bracket" style="color: #ffffff;"></i></a>
+            </div>
+            <div class="hamburger-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+    <br>
+    <center> <h1>Lista de Solicitudes de Contacto</h1></center>
+
+        <div class="table">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Nombre</th>
+                        <th>Correo Electrónico</th>
+                        <th>Asunto</th>
+                        <th>Mensaje</th>
+                        <th>Fecha de Envío</th>
+                        <th>Imagen Adjunta</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mensaje in mensajes %}
+                    <tr>
+                        <td>{{ mensaje.id }}</td>
+                        <td>{{ mensaje.nombre }}</td>
+                        <td>{{ mensaje.email }}</td>
+                        <td>{{ mensaje.asunto }}</td>
+                        <td>
+                            <div class="mensaje">{{ mensaje.mensaje }}</div>
+                        </td>
+                        <td>{{ mensaje.fecha_envio.strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                        <td>
+                            {% if mensaje.imagen %}
+                                <img src="{{ url_for('static', filename='uploads/' + mensaje.imagen) }}" alt="Imagen adjunta">
+                            {% else %}
+                                No hay imagen adjunta
+                            {% endif %}
+                        </td>
+                        <td class="{% if mensaje.estado == 'Pendiente' %}estado-pendiente{% elif mensaje.estado == 'Abierta' %}estado-abierto{% elif mensaje.estado == 'Resuelta' %}estado-resuelta{% endif %}">
+                            {{ mensaje.estado }}
+                        </td>
+                        <td>
+                            <div class="acciones">
+                            <form action="/cambiar_estado/{{ mensaje.id }}" method="post">
+                                <div class="form-group">
+                                    <select name="estado" class="custom-select">
+                                        <option value="Pendiente" {% if mensaje.estado == 'Pendiente' %} selected {% endif %}>Pendiente</option>
+                                        <option value="Abierta" {% if mensaje.estado == 'Abierta' %} selected {% endif %}>Abierta</option>
+                                        <option value="Resuelta" {% if mensaje.estado == 'Resuelta' %} selected {% endif %}>Resuelta</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+                                </div>
+                            </div>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        
+    </div>
+</body>
+</html>
