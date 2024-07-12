@@ -1460,6 +1460,110 @@ def agregar_producto_ad():
         return redirect(url_for('catalogo_admin'))
 
 
+
+@app.route('/editar', methods=['POST'])
+def editar():
+    print(f"Datos recibidos: {request.form}")
+
+    id = request.form.get('id_cli')
+    id = request.form.get('id')
+    nombre = request.form.get('nombre')
+    apellidos = request.form.get('apellidos')
+    correo = request.form.get('correo')
+    telefono_celular = request.form.get('telefono')
+    dni_ruc = request.form.get('dni_ruc')
+    fecha_nacimiento = request.form.get('fecha_nacimiento')
+    direccion = request.form.get('direccion')
+    username = request.form.get('username')
+    sueldo = request.form.get('sueldo')
+    table_type = request.form.get('table_type')
+
+
+    print(f"ID recibido: {id}")
+    print(f"Tipo de tabla: {table_type}")
+
+    if table_type == 'cliente':
+        cliente = Cliente.query.get(id)
+        if cliente:
+            cliente.nombre = nombre if nombre is not None else cliente.nombre
+            cliente.apellidos = apellidos if apellidos is not None else cliente.apellidos
+            cliente.correo = correo if correo is not None else cliente.correo
+            cliente.telefono_celular = telefono_celular if telefono_celular is not None else cliente.telefono_celular
+            cliente.dni_ruc = dni_ruc if dni_ruc is not None else cliente.dni_ruc
+            cliente.fecha_nacimiento = fecha_nacimiento if fecha_nacimiento is not None else cliente.fecha_nacimiento
+            cliente.direccion = direccion if direccion is not None else cliente.direccion
+            cliente.username = username if username is not None else cliente.username
+            db.session.commit()
+            print(f"Cliente actualizado: {cliente.id_cli}, {cliente.nombre} {cliente.apellidos}")
+
+    elif table_type == 'empleado':
+        empleado = Empleado.query.get(id)
+        if empleado:
+            empleado.nombre = nombre if nombre is not None else empleado.nombre
+            empleado.apellidos = apellidos if apellidos is not None else empleado.apellidos
+            empleado.correo = correo if correo is not None else empleado.correo
+            empleado.telefono_celular = telefono_celular if telefono_celular is not None else empleado.telefono_celular
+            empleado.dni = dni_ruc if dni_ruc is not None else empleado.dni
+            empleado.fecha_nacimiento = fecha_nacimiento if fecha_nacimiento is not None else empleado.fecha_nacimiento
+            empleado.direccion = direccion if direccion is not None else empleado.direccion
+            empleado.sueldo = sueldo if sueldo is not None else empleado.sueldo
+            db.session.commit()
+            print(f"Empleado actualizado: {empleado.id}, {empleado.nombre} {empleado.apellidos}")
+
+    elif table_type == 'administrador':
+        administrador = Administrador.query.get(id)
+        if administrador:
+            administrador.nombre = nombre if nombre is not None else administrador.nombre
+            administrador.apellidos = apellidos if apellidos is not None else administrador.apellidos
+            administrador.correo = correo if correo is not None else administrador.correo
+            administrador.telefono_celular = telefono_celular if telefono_celular is not None else administrador.telefono_celular
+            administrador.dni = dni_ruc if dni_ruc is not None else administrador.dni
+            administrador.fecha_nacimiento = fecha_nacimiento if fecha_nacimiento is not None else administrador.fecha_nacimiento
+            administrador.direccion = direccion if direccion is not None else administrador.direccion
+            administrador.sueldo = sueldo if sueldo is not None else administrador.sueldo
+            db.session.commit()
+            print(f"Administrador actualizado: {administrador.id}, {administrador.nombre} {administrador.apellidos}")
+
+    return jsonify({'success': True})
+
+# Ruta para eliminar un cliente
+@app.route('/eliminar_cliente/<int:id_cli>', methods=['POST'])
+def eliminar_cliente(id_cli):
+    cliente = Cliente.query.get_or_404(id_cli)
+    try:
+        # Cambiar el estado del cliente a inactivo (estado=0)
+        cliente.id_cli = 0
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Cliente cambiado a inactivo correctamente'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)})
+
+# Ruta para eliminar un empleado
+@app.route('/eliminar_empleado/<int:id>', methods=['POST'])
+def eliminar_empleado(id):
+    empleado = Empleado.query.get_or_404(id)
+    try:
+        # Cambiar el estado del empleado a inactivo (estado=0)
+        empleado.id = 0
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Empleado cambiado a inactivo correctamente'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)})
+
+# Ruta para eliminar un administrador
+@app.route('/eliminar_administrador/<int:id>', methods=['POST'])
+def eliminar_administrador(id):
+    administrador = Administrador.query.get_or_404(id)
+    try:
+        # Cambiar el estado del administrador a inactivo (estado=0)
+        administrador.id = 0
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Administrador cambiado a inactivo correctamente'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)})
 if __name__ == '__main__':
     app.run(debug=True)
 

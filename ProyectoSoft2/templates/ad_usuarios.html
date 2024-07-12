@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Usuarios y Empleados</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style_usu.css') }}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
     <script src="https://kit.fontawesome.com/9e204c657e.js" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -47,17 +50,216 @@
         </nav>
     </header>
 
-    <center>  <div class="btn-group mt-3" role="group" aria-label="Basic example">
-        <button type="button" class="btn btn-primary" onclick="showTable('clientes')">Clientes</button>
-        <button type="button" class="btn btn-primary" onclick="showTable('empleados')">Empleados</button>
-        <button type="button" class="btn btn-primary" onclick="showTable('administradores')">Administradores</button>
-        <button type="button" class="btn btn-secondary" onclick="showTable('all')">Mostrar Todos</button>
-    </div></center>
-        <div id="clientes" class="table-container">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="button" class="btn btn-primary" onclick="showTable('clientes')">Clientes</button>
+                <button type="button" class="btn btn-primary" onclick="showTable('empleados')">Empleados</button>
+                <button type="button" class="btn btn-primary" onclick="showTable('administradores')">Administradores</button>
+                <button type="button" class="btn btn-secondary" onclick="showTable('all')">Mostrar Todos</button>
+            </div>
+        </div>
+
+        <!-- Modales para editar clientes, empleados y administradores -->
+        <!-- Modal Editar Cliente -->
+        <div class="modal fade" id="modalEditarCliente" tabindex="-1" role="dialog" aria-labelledby="modalEditarClienteLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalEditarClienteLabel">Editar Cliente</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formEditarCliente">
+                            <input type="hidden" id="clienteId">
+                            <div class="form-group">
+                                <label for="nombreCliente">Nombre</label>
+                                <input type="text" class="form-control" id="nombreCliente" name="nombreCliente">
+                            </div>
+                            <div class="form-group">
+                                <label for="apellidosCliente">Apellidos</label>
+                                <input type="text" class="form-control" id="apellidosCliente" name="apellidosCliente">
+                            </div>
+                            <div class="form-group">
+                                <label for="correoCliente">Correo</label>
+                                <input type="email" class="form-control" id="correoCliente" name="correoCliente">
+                            </div>
+                            <div class="form-group">
+                                <label for="telefonoCliente">Teléfono Celular</label>
+                                <input type="text" class="form-control" id="telefonoCliente" name="telefonoCliente">
+                            </div>
+                            <div class="form-group">
+                                <label for="dniCliente">DNI/RUC</label>
+                                <input type="text" class="form-control" id="dniCliente" name="dniCliente">
+                            </div>
+                            <div class="form-group">
+                                <label for="fechaNacimientoCliente">Fecha de Nacimiento</label>
+                                <input type="date" class="form-control" id="fechaNacimientoCliente" name="fechaNacimientoCliente">
+                            </div>
+                            <div class="form-group">
+                                <label for="direccionCliente">Dirección</label>
+                                <input type="text" class="form-control" id="direccionCliente" name="direccionCliente">
+                            </div>
+                            <div class="form-group">
+                                <label for="usernameCliente">Usuario</label>
+                                <input type="text" class="form-control" id="usernameCliente" name="usernameCliente">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" onclick="guardarCambiosCliente()">Guardar cambios</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Editar Empleado -->
+        <div class="modal fade" id="modalEditarEmpleado" tabindex="-1" role="dialog" aria-labelledby="modalEditarEmpleadoLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalEditarEmpleadoLabel">Editar Empleado</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formEditarEmpleado">
+                            <input type="hidden" id="empleadoId">
+                            <div class="form-group">
+                                <label for="nombreEmpleado">Nombre</label>
+                                <input type="text" class="form-control" id="nombreEmpleado" name="nombreEmpleado" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="apellidosEmpleado">Apellidos</label>
+                                <input type="text" class="form-control" id="apellidosEmpleado" name="apellidosEmpleado" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="correoEmpleado">Correo</label>
+                                <input type="email" class="form-control" id="correoEmpleado" name="correoEmpleado" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="telefonoEmpleado">Teléfono Celular</label>
+                                <input type="text" class="form-control" id="telefonoEmpleado" name="telefonoEmpleado" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="dniEmpleado">DNI</label>
+                                <input type="text" class="form-control" id="dniEmpleado" name="dniEmpleado" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="fechaNacimientoEmpleado">Fecha de Nacimiento</label>
+                                <input type="date" class="form-control" id="fechaNacimientoEmpleado" name="fechaNacimientoEmpleado" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="direccionEmpleado">Dirección</label>
+                                <input type="text" class="form-control" id="direccionEmpleado" name="direccionEmpleado" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sueldoEmpleado">Sueldo</label>
+                                <input type="number" class="form-control" id="sueldoEmpleado" name="sueldoEmpleado" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="usernameEmpleado">Usuario</label>
+                                <input type="text" class="form-control" id="usernameEmpleado" name="usernameEmpleado" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" onclick="guardarCambiosEmpleado()">Guardar cambios</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Editar Administrador -->
+        <div class="modal fade" id="modalEditarAdministrador" tabindex="-1" role="dialog" aria-labelledby="modalEditarAdministradorLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalEditarAdministradorLabel">Editar Administrador</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formEditarAdministrador">
+                            <input type="hidden" id="administradorId">
+                            <div class="form-group">
+                                <label for="nombreAdministrador">Nombre</label>
+                                <input type="text" class="form-control" id="nombreAdministrador" name="nombreAdministrador" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="apellidosAdministrador">Apellidos</label>
+                                <input type="text" class="form-control" id="apellidosAdministrador" name="apellidosAdministrador" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="correoAdministrador">Correo</label>
+                                <input type="email" class="form-control" id="correoAdministrador" name="correoAdministrador" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="telefonoAdministrador">Teléfono Celular</label>
+                                <input type="text" class="form-control" id="telefonoAdministrador" name="telefonoAdministrador" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="dniAdministrador">DNI</label>
+                                <input type="text" class="form-control" id="dniAdministrador" name="dniAdministrador" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="fechaNacimientoAdministrador">Fecha de Nacimiento</label>
+                                <input type="date" class="form-control" id="fechaNacimientoAdministrador" name="fechaNacimientoAdministrador" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="direccionAdministrador">Dirección</label>
+                                <input type="text" class="form-control" id="direccionAdministrador" name="direccionAdministrador" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sueldoAdministrador">Sueldo</label>
+                                <input type="number" class="form-control" id="sueldoAdministrador" name="sueldoAdministrador" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="usernameAdministrador">Usuario</label>
+                                <input type="text" class="form-control" id="usernameAdministrador" name="usernameAdministrador" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" onclick="guardarCambiosAdministrador()">Guardar cambios</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal de Confirmación de Borrado -->
+<div class="modal fade" id="confirmarBorradoModal" tabindex="-1" role="dialog" aria-labelledby="confirmarBorradoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmarBorradoModalLabel">Confirmación</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                ¿Está seguro que desea borrar este registro?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmarBorradoBtn">Borrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+        <!-- Tabla de clientes -->
+        <div id="clientes" class="table-container mt-3">
             <h2 class="mt-4">Clientes</h2>
             <table class="table table-bordered">
                 <thead class="table-dark">
                     <tr>
+                        <th>ID</th>
                         <th>Nombre</th>
                         <th>Apellidos</th>
                         <th>Correo</th>
@@ -72,6 +274,7 @@
                 <tbody>
                     {% for cliente in clientes %}
                     <tr>
+                        <td>{{ cliente.id_cli }}</td>
                         <td>{{ cliente.nombre }}</td>
                         <td>{{ cliente.apellidos }}</td>
                         <td>{{ cliente.correo }}</td>
@@ -81,20 +284,21 @@
                         <td>{{ cliente.direccion }}</td>
                         <td>{{ cliente.username }}</td>
                         <td>
-                            <button class="btn btn-warning btn-sm">Editar</button>
-                            <button class="btn btn-danger btn-sm">Borrar</button>
+                            <button class="btn btn-warning btn-sm" onclick="editarCliente('{{ cliente.id_cli }}', '{{ cliente.nombre }}', '{{ cliente.apellidos }}', '{{ cliente.correo }}', '{{ cliente.telefono_celular }}', '{{ cliente.dni_ruc }}', '{{ cliente.fecha_nacimiento }}', '{{ cliente.direccion }}', '{{ cliente.username }}')">Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="confirmarBorrado('{{ cliente.id_cli }}')">Borrar</button>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-        </div><br>
-        
+        </div>
+
         <div id="empleados" class="table-container">
             <h2 class="mt-4">Empleados</h2>
             <table class="table table-bordered">
                 <thead class="table-dark">
                     <tr>
+                        <th>ID</th>
                         <th>Nombre</th>
                         <th>Apellidos</th>
                         <th>Correo</th>
@@ -110,6 +314,7 @@
                 <tbody>
                     {% for empleado in empleados %}
                     <tr>
+                        <td>{{ empleado.id }}</td>
                         <td>{{ empleado.nombre }}</td>
                         <td>{{ empleado.apellidos }}</td>
                         <td>{{ empleado.correo }}</td>
@@ -120,8 +325,8 @@
                         <td>{{ empleado.sueldo }}</td>
                         <td>{{ empleado.username }}</td>
                         <td>
-                            <button class="btn btn-warning btn-sm">Editar</button>
-                            <button class="btn btn-danger btn-sm">Borrar</button>
+                            <button class="btn btn-warning btn-sm" onclick="editarEmpleado('{{ empleado.id }}', '{{ empleado.nombre }}', '{{ empleado.apellidos }}', '{{ empleado.correo }}', '{{ empleado.telefono_celular }}', '{{ empleado.dni }}', '{{ empleado.fecha_nacimiento }}', '{{ empleado.direccion }}', '{{ empleado.sueldo }}', '{{ empleado.username }}')">Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="confirmarBorrado('{{ empleado.id }}')">Borrar</button>
                         </td>
                     </tr>
                     {% endfor %}
@@ -133,6 +338,7 @@
             <table class="table table-bordered">
                 <thead class="table-dark">
                     <tr>
+                        <th>ID</th>
                         <th>Nombre</th>
                         <th>Apellidos</th>
                         <th>Correo</th>
@@ -148,6 +354,7 @@
                 <tbody>
                     {% for administrador in administradores %}
                     <tr>
+                        <td>{{ administrador.id }}</td>
                         <td>{{ administrador.nombre }}</td>
                         <td>{{ administrador.apellidos }}</td>
                         <td>{{ administrador.correo }}</td>
@@ -158,35 +365,267 @@
                         <td>{{ administrador.sueldo }}</td>
                         <td>{{ administrador.username }}</td>
                         <td>
-                            <button class="btn btn-warning btn-sm">Editar</button>
-                            <button class="btn btn-danger btn-sm">Borrar</button>
+                            <button class="btn btn-warning btn-sm" onclick="editarAdministrador('{{ administrador.id }}', '{{ administrador.nombre }}', '{{ administrador.apellidos }}', '{{ administrador.correo }}', '{{ administrador.telefono_celular }}', '{{ administrador.dni }}', '{{ administrador.fecha_nacimiento }}', '{{ administrador.direccion }}', '{{ administrador.sueldo }}', '{{ administrador.username }}')">Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="confirmarBorrado('{{ administrador.id }}')">Borrar</button>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+
     </div>
 
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
         function showTable(tableId) {
-            var tables = document.getElementsByClassName('table-container');
-            for (var i = 0; i < tables.length; i++) {
-                tables[i].classList.remove('active');
-            }
+            var tables = document.querySelectorAll('.table-container');
+            tables.forEach(function(table) {
+                table.style.display = 'none'; // Oculta todas las tablas por defecto
+            });
+
             if (tableId === 'all') {
-                for (var i = 0; i < tables.length; i++) {
-                    tables[i].classList.add('active');
-                }
+                tables.forEach(function(table) {
+                    table.style.display = 'block'; // Muestra todas las tablas si se selecciona 'Mostrar Todos'
+                });
             } else {
-                document.getElementById(tableId).classList.add('active');
+                document.getElementById(tableId).style.display = 'block'; // Muestra la tabla seleccionada
             }
         }
 
-        // Mostrar todas las tablas al cargar la página
-        window.onload = function() {
-            showTable('all');
+        function editarCliente(id_cli, nombre, apellidos, correo, telefono, dni, fechaNacimiento, direccion, username) {
+            $('#clienteId').val(id_cli);
+            $('#nombreCliente').val(nombre);
+            $('#apellidosCliente').val(apellidos);
+            $('#correoCliente').val(correo);
+            $('#telefonoCliente').val(telefono);
+            $('#dniCliente').val(dni);
+            $('#fechaNacimientoCliente').val(fechaNacimiento);
+            $('#direccionCliente').val(direccion);
+            $('#usernameCliente').val(username);
+            $('#modalEditarCliente').modal('show');
         }
+
+        function guardarCambiosCliente() {
+    var formData = {
+        'id_cli': $('#clienteId').val(),
+        'nombre': $('#nombreCliente').val(),
+        'apellidos': $('#apellidosCliente').val(),
+        'correo': $('#correoCliente').val(),
+        'telefono': $('#telefonoCliente').val(),
+        'dni_ruc': $('#dniCliente').val(),
+        'fecha_nacimiento': $('#fechaNacimientoCliente').val(),
+        'direccion': $('#direccionCliente').val(),
+        'username': $('#usernameCliente').val(),
+        'table_type': 'cliente'  // Indicar el tipo de tabla
+    };
+
+    // Enviar solicitud AJAX
+    $.ajax({
+        type: 'POST',
+        url: '{{ url_for("editar") }}',
+        data: formData, 
+        success: function(response) {
+            if (response.success) {
+                alert('Cambios guardados exitosamente');
+                $('#modalEditarCliente').modal('hide');
+                window.location.reload();
+            } else {
+                alert('Error al guardar cambios: ' + response.error);
+            }
+        },
+        error: function(error) {
+            console.error('Error en la solicitud AJAX', error);
+            alert('Error al intentar guardar cambios');
+        }
+    });
+}
+
+function editarEmpleado(id, nombre, apellidos, correo, telefono, dni, fechaNacimiento, direccion, sueldo, username) {
+    $('#empleadoId').val(id);
+    $('#nombreEmpleado').val(nombre);
+    $('#apellidosEmpleado').val(apellidos);
+    $('#correoEmpleado').val(correo);
+    $('#telefonoEmpleado').val(telefono);
+    $('#dniEmpleado').val(dni);
+    $('#fechaNacimientoEmpleado').val(fechaNacimiento);
+    $('#direccionEmpleado').val(direccion);
+    $('#sueldoEmpleado').val(sueldo);
+    $('#usernameEmpleado').val(username);
+    $('#modalEditarEmpleado').modal('show');
+}
+
+function guardarCambiosEmpleado() {
+    var formData = {
+        'id': $('#empleadoId').val(),
+        'nombre': $('#nombreEmpleado').val(),
+        'apellidos': $('#apellidosEmpleado').val(),
+        'correo': $('#correoEmpleado').val(),
+        'telefono': $('#telefonoEmpleado').val(),
+        'dni': $('#dniEmpleado').val(),
+        'fecha_nacimiento': $('#fechaNacimientoEmpleado').val(),
+        'direccion': $('#direccionEmpleado').val(),
+        'sueldo': $('#sueldoEmpleado').val(),
+        'username': $('#usernameEmpleado').val(),
+        'table_type': 'empleado'  // Indicar el tipo de tabla
+    };
+
+    // Enviar solicitud AJAX
+    $.ajax({
+        type: 'POST',
+        url: '{{ url_for("editar") }}',
+        data: formData,
+        success: function(response) {
+            if (response.success) {
+                alert('Cambios guardados exitosamente');
+                $('#modalEditarEmpleado').modal('hide');
+                window.location.reload();
+            } else {
+                alert('Error al guardar cambios: ' + response.error);
+            }
+        },
+        error: function(error) {
+            console.error('Error en la solicitud AJAX', error);
+            alert('Error al intentar guardar cambios');
+        }
+    });
+}
+
+function editarAdministrador(id, nombre, apellidos, correo, telefono, dni, fechaNacimiento, direccion, sueldo, username) {
+    $('#administradorId').val(id);
+    $('#nombreAdministrador').val(nombre);
+    $('#apellidosAdministrador').val(apellidos);
+    $('#correoAdministrador').val(correo);
+    $('#telefonoAdministrador').val(telefono);
+    $('#dniAdministrador').val(dni);
+    $('#fechaNacimientoAdministrador').val(fechaNacimiento);
+    $('#direccionAdministrador').val(direccion);
+    $('#sueldoAdministrador').val(sueldo);
+    $('#usernameAdministrador').val(username);
+    $('#modalEditarAdministrador').modal('show');
+}
+
+function guardarCambiosAdministrador() {
+    var formData = {
+        'id': $('#administradorId').val(),
+        'nombre': $('#nombreAdministrador').val(),
+        'apellidos': $('#apellidosAdministrador').val(),
+        'correo': $('#correoAdministrador').val(),
+        'telefono': $('#telefonoAdministrador').val(),
+        'dni': $('#dniAdministrador').val(),
+        'fecha_nacimiento': $('#fechaNacimientoAdministrador').val(),
+        'direccion': $('#direccionAdministrador').val(),
+        'sueldo': $('#sueldoAdministrador').val(),
+        'username': $('#usernameAdministrador').val(),
+        'table_type': 'administrador'  // Indicar el tipo de tabla
+    };
+
+    // Enviar solicitud AJAX
+    $.ajax({
+        type: 'POST',
+        url: '{{ url_for("editar") }}',
+        data: formData,
+        success: function(response) {
+            if (response.success) {
+                alert('Cambios guardados exitosamente');
+                $('#modalEditarAdministrador').modal('hide');
+                window.location.reload();
+            } else {
+                alert('Error al guardar cambios: ' + response.error);
+            }
+        },
+        error: function(error) {
+            console.error('Error en la solicitud AJAX', error);
+            alert('Error al intentar guardar cambios');
+        }
+    });
+}
+
+// Función para confirmar el borrado (cambio de estado a 0)
+function confirmarBorrado(tipo, id) {
+    $('#confirmarBorradoModal').modal('show');
+
+    $('#confirmarBorradoBtn').off('click').on('click', function() {
+        switch (tipo) {
+            case 'cliente':
+                cambiarEstadoCliente(id_cli);
+                break;
+            case 'empleado':
+                cambiarEstadoEmpleado(id);
+                break;
+            case 'administrador':
+                cambiarEstadoAdministrador(id);
+                break;
+            default:
+                console.error('Tipo de usuario no válido:', tipo);
+                break;
+        }
+
+        $('#confirmarBorradoModal').modal('hide');
+    });
+}
+
+// Función para cambiar estado de cliente a 0
+function cambiarEstadoCliente(id) {
+    fetch(`/eliminar_cliente/${id_cli}`, {
+        method: 'POST',
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            // Aquí podrías recargar la lista de clientes o actualizar la interfaz de usuario
+        } else {
+            alert(`Error: ${data.error}`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Hubo un error al intentar cambiar el estado del cliente.');
+    });
+}
+
+// Función para cambiar estado de empleado a 0
+function cambiarEstadoEmpleado(id) {
+    fetch(`/eliminar_empleado/${id}`, {
+        method: 'POST',
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            // Aquí podrías recargar la lista de empleados o actualizar la interfaz de usuario
+        } else {
+            alert(`Error: ${data.error}`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Hubo un error al intentar cambiar el estado del empleado.');
+    });
+}
+
+// Función para cambiar estado de administrador a 0
+function cambiarEstadoAdministrador(id) {
+    fetch(`/eliminar_administrador/${id}`, {
+        method: 'POST',
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            // Aquí podrías recargar la lista de administradores o actualizar la interfaz de usuario
+        } else {
+            alert(`Error: ${data.error}`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Hubo un error al intentar cambiar el estado del administrador.');
+    });
+}
     </script>
 </body>
 </html>
